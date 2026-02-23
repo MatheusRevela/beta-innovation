@@ -51,6 +51,7 @@ import Onboarding from './pages/Onboarding';
 import Diagnostic from './pages/Diagnostic';
 import StartupRadar from './pages/StartupRadar';
 import MyCRM from './pages/MyCRM';
+import StartupManagement from './pages/StartupManagement';
 import __Layout from './Layout.jsx';
 
 
@@ -59,6 +60,7 @@ export const PAGES = {
     "Diagnostic": Diagnostic,
     "StartupRadar": StartupRadar,
     "MyCRM": MyCRM,
+    "StartupManagement": StartupManagement,
 }
 
 export const pagesConfig = {
