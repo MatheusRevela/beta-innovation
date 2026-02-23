@@ -47,13 +47,18 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
+import Onboarding from './pages/Onboarding';
+import Diagnostic from './pages/Diagnostic';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
+    "Onboarding": Onboarding,
+    "Diagnostic": Diagnostic,
 }
 
 export const pagesConfig = {
+    mainPage: "Onboarding",
     Pages: PAGES,
     Layout: __Layout,
 };
