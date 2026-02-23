@@ -49,12 +49,16 @@
  */
 import Onboarding from './pages/Onboarding';
 import Diagnostic from './pages/Diagnostic';
+import StartupRadar from './pages/StartupRadar';
+import MyCRM from './pages/MyCRM';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Onboarding": Onboarding,
     "Diagnostic": Diagnostic,
+    "StartupRadar": StartupRadar,
+    "MyCRM": MyCRM,
 }
 
 export const pagesConfig = {
