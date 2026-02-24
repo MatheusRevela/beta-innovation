@@ -47,20 +47,24 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
-import Onboarding from './pages/Onboarding';
 import Diagnostic from './pages/Diagnostic';
-import StartupRadar from './pages/StartupRadar';
 import MyCRM from './pages/MyCRM';
+import Onboarding from './pages/Onboarding';
 import StartupManagement from './pages/StartupManagement';
+import StartupRadar from './pages/StartupRadar';
+import Dashboard from './pages/Dashboard';
+import AdminDashboard from './pages/AdminDashboard';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
-    "Onboarding": Onboarding,
     "Diagnostic": Diagnostic,
-    "StartupRadar": StartupRadar,
     "MyCRM": MyCRM,
+    "Onboarding": Onboarding,
     "StartupManagement": StartupManagement,
+    "StartupRadar": StartupRadar,
+    "Dashboard": Dashboard,
+    "AdminDashboard": AdminDashboard,
 }
 
 export const pagesConfig = {
