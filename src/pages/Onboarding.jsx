@@ -244,6 +244,14 @@ export default function Onboarding() {
 
           <div className="mt-6 flex items-center justify-between">
             <Button
+              variant="ghost"
+              onClick={() => navigate(createPageUrl("Dashboard"))}
+              className="text-sm"
+              style={{ color: '#4B4F4B' }}
+            >
+              Voltar depois
+            </Button>
+            <Button
               onClick={next}
               disabled={
                 loading ||
