@@ -21,7 +21,8 @@ const NAV_ITEMS = {
     { label: "Início", icon: LayoutDashboard, page: "Dashboard" },
     { label: "Diagnósticos", icon: Zap, page: "MyDiagnostics" },
     { label: "Radar", icon: Map, page: "StartupRadar" },
-    { label: "Meu CRM", icon: Briefcase, page: "MyCRM" },
+    { label: "CRM por Diagnóstico", icon: FileText, page: "DiagnosticCRM" },
+    { label: "SuperCRM", icon: Briefcase, page: "MyCRM" },
   ],
 };
 
