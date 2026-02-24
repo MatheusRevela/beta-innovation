@@ -1,0 +1,143 @@
+import { useState, useEffect } from "react";
+import { base44 } from "@/api/base44Client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { X, Loader2 } from "lucide-react";
+
+const FIELDS = {
+  business_model: ["SaaS", "Hardware", "Marketplace", "Serviço", "Plataforma", "Outro"],
+  stage: ["Ideação", "MVP", "PMF", "Scale", "Growth"],
+  price_range: ["Gratuito", "Até R$10k/ano", "R$10k–R$50k/ano", "R$50k–R$200k/ano", "Acima de R$200k/ano"],
+};
+
+const EMPTY = {
+  name: "", category: "", vertical: "", business_model: "", description: "",
+  website: "", contact_email: "", contact_whatsapp: "", state: "", country: "Brasil",
+  stage: "", price_range: "", tags: "", logo_url: "", notes: "", is_active: true
+};
+
+export default function StartupFormModal({ startup, onClose, onSaved }) {
+  const [form, setForm] = useState(startup ? { ...startup, tags: (startup.tags || []).join(", ") } : EMPTY);
+  const [saving, setSaving] = useState(false);
+
+  const update = (k, v) => setForm(f => ({ ...f, [k]: v }));
+
+  const save = async () => {
+    setSaving(true);
+    const data = {
+      ...form,
+      tags: form.tags ? form.tags.split(",").map(t => t.trim()).filter(Boolean) : [],
+      is_active: form.is_active !== false
+    };
+    if (startup?.id) {
+      await base44.entities.Startup.update(startup.id, data);
+    } else {
+      await base44.entities.Startup.create(data);
+    }
+    setSaving(false);
+    onSaved();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-5 border-b" style={{ borderColor: '#ECEEEA' }}>
+          <h2 className="font-bold text-lg" style={{ color: '#111111' }}>
+            {startup ? "Editar Startup" : "Nova Startup"}
+          </h2>
+          <button onClick={onClose}><X className="w-5 h-5" style={{ color: '#A7ADA7' }} /></button>
+        </div>
+
+        <div className="p-5 space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="col-span-2">
+              <Label>Nome *</Label>
+              <Input value={form.name} onChange={e => update("name", e.target.value)} placeholder="Nome da startup" />
+            </div>
+            <div>
+              <Label>Categoria</Label>
+              <Input value={form.category} onChange={e => update("category", e.target.value)} placeholder="Ex: HealthTech" />
+            </div>
+            <div>
+              <Label>Vertical</Label>
+              <Input value={form.vertical} onChange={e => update("vertical", e.target.value)} placeholder="Ex: Diagnóstico" />
+            </div>
+            <div>
+              <Label>Modelo de Negócio</Label>
+              <select value={form.business_model} onChange={e => update("business_model", e.target.value)}
+                className="w-full border rounded-md px-3 py-2 text-sm" style={{ borderColor: '#A7ADA7' }}>
+                <option value="">Selecionar</option>
+                {FIELDS.business_model.map(v => <option key={v} value={v}>{v}</option>)}
+              </select>
+            </div>
+            <div>
+              <Label>Estágio</Label>
+              <select value={form.stage} onChange={e => update("stage", e.target.value)}
+                className="w-full border rounded-md px-3 py-2 text-sm" style={{ borderColor: '#A7ADA7' }}>
+                <option value="">Selecionar</option>
+                {FIELDS.stage.map(v => <option key={v} value={v}>{v}</option>)}
+              </select>
+            </div>
+            <div className="col-span-2">
+              <Label>Descrição</Label>
+              <textarea value={form.description} onChange={e => update("description", e.target.value)}
+                rows={3} placeholder="Descreva a solução em 2-3 frases"
+                className="w-full border rounded-md px-3 py-2 text-sm resize-none" style={{ borderColor: '#A7ADA7' }} />
+            </div>
+            <div>
+              <Label>Website</Label>
+              <Input value={form.website} onChange={e => update("website", e.target.value)} placeholder="https://" />
+            </div>
+            <div>
+              <Label>Logo URL</Label>
+              <Input value={form.logo_url} onChange={e => update("logo_url", e.target.value)} placeholder="https://..." />
+            </div>
+            <div>
+              <Label>E-mail de contato</Label>
+              <Input type="email" value={form.contact_email} onChange={e => update("contact_email", e.target.value)} />
+            </div>
+            <div>
+              <Label>WhatsApp</Label>
+              <Input value={form.contact_whatsapp} onChange={e => update("contact_whatsapp", e.target.value)} placeholder="+55 11 99999-9999" />
+            </div>
+            <div>
+              <Label>Estado</Label>
+              <Input value={form.state} onChange={e => update("state", e.target.value)} placeholder="SP" />
+            </div>
+            <div>
+              <Label>Faixa de preço</Label>
+              <select value={form.price_range} onChange={e => update("price_range", e.target.value)}
+                className="w-full border rounded-md px-3 py-2 text-sm" style={{ borderColor: '#A7ADA7' }}>
+                <option value="">Selecionar</option>
+                {FIELDS.price_range.map(v => <option key={v} value={v}>{v}</option>)}
+              </select>
+            </div>
+            <div className="col-span-2">
+              <Label>Tags (separadas por vírgula)</Label>
+              <Input value={form.tags} onChange={e => update("tags", e.target.value)} placeholder="ia, automação, saúde" />
+            </div>
+            <div className="col-span-2">
+              <Label>Notas internas</Label>
+              <textarea value={form.notes} onChange={e => update("notes", e.target.value)}
+                rows={2} className="w-full border rounded-md px-3 py-2 text-sm resize-none" style={{ borderColor: '#A7ADA7' }} />
+            </div>
+            <div className="col-span-2 flex items-center gap-2">
+              <input type="checkbox" id="is_active" checked={form.is_active !== false}
+                onChange={e => update("is_active", e.target.checked)} className="rounded" />
+              <Label htmlFor="is_active" className="cursor-pointer">Startup ativa (aparece em matchings)</Label>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-2 p-5 border-t" style={{ borderColor: '#ECEEEA' }}>
+          <Button variant="outline" onClick={onClose} disabled={saving}>Cancelar</Button>
+          <Button onClick={save} disabled={!form.name || saving}
+            className="text-white" style={{ background: '#E10867', border: 'none' }}>
+            {saving ? <><Loader2 className="w-4 h-4 animate-spin mr-1.5" />Salvando…</> : "Salvar"}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
