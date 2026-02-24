@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+// Diagnostic page — imports OK
 import { createPageUrl } from "@/utils";
 import { DIAGNOSTIC_PILLARS, calculateScores } from "@/components/diagnostic/DiagnosticQuestions";
 import MaturityRadarChart from "@/components/diagnostic/MaturityRadarChart";
