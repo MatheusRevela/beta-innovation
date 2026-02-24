@@ -4,7 +4,7 @@ import { createPageUrl } from "@/utils";
 import { Link } from "react-router-dom";
 import { getMaturidadeLevel } from "@/components/ui/DesignTokens";
 import { MaturityBadge } from "@/components/shared/StatusBadge";
-import { Zap, Map, Briefcase, ChevronRight, Loader2, Plus } from "lucide-react";
+import { Zap, Map, Briefcase, ChevronRight, Loader2, ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Dashboard() {
