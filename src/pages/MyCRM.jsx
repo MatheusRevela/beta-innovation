@@ -5,7 +5,7 @@ import { StageBadge } from "@/components/shared/StatusBadge";
 import PageHeader from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, ChevronRight, Calendar, User, Loader2, X, ExternalLink, Check, Trash2 } from "lucide-react";
+import { Plus, Loader2, X, ExternalLink, Check, Trash2 } from "lucide-react";
 
 export default function MyCRM() {
   const [projects, setProjects] = useState([]);

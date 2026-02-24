@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
 import { CRM_TYPES } from "@/components/ui/DesignTokens";
-import { FitScoreBadge, StatusDot } from "@/components/shared/StatusBadge";
+import { FitScoreBadge } from "@/components/shared/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, Zap, Search, Plus, ExternalLink, MessageCircle, ChevronDown, X, ArrowRight, Filter } from "lucide-react";
+import { Loader2, Zap, Search, Plus, ExternalLink, MessageCircle, X } from "lucide-react";
 
 export default function StartupRadar() {
   const navigate = useNavigate();
