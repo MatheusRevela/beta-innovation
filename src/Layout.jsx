@@ -27,7 +27,7 @@ const NAV_ITEMS = {
 
 const PORTAL_PAGES = ["Dashboard", "Diagnostic", "StartupRadar", "MyCRM", "Onboarding"];
 const ADMIN_PAGES = ["AdminDashboard", "StartupManagement", "CorporateManagement", "CRMBoard", "Reports", "AuditLogs", "AdminSettings"];
-const NO_LAYOUT_PAGES = ["Onboarding", "Login", "Register"];
+const NO_LAYOUT_PAGES = ["Onboarding", "Login", "Register", "Home"];
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
