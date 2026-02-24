@@ -33,6 +33,7 @@ export default function Diagnostic() {
   const [aiHelp, setAiHelp] = useState(null);
   const [aiHelpQuestion, setAiHelpQuestion] = useState(null);
   const [loadingHelp, setLoadingHelp] = useState(false);
+  const [sessionCreated, setSessionCreated] = useState(false);
 
   const pillar = DIAGNOSTIC_PILLARS[pillarIdx];
   const totalPillars = DIAGNOSTIC_PILLARS.length;
