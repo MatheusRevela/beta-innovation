@@ -84,10 +84,22 @@ export default function MyCRM() {
 
   return (
     <div className="max-w-full px-4 sm:px-6 py-8">
-      <PageHeader
-        title="Meu CRM de Inovação"
-        subtitle="Pipeline de projetos com startups"
-      />
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-2">
+        <div>
+          <h1 className="text-2xl font-bold" style={{ color: '#111111' }}>SuperCRM</h1>
+          <p className="text-sm mt-1" style={{ color: '#4B4F4B' }}>
+            Todos os projetos ativos integrados de diferentes diagnósticos e teses
+          </p>
+        </div>
+        <Button
+          variant="outline"
+          className="text-sm gap-2"
+          style={{ borderColor: '#E10867', color: '#E10867' }}
+          onClick={() => window.location.href = createPageUrl("DiagnosticCRM")}
+        >
+          ← CRM por Diagnóstico
+        </Button>
+      </div>
 
       {/* Filters */}
       <div className="flex gap-2 flex-wrap mb-6">
