@@ -60,7 +60,21 @@ export default function Diagnostic() {
   }, [sessionId]);
 
   const getAnswer = (qId) => responses[`${pillar.id}__${qId}`] ?? null;
-  const setAnswer = (qId, val) => setResponses(r => ({ ...r, [`${pillar.id}__${qId}`]: val }));
+
+  const setAnswer = async (qId, val) => {
+    setResponses(r => ({ ...r, [`${pillar.id}__${qId}`]: val }));
+    // Create session on first answer if none exists yet
+    if (!session && !sessionCreated && corporateId) {
+      setSessionCreated(true);
+      const sess = await base44.entities.DiagnosticSession.create({
+        corporate_id: corporateId,
+        status: "in_progress",
+        current_pillar_index: pillarIdx,
+      });
+      setSession(sess);
+    }
+  };
+
   const pillarAnswered = pillar.questions.every(q => getAnswer(q.id) !== null);
   const progressPct = (pillarIdx / totalPillars) * 100;
 
