@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-// StartupRadar — imports OK
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
 import { CRM_TYPES } from "@/components/ui/DesignTokens";
