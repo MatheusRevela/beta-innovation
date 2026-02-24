@@ -61,6 +61,7 @@ import Reports from './pages/Reports';
 import StartupManagement from './pages/StartupManagement';
 import StartupRadar from './pages/StartupRadar';
 import MyDiagnostics from './pages/MyDiagnostics';
+import DiagnosticCRM from './pages/DiagnosticCRM';
 import __Layout from './Layout.jsx';
 
 
@@ -79,6 +80,7 @@ export const PAGES = {
     "StartupManagement": StartupManagement,
     "StartupRadar": StartupRadar,
     "MyDiagnostics": MyDiagnostics,
+    "DiagnosticCRM": DiagnosticCRM,
 }
 
 export const pagesConfig = {
