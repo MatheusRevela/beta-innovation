@@ -92,7 +92,15 @@ export default function Diagnostic() {
   const nextPillar = async () => {
     if (!pillarAnswered) return;
     if (pillarIdx < totalPillars - 1) {
-      setPillarIdx(i => i + 1);
+      const nextIdx = pillarIdx + 1;
+      setPillarIdx(nextIdx);
+      // Update session progress
+      if (session) {
+        await base44.entities.DiagnosticSession.update(session.id, {
+          current_pillar_index: nextIdx,
+          status: "in_progress",
+        });
+      }
     } else {
       await finishDiagnostic();
     }
