@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-  Plus, Search, RefreshCw, Trash2, Loader2, ChevronUp, ChevronDown,
-  Edit, Eye, Zap, Power, PowerOff, AlertCircle, Check, X
+  Plus, Search, Trash2, Loader2, ChevronUp, ChevronDown,
+  Edit, Eye, Power, PowerOff, AlertCircle, X
 } from "lucide-react";
 import StartupFormModal from "@/components/admin/StartupFormModal";
 import StartupDetailDrawer from "@/components/admin/StartupDetailDrawer";
