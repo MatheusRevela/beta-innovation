@@ -59,6 +59,7 @@ import CRMBoard from './pages/CRMBoard';
 import AuditLogs from './pages/AuditLogs';
 import Reports from './pages/Reports';
 import Home from './pages/Home';
+import AdminLogin from './pages/AdminLogin';
 import __Layout from './Layout.jsx';
 
 
@@ -75,6 +76,7 @@ export const PAGES = {
     "AuditLogs": AuditLogs,
     "Reports": Reports,
     "Home": Home,
+    "AdminLogin": AdminLogin,
 }
 
 export const pagesConfig = {

@@ -233,66 +233,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* TWO PORTALS */}
-      <section className="py-20 bg-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-14">
-            <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#E10867' }}>Acessos</p>
-            <h2 className="text-3xl sm:text-4xl font-black" style={{ color: '#111111' }}>Dois portais, uma plataforma</h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            {/* Corporate Portal */}
-            <div className="rounded-3xl border-2 p-8" style={{ borderColor: '#E10867', background: '#fffafa' }}>
-              <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5"
-                style={{ background: '#fce7ef' }}>
-                <Building2 className="w-7 h-7" style={{ color: '#E10867' }} />
-              </div>
-              <h3 className="text-xl font-black mb-2" style={{ color: '#111111' }}>Portal Corporativo</h3>
-              <p className="text-sm leading-relaxed mb-6" style={{ color: '#4B4F4B' }}>
-                Para equipes de inovação e gestores de grandes empresas. Acesse seu diagnóstico, veja startups recomendadas e gerencie projetos de inovação aberta.
-              </p>
-              <ul className="space-y-2 mb-8">
-                {["Diagnóstico de maturidade IA", "Radar personalizado de startups", "CRM de projetos e PoCs", "Acompanhamento com a Beta-i"].map(item => (
-                  <li key={item} className="flex items-center gap-2 text-sm" style={{ color: '#111111' }}>
-                    <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: '#E10867' }} />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <Button onClick={handleCTA} className="w-full text-white font-semibold h-11"
-                style={{ background: '#E10867', border: 'none' }}>
-                Acessar Portal Corporativo
-              </Button>
-            </div>
-
-            {/* Admin Console */}
-            <div className="rounded-3xl border-2 p-8" style={{ borderColor: '#1E0B2E', background: '#faf8fd' }}>
-              <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5"
-                style={{ background: '#1E0B2E' }}>
-                <Database className="w-7 h-7 text-white" />
-              </div>
-              <h3 className="text-xl font-black mb-2" style={{ color: '#111111' }}>Console Admin Beta-i</h3>
-              <p className="text-sm leading-relaxed mb-6" style={{ color: '#4B4F4B' }}>
-                Para a equipe interna da Beta-i. Gerencie startups, visualize diagnósticos de clientes, consolide o CRM e acompanhe métricas da plataforma.
-              </p>
-              <ul className="space-y-2 mb-8">
-                {["Gestão de startups e corporates", "CRM Board consolidado", "Relatórios e analytics", "Audit log de ações"].map(item => (
-                  <li key={item} className="flex items-center gap-2 text-sm" style={{ color: '#111111' }}>
-                    <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: '#6B2FA0' }} />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <Button variant="outline" onClick={handleEnter} className="w-full font-semibold h-11"
-                style={{ borderColor: '#1E0B2E', color: '#1E0B2E' }}>
-                <Shield className="w-4 h-4 mr-2" />
-                Acesso restrito — Beta-i team
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* CTA FINAL */}
       <section className="py-20" style={{ background: '#1E0B2E' }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
