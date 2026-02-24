@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { X, Loader2 } from "lucide-react";
+import { X, Loader2, Sparkles, Globe } from "lucide-react";
 
 const FIELDS = {
   business_model: ["SaaS", "Hardware", "Marketplace", "Serviço", "Plataforma", "Outro"],
@@ -20,8 +20,54 @@ const EMPTY = {
 export default function StartupFormModal({ startup, onClose, onSaved }) {
   const [form, setForm] = useState(startup ? { ...startup, tags: (startup.tags || []).join(", ") } : EMPTY);
   const [saving, setSaving] = useState(false);
+  const [aiUrl, setAiUrl] = useState(startup?.website || "");
+  const [aiDesc, setAiDesc] = useState("");
+  const [analyzing, setAnalyzing] = useState(false);
 
   const update = (k, v) => setForm(f => ({ ...f, [k]: v }));
+
+  const analyzeWithAI = async () => {
+    if (!aiUrl) return;
+    setAnalyzing(true);
+    const res = await base44.integrations.Core.InvokeLLM({
+      prompt: `Você é um analista de inovação. Analise a startup com site: ${aiUrl}.
+${aiDesc ? `Contexto adicional fornecido: "${aiDesc}"` : ""}
+Acesse o site e extraia o máximo de informações possíveis para pré-preencher um cadastro de startup.
+Retorne todos os campos que conseguir identificar com precisão.`,
+      add_context_from_internet: true,
+      response_json_schema: {
+        type: "object",
+        properties: {
+          name: { type: "string" },
+          description: { type: "string" },
+          category: { type: "string" },
+          vertical: { type: "string" },
+          business_model: { type: "string", enum: ["SaaS", "Hardware", "Marketplace", "Serviço", "Plataforma", "Outro"] },
+          stage: { type: "string", enum: ["Ideação", "MVP", "PMF", "Scale", "Growth"] },
+          tags: { type: "array", items: { type: "string" } },
+          contact_email: { type: "string" },
+          state: { type: "string" },
+          country: { type: "string" },
+        }
+      }
+    });
+
+    setForm(f => ({
+      ...f,
+      website: aiUrl,
+      name: res.name || f.name,
+      description: res.description || f.description,
+      category: res.category || f.category,
+      vertical: res.vertical || f.vertical,
+      business_model: res.business_model || f.business_model,
+      stage: res.stage || f.stage,
+      tags: res.tags?.length ? res.tags.join(", ") : f.tags,
+      contact_email: res.contact_email || f.contact_email,
+      state: res.state || f.state,
+      country: res.country || f.country,
+    }));
+    setAnalyzing(false);
+  };
 
   const save = async () => {
     setSaving(true);
@@ -50,6 +96,45 @@ export default function StartupFormModal({ startup, onClose, onSaved }) {
         </div>
 
         <div className="p-5 space-y-4">
+          {/* AI Assistant */}
+          <div className="rounded-xl border p-4 space-y-3" style={{ borderColor: '#c4b5fd', background: '#faf8ff' }}>
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4" style={{ color: '#6B2FA0' }} />
+              <span className="text-sm font-semibold" style={{ color: '#1E0B2E' }}>Assistente de Cadastro Inteligente</span>
+            </div>
+            <p className="text-xs" style={{ color: '#4B4F4B' }}>
+              Cole a URL da startup e opcionalmente uma descrição adicional. Nossa IA preencherá automaticamente todos os campos.
+            </p>
+            <div className="flex gap-2">
+              <Input
+                value={aiUrl}
+                onChange={e => setAiUrl(e.target.value)}
+                placeholder="https://exemplo.com"
+                className="flex-1"
+                style={{ borderColor: '#A7ADA7' }}
+              />
+              <Button onClick={analyzeWithAI} disabled={!aiUrl || analyzing}
+                className="text-white whitespace-nowrap"
+                style={{ background: '#6B2FA0', border: 'none' }}>
+                {analyzing
+                  ? <><Loader2 className="w-4 h-4 mr-1.5 animate-spin" />Analisando…</>
+                  : <><Globe className="w-4 h-4 mr-1.5" />Analisar Site</>}
+              </Button>
+            </div>
+            <textarea
+              value={aiDesc}
+              onChange={e => setAiDesc(e.target.value)}
+              rows={3}
+              placeholder="[OPCIONAL] Cole aqui uma descrição adicional da startup que você já tenha (ex: do LinkedIn, database, etc.). Isso ajudará a IA a fazer uma análise mais precisa."
+              className="w-full border rounded-md px-3 py-2 text-sm resize-none"
+              style={{ borderColor: '#A7ADA7', background: 'white' }}
+            />
+            <p className="text-xs" style={{ color: '#6B2FA0' }}>
+              💡 Dica: Quanto mais contexto você fornecer, melhor será a análise da IA.
+            </p>
+          </div>
+
+          {/* Form fields */}
           <div className="grid grid-cols-2 gap-3">
             <div className="col-span-2">
               <Label>Nome *</Label>
