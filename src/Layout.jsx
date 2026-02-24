@@ -10,10 +10,17 @@ import {
 
 const NAV_ITEMS = {
   admin: [
+    { section: "Dashboard" },
     { label: "Dashboard", icon: LayoutDashboard, page: "AdminDashboard" },
+    { section: "Visão do Usuário" },
+    { label: "Diagnósticos", icon: Zap, page: "MyDiagnostics" },
+    { label: "Radar de Startups", icon: Map, page: "StartupRadar" },
+    { label: "CRM por Diagnóstico", icon: FileText, page: "DiagnosticCRM" },
+    { label: "SuperCRM", icon: Briefcase, page: "MyCRM" },
+    { section: "Gestão" },
     { label: "Startups", icon: Database, page: "StartupManagement" },
     { label: "Corporates", icon: Building2, page: "CorporateManagement" },
-    { label: "CRM", icon: Briefcase, page: "CRMBoard" },
+    { label: "CRM Board", icon: Briefcase, page: "CRMBoard" },
     { label: "Relatórios", icon: BarChart3, page: "Reports" },
     { label: "Audit Log", icon: FileText, page: "AuditLogs" },
   ],
