@@ -99,7 +99,16 @@ export default function Layout({ children, currentPageName }) {
 
         {/* Nav */}
         <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-1">
-          {navItems.map(({ label, icon: Icon, page }) => {
+          {navItems.map((item, idx) => {
+            if (item.section) {
+              if (collapsed) return null;
+              return (
+                <p key={`section-${idx}`} className="px-3 pt-4 pb-1 text-xs font-semibold uppercase tracking-widest text-white/30 select-none">
+                  {item.section}
+                </p>
+              );
+            }
+            const { label, icon: Icon, page } = item;
             const isActive = currentPageName === page;
             return (
               <Link
