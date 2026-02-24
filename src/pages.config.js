@@ -54,6 +54,8 @@ import StartupManagement from './pages/StartupManagement';
 import StartupRadar from './pages/StartupRadar';
 import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import CorporateManagement from './pages/CorporateManagement';
+import CRMBoard from './pages/CRMBoard';
 import __Layout from './Layout.jsx';
 
 
@@ -65,6 +67,8 @@ export const PAGES = {
     "StartupRadar": StartupRadar,
     "Dashboard": Dashboard,
     "AdminDashboard": AdminDashboard,
+    "CorporateManagement": CorporateManagement,
+    "CRMBoard": CRMBoard,
 }
 
 export const pagesConfig = {
