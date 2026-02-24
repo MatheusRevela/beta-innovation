@@ -1,6 +1,7 @@
 import { StatusDot } from "@/components/shared/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { X, Edit, ExternalLink, Power, PowerOff } from "lucide-react";
+import AIEnrichmentPanel from "@/components/admin/AIEnrichmentPanel";
 
 export default function StartupDetailDrawer({ startup, onClose, onEdit, onToggleActive }) {
   if (!startup) return null;
