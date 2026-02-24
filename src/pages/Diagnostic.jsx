@@ -108,6 +108,9 @@ export default function Diagnostic() {
 
   const finishDiagnostic = async () => {
     setGenerating(true);
+    if (session) {
+      await base44.entities.DiagnosticSession.update(session.id, { status: "processing" });
+    }
     const allResponses = DIAGNOSTIC_PILLARS.flatMap(p =>
       p.questions.map(q => ({
         pillar_id: p.id,
