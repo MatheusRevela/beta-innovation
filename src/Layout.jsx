@@ -19,7 +19,7 @@ const NAV_ITEMS = {
   ],
   user: [
     { label: "Início", icon: LayoutDashboard, page: "Dashboard" },
-    { label: "Diagnóstico", icon: Zap, page: "Diagnostic" },
+    { label: "Diagnósticos", icon: Zap, page: "MyDiagnostics" },
     { label: "Radar", icon: Map, page: "StartupRadar" },
     { label: "Meu CRM", icon: Briefcase, page: "MyCRM" },
   ],
