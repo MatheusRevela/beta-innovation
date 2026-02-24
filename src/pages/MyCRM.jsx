@@ -28,7 +28,8 @@ export default function MyCRM() {
       base44.entities.CRMProject.list("-created_date", 200),
       base44.entities.Startup.filter({ is_deleted: false })
     ]);
-    setProjects(ps);
+    // SuperCRM: only include projects not explicitly excluded
+    setProjects(ps.filter(p => p.include_in_super_crm !== false));
     const map = {};
     ss.forEach(s => { map[s.id] = s; });
     setStartups(map);
