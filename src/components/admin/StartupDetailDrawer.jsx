@@ -5,6 +5,9 @@ import AIEnrichmentPanel from "@/components/admin/AIEnrichmentPanel";
 
 export default function StartupDetailDrawer({ startup, onClose, onEdit, onToggleActive }) {
   if (!startup) return null;
+  const [currentStartup, setCurrentStartup] = React.useState(startup);
+  React.useEffect(() => setCurrentStartup(startup), [startup]);
+  const startup_ = currentStartup;
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
