@@ -6,6 +6,7 @@ import PageHeader from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Loader2, X, ExternalLink, Check, Trash2 } from "lucide-react";
+import { createPageUrl } from "@/utils";
 
 export default function MyCRM() {
   const [projects, setProjects] = useState([]);
