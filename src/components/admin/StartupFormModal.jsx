@@ -18,13 +18,22 @@ const EMPTY = {
 };
 
 export default function StartupFormModal({ startup, onClose, onSaved }) {
-  const [form, setForm] = useState(startup ? { ...startup, tags: (startup.tags || []).join(", ") } : EMPTY);
+  const [form, setForm] = useState(startup ? { ...startup, tags: startup.tags || [] } : { ...EMPTY, tags: [] });
   const [saving, setSaving] = useState(false);
   const [aiUrl, setAiUrl] = useState(startup?.website || "");
   const [aiDesc, setAiDesc] = useState("");
   const [analyzing, setAnalyzing] = useState(false);
+  const [tagInput, setTagInput] = useState("");
 
   const update = (k, v) => setForm(f => ({ ...f, [k]: v }));
+
+  const addTags = (raw) => {
+    const newTags = raw.split(",").map(t => t.trim().toLowerCase()).filter(Boolean);
+    setForm(f => ({ ...f, tags: [...new Set([...(f.tags || []), ...newTags])] }));
+    setTagInput("");
+  };
+
+  const removeTag = (tag) => setForm(f => ({ ...f, tags: f.tags.filter(t => t !== tag) }));
 
   const analyzeWithAI = async () => {
     if (!aiUrl) return;
