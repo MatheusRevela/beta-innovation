@@ -86,7 +86,7 @@ Retorne todos os campos que conseguir identificar com precisão.`,
     setSaving(true);
     const data = {
       ...form,
-      tags: form.tags ? form.tags.split(",").map(t => t.trim()).filter(Boolean) : [],
+      tags: form.tags || [],
       is_active: form.is_active !== false
     };
     if (startup?.id) {
