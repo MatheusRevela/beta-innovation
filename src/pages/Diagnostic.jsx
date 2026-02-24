@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
 import { DIAGNOSTIC_PILLARS, calculateScores } from "@/components/diagnostic/DiagnosticQuestions";
 import MaturityRadarChart from "@/components/diagnostic/MaturityRadarChart";
@@ -25,9 +27,8 @@ export default function Diagnostic() {
   const [session, setSession] = useState(null);
   const [pillarIdx, setPillarIdx] = useState(0);
   const [responses, setResponses] = useState({});
-  const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
-  const [phase, setPhase] = useState("quiz"); // quiz | results
+  const [phase, setPhase] = useState("quiz");
   const [results, setResults] = useState(null);
   const [aiHelp, setAiHelp] = useState(null);
   const [aiHelpQuestion, setAiHelpQuestion] = useState(null);
@@ -47,7 +48,8 @@ export default function Diagnostic() {
               overallScore: r[0].overall_score,
               maturityLevel: r[0].maturity_level,
               synthesis: r[0].ai_synthesis,
-              recommendations: r[0].ai_recommendations
+              recommendations: r[0].ai_recommendations,
+              sessionId: r[0].id
             });
             setPhase("results");
           }
@@ -58,7 +60,6 @@ export default function Diagnostic() {
 
   const getAnswer = (qId) => responses[`${pillar.id}__${qId}`] ?? null;
   const setAnswer = (qId, val) => setResponses(r => ({ ...r, [`${pillar.id}__${qId}`]: val }));
-
   const pillarAnswered = pillar.questions.every(q => getAnswer(q.id) !== null);
   const progressPct = (pillarIdx / totalPillars) * 100;
 
@@ -67,7 +68,7 @@ export default function Diagnostic() {
     setLoadingHelp(true);
     setAiHelp(null);
     const res = await base44.integrations.Core.InvokeLLM({
-      prompt: `Você é um consultor de inovação da Beta-i Brasil. Explique de forma clara e concisa (máximo 3 frases) o que esta pergunta de diagnóstico de maturidade de inovação quer avaliar: "${question.text}". Seja objetivo e evite jargões. Responda em português.`
+      prompt: `Você é um consultor de inovação da Beta-i Brasil. Explique de forma clara e concisa (máximo 3 frases) o que esta pergunta de diagnóstico quer avaliar: "${question.text}". Responda em português.`
     });
     setAiHelp(res);
     setLoadingHelp(false);
@@ -97,21 +98,18 @@ export default function Diagnostic() {
     const matLevel = getMaturidadeLevel(overallScore);
 
     const summaryText = DIAGNOSTIC_PILLARS.map(p =>
-      `${p.name}: ${pillarScores[p.id] ?? 0}% (${allResponses.filter(r => r.pillar_id === p.id).map(r => `${r.question_id}=${r.answer_value}`).join(", ")})`
+      `${p.name}: ${pillarScores[p.id] ?? 0}%`
     ).join("\n");
 
-    const aiPrompt = `Você é consultor sênior de inovação da Beta-i Brasil. Com base nos resultados do diagnóstico de maturidade de inovação abaixo, gere:
-1. Uma síntese executiva em 3-4 frases sobre o perfil de inovação da empresa
-2. As 2 principais recomendações para cada pilar (em pt-BR)
+    const aiPrompt = `Você é consultor sênior de inovação da Beta-i Brasil. Com base nos resultados do diagnóstico abaixo, gere uma síntese e recomendações.
 
-Resultados por pilar (score 0-100):
+Scores por pilar (0-100):
 ${summaryText}
-
 Score geral: ${overallScore}% — Nível: ${matLevel.label}
 
-Responda estritamente no JSON schema abaixo:
+Responda em JSON:
 {
-  "synthesis": "string (síntese geral)",
+  "synthesis": "síntese geral em 3 frases",
   "pillar_recommendations": {
     "estrategia_governanca": ["rec1","rec2"],
     "cultura": ["rec1","rec2"],
@@ -120,8 +118,8 @@ Responda estritamente no JSON schema abaixo:
     "investimento": ["rec1","rec2"],
     "resultados_futuro": ["rec1","rec2"]
   },
-  "quick_wins": ["ação rápida 1", "ação rápida 2", "ação rápida 3"],
-  "strategic_initiatives": ["iniciativa estratégica 1", "iniciativa estratégica 2"]
+  "quick_wins": ["ação 1","ação 2","ação 3"],
+  "strategic_initiatives": ["iniciativa 1","iniciativa 2"]
 }`;
 
     let aiResult = null;
@@ -139,7 +137,7 @@ Responda estritamente no JSON schema abaixo:
         }
       });
     } catch (e) {
-      aiResult = { synthesis: "Análise gerada com base nas respostas.", pillar_recommendations: PILLAR_RECS, quick_wins: [], strategic_initiatives: [] };
+      aiResult = { synthesis: "Análise gerada.", pillar_recommendations: PILLAR_RECS, quick_wins: [], strategic_initiatives: [] };
     }
 
     let sess;
@@ -180,8 +178,6 @@ Responda estritamente no JSON schema abaixo:
       maturityLevel: matLevel.label,
       synthesis: aiResult?.synthesis,
       recommendations: aiResult?.pillar_recommendations,
-      quick_wins: aiResult?.quick_wins,
-      strategic_initiatives: aiResult?.strategic_initiatives,
       sessionId: sess?.id
     });
     setGenerating(false);
@@ -196,7 +192,7 @@ Responda estritamente no JSON schema abaixo:
         </div>
         <div className="text-center">
           <h2 className="text-xl font-bold mb-2" style={{ color: '#111111' }}>Analisando suas respostas…</h2>
-          <p className="text-sm" style={{ color: '#4B4F4B' }}>A IA está gerando seu diagnóstico e recomendações personalizadas</p>
+          <p className="text-sm" style={{ color: '#4B4F4B' }}>A IA está gerando seu diagnóstico personalizado</p>
         </div>
         <Loader2 className="w-6 h-6 animate-spin" style={{ color: '#E10867' }} />
       </div>
@@ -204,21 +200,17 @@ Responda estritamente no JSON schema abaixo:
   }
 
   if (phase === "results" && results) {
-    const matLevel = getMaturidadeLevel(results.overallScore);
     return (
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
-        {/* Header */}
         <div className="text-center mb-6">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4" style={{ background: '#fce7ef' }}>
             <CheckCircle className="w-7 h-7" style={{ color: '#E10867' }} />
           </div>
           <h1 className="text-2xl font-bold mb-1" style={{ color: '#111111' }}>Diagnóstico Concluído</h1>
-          <p className="text-sm" style={{ color: '#4B4F4B' }}>Aqui está o perfil de maturidade em inovação da sua empresa</p>
+          <p className="text-sm" style={{ color: '#4B4F4B' }}>Perfil de maturidade em inovação da sua empresa</p>
         </div>
 
-        {/* Score card */}
-        <div className="bg-white rounded-2xl shadow-sm border p-6 flex flex-col sm:flex-row items-center gap-6"
-          style={{ borderColor: '#A7ADA7' }}>
+        <div className="bg-white rounded-2xl shadow-sm border p-6 flex flex-col sm:flex-row items-center gap-6" style={{ borderColor: '#A7ADA7' }}>
           <div className="flex-shrink-0 text-center">
             <div className="text-6xl font-black" style={{ color: '#E10867' }}>{results.overallScore}</div>
             <div className="text-sm font-medium mt-1" style={{ color: '#4B4F4B' }}>de 100</div>
@@ -229,7 +221,6 @@ Responda estritamente no JSON schema abaixo:
           </div>
         </div>
 
-        {/* AI Synthesis */}
         {results.synthesis && (
           <div className="bg-white rounded-2xl border p-5" style={{ borderColor: '#A7ADA7' }}>
             <div className="flex items-center gap-2 mb-3">
@@ -240,7 +231,6 @@ Responda estritamente no JSON schema abaixo:
           </div>
         )}
 
-        {/* Pillar scores */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {DIAGNOSTIC_PILLARS.map(p => {
             const score = results.pillarScores?.[p.id] ?? 0;
@@ -249,35 +239,23 @@ Responda estritamente no JSON schema abaixo:
               <div key={p.id} className="bg-white rounded-2xl border p-4" style={{ borderColor: '#A7ADA7' }}>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-semibold">{p.icon} {p.name}</span>
-                  <span className="font-bold text-sm" style={{ color: score >= 60 ? '#2C4425' : score >= 40 ? '#6B2FA0' : '#E10867' }}>
-                    {score}%
-                  </span>
+                  <span className="font-bold text-sm" style={{ color: score >= 60 ? '#2C4425' : score >= 40 ? '#6B2FA0' : '#E10867' }}>{score}%</span>
                 </div>
                 <div className="h-1.5 rounded-full mb-3" style={{ background: '#ECEEEA' }}>
-                  <div className="h-full rounded-full transition-all"
-                    style={{ width: `${score}%`, background: score >= 60 ? '#2C4425' : score >= 40 ? '#6B2FA0' : '#E10867' }} />
+                  <div className="h-full rounded-full" style={{ width: `${score}%`, background: score >= 60 ? '#2C4425' : score >= 40 ? '#6B2FA0' : '#E10867' }} />
                 </div>
-                {recs && (
-                  <ul className="space-y-1">
-                    {recs.slice(0, 2).map((r, i) => (
-                      <li key={i} className="text-xs flex items-start gap-1.5" style={{ color: '#4B4F4B' }}>
-                        <span className="mt-0.5 flex-shrink-0">→</span>{r}
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                {recs && recs.slice(0, 2).map((r, i) => (
+                  <p key={i} className="text-xs flex items-start gap-1" style={{ color: '#4B4F4B' }}>→ {r}</p>
+                ))}
               </div>
             );
           })}
         </div>
 
-        {/* CTA */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Button
             onClick={() => navigate(createPageUrl("StartupRadar") + `?session_id=${results.sessionId}&corporate_id=${corporateId}`)}
-            className="text-white px-8"
-            style={{ background: '#E10867', border: 'none' }}
-          >
+            className="text-white px-8" style={{ background: '#E10867', border: 'none' }}>
             Ver Radar de Startups →
           </Button>
           <Button variant="outline" onClick={() => window.print()} style={{ borderColor: '#A7ADA7' }}>
@@ -290,12 +268,9 @@ Responda estritamente no JSON schema abaixo:
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      {/* Progress */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-1">
-          <span className="text-xs font-medium" style={{ color: '#4B4F4B' }}>
-            Pilar {pillarIdx + 1} de {totalPillars}
-          </span>
+          <span className="text-xs font-medium" style={{ color: '#4B4F4B' }}>Pilar {pillarIdx + 1} de {totalPillars}</span>
           <span className="text-xs font-medium" style={{ color: '#E10867' }}>{Math.round(progressPct)}%</span>
         </div>
         <div className="h-2 rounded-full" style={{ background: '#A7ADA7' }}>
@@ -314,7 +289,6 @@ Responda estritamente no JSON schema abaixo:
         </div>
       </div>
 
-      {/* Pillar card */}
       <div className="bg-white rounded-2xl border shadow-sm p-6 mb-4" style={{ borderColor: '#A7ADA7' }}>
         <div className="flex items-center gap-3 mb-5">
           <span className="text-2xl">{pillar.icon}</span>
@@ -333,28 +307,23 @@ Responda estritamente no JSON schema abaixo:
                   <span className="text-xs font-bold rounded-full w-5 h-5 flex-shrink-0 flex items-center justify-center mt-0.5"
                     style={{ background: '#ECEEEA', color: '#4B4F4B' }}>{qi + 1}</span>
                   <p className="text-sm font-medium flex-1" style={{ color: '#111111' }}>{q.text}</p>
-                  <button onClick={() => askAiHelp(q)} className="flex-shrink-0 hover:opacity-70 transition-opacity" title="O que isso significa?">
+                  <button onClick={() => askAiHelp(q)} className="flex-shrink-0 hover:opacity-70">
                     <HelpCircle className="w-4 h-4" style={{ color: '#A7ADA7' }} />
                   </button>
                 </div>
-                <div className="flex gap-2 flex-wrap">
+                <div className="flex gap-2">
                   {[1, 2, 3, 4, 5].map(v => (
-                    <button key={v}
-                      onClick={() => setAnswer(q.id, v)}
-                      className="flex-1 min-w-0 py-2 rounded-xl border-2 text-sm font-semibold transition-all"
+                    <button key={v} onClick={() => setAnswer(q.id, v)}
+                      className="flex-1 py-2 rounded-xl border-2 text-sm font-semibold transition-all"
                       style={{
                         borderColor: answer === v ? '#E10867' : '#A7ADA7',
                         background: answer === v ? '#fce7ef' : '#fff',
                         color: answer === v ? '#E10867' : '#4B4F4B'
-                      }}>
-                      {v}
-                    </button>
+                      }}>{v}</button>
                   ))}
                 </div>
                 {q.labels && answer && (
-                  <p className="text-xs mt-1.5 text-center" style={{ color: '#6B2FA0' }}>
-                    {q.labels[answer - 1]}
-                  </p>
+                  <p className="text-xs mt-1.5 text-center" style={{ color: '#6B2FA0' }}>{q.labels[answer - 1]}</p>
                 )}
               </div>
             );
@@ -362,7 +331,6 @@ Responda estritamente no JSON schema abaixo:
         </div>
       </div>
 
-      {/* AI help tooltip */}
       {aiHelpQuestion && (
         <div className="bg-white rounded-2xl border p-4 mb-4" style={{ borderColor: '#B4D1D7' }}>
           <div className="flex items-start justify-between gap-2 mb-2">
@@ -374,24 +342,17 @@ Responda estritamente no JSON schema abaixo:
               <X className="w-3.5 h-3.5" style={{ color: '#A7ADA7' }} />
             </button>
           </div>
-          {loadingHelp ? (
-            <div className="flex items-center gap-2 text-xs" style={{ color: '#4B4F4B' }}>
-              <Loader2 className="w-3 h-3 animate-spin" /> Explicando…
-            </div>
-          ) : (
-            <p className="text-xs leading-relaxed" style={{ color: '#4B4F4B' }}>{aiHelp}</p>
-          )}
+          {loadingHelp
+            ? <div className="flex items-center gap-2 text-xs" style={{ color: '#4B4F4B' }}><Loader2 className="w-3 h-3 animate-spin" /> Explicando…</div>
+            : <p className="text-xs leading-relaxed" style={{ color: '#4B4F4B' }}>{aiHelp}</p>}
         </div>
       )}
 
-      {/* Navigation */}
       <div className="flex justify-between">
-        <Button variant="outline" onClick={() => setPillarIdx(i => i - 1)} disabled={pillarIdx === 0}
-          style={{ borderColor: '#A7ADA7' }}>
+        <Button variant="outline" onClick={() => setPillarIdx(i => i - 1)} disabled={pillarIdx === 0} style={{ borderColor: '#A7ADA7' }}>
           <ChevronLeft className="w-4 h-4 mr-1" /> Anterior
         </Button>
-        <Button onClick={nextPillar} disabled={!pillarAnswered}
-          className="text-white gap-2"
+        <Button onClick={nextPillar} disabled={!pillarAnswered} className="text-white gap-2"
           style={{ background: pillarAnswered ? '#E10867' : '#A7ADA7', border: 'none' }}>
           {pillarIdx === totalPillars - 1 ? "Gerar Diagnóstico" : "Próximo"}
           <ChevronRight className="w-4 h-4" />
