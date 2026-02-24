@@ -47,36 +47,36 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
+import AdminDashboard from './pages/AdminDashboard';
+import AdminLogin from './pages/AdminLogin';
+import AuditLogs from './pages/AuditLogs';
+import CRMBoard from './pages/CRMBoard';
+import CorporateManagement from './pages/CorporateManagement';
+import Dashboard from './pages/Dashboard';
 import Diagnostic from './pages/Diagnostic';
+import Home from './pages/Home';
 import MyCRM from './pages/MyCRM';
 import Onboarding from './pages/Onboarding';
+import Reports from './pages/Reports';
 import StartupManagement from './pages/StartupManagement';
 import StartupRadar from './pages/StartupRadar';
-import Dashboard from './pages/Dashboard';
-import AdminDashboard from './pages/AdminDashboard';
-import CorporateManagement from './pages/CorporateManagement';
-import CRMBoard from './pages/CRMBoard';
-import AuditLogs from './pages/AuditLogs';
-import Reports from './pages/Reports';
-import Home from './pages/Home';
-import AdminLogin from './pages/AdminLogin';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
+    "AdminDashboard": AdminDashboard,
+    "AdminLogin": AdminLogin,
+    "AuditLogs": AuditLogs,
+    "CRMBoard": CRMBoard,
+    "CorporateManagement": CorporateManagement,
+    "Dashboard": Dashboard,
     "Diagnostic": Diagnostic,
+    "Home": Home,
     "MyCRM": MyCRM,
     "Onboarding": Onboarding,
+    "Reports": Reports,
     "StartupManagement": StartupManagement,
     "StartupRadar": StartupRadar,
-    "Dashboard": Dashboard,
-    "AdminDashboard": AdminDashboard,
-    "CorporateManagement": CorporateManagement,
-    "CRMBoard": CRMBoard,
-    "AuditLogs": AuditLogs,
-    "Reports": Reports,
-    "Home": Home,
-    "AdminLogin": AdminLogin,
 }
 
 export const pagesConfig = {
