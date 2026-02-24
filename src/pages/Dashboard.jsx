@@ -76,14 +76,21 @@ export default function Dashboard() {
         <div className="space-y-4">
           {/* Diagnostic card */}
           <div className="bg-white rounded-2xl border p-5" style={{ borderColor: '#A7ADA7' }}>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: '#fce7ef' }}>
-                <Zap className="w-5 h-5" style={{ color: '#E10867' }} />
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: '#fce7ef' }}>
+                  <Zap className="w-5 h-5" style={{ color: '#E10867' }} />
+                </div>
+                <div>
+                  <p className="font-semibold text-sm" style={{ color: '#111111' }}>Diagnóstico de Maturidade</p>
+                  <p className="text-xs" style={{ color: '#4B4F4B' }}>6 pilares de inovação</p>
+                </div>
               </div>
-              <div>
-                <p className="font-semibold text-sm" style={{ color: '#111111' }}>Diagnóstico de Maturidade</p>
-                <p className="text-xs" style={{ color: '#4B4F4B' }}>6 pilares de inovação</p>
-              </div>
+              <Link to={createPageUrl("MyDiagnostics")}>
+                <Button variant="ghost" size="sm" className="text-xs gap-1" style={{ color: '#6B2FA0' }}>
+                  <ClipboardList className="w-3.5 h-3.5" /> Ver todos
+                </Button>
+              </Link>
             </div>
             {session ? (
               <div className="flex items-center justify-between">
