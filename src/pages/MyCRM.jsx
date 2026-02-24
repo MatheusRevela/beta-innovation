@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { PIPELINE_STAGES, STAGE_COLORS, CRM_TYPES } from "@/components/ui/DesignTokens";
 import { StageBadge } from "@/components/shared/StatusBadge";
-import PageHeader from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Loader2, X, ExternalLink, Check, Trash2 } from "lucide-react";
