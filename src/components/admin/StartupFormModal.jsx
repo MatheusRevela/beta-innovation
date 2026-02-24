@@ -212,8 +212,37 @@ Retorne todos os campos que conseguir identificar com precisão.`,
               </select>
             </div>
             <div className="col-span-2">
-              <Label>Tags (separadas por vírgula)</Label>
-              <Input value={form.tags} onChange={e => update("tags", e.target.value)} placeholder="ia, automação, saúde" />
+              <Label>Tags para Matching</Label>
+              {form.tags?.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mb-2 mt-1">
+                  {form.tags.map(tag => (
+                    <span key={tag} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium"
+                      style={{ background: '#ECEEEA', color: '#4B4F4B' }}>
+                      {tag}
+                      <button type="button" onClick={() => removeTag(tag)}
+                        className="hover:text-red-500 transition-colors ml-0.5">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+              <div className="flex gap-2">
+                <Input
+                  value={tagInput}
+                  onChange={e => setTagInput(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addTags(tagInput); } }}
+                  placeholder="Digite tags separadas por vírgula"
+                  style={{ borderColor: '#A7ADA7' }}
+                />
+                <Button type="button" variant="outline" onClick={() => addTags(tagInput)} disabled={!tagInput}
+                  style={{ borderColor: '#A7ADA7', flexShrink: 0 }}>
+                  +
+                </Button>
+              </div>
+              <p className="text-xs mt-1" style={{ color: '#A7ADA7' }}>
+                Você pode colar uma lista de tags ou digitá-las separadas por vírgula. Ex: "vendas, marketing, crm".
+              </p>
             </div>
             <div className="col-span-2">
               <Label>Notas internas</Label>
