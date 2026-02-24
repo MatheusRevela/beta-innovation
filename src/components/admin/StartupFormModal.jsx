@@ -61,20 +61,24 @@ Retorne todos os campos que conseguir identificar com precisão.`,
       }
     });
 
-    setForm(f => ({
-      ...f,
-      website: aiUrl,
-      name: res.name || f.name,
-      description: res.description || f.description,
-      category: res.category || f.category,
-      vertical: res.vertical || f.vertical,
-      business_model: res.business_model || f.business_model,
-      stage: res.stage || f.stage,
-      tags: res.tags?.length ? res.tags.join(", ") : f.tags,
-      contact_email: res.contact_email || f.contact_email,
-      state: res.state || f.state,
-      country: res.country || f.country,
-    }));
+    setForm(f => {
+      const existingTags = f.tags || [];
+      const newTags = res.tags?.length ? res.tags.map(t => t.trim().toLowerCase()) : [];
+      return {
+        ...f,
+        website: aiUrl,
+        name: res.name || f.name,
+        description: res.description || f.description,
+        category: res.category || f.category,
+        vertical: res.vertical || f.vertical,
+        business_model: res.business_model || f.business_model,
+        stage: res.stage || f.stage,
+        tags: [...new Set([...existingTags, ...newTags])],
+        contact_email: res.contact_email || f.contact_email,
+        state: res.state || f.state,
+        country: res.country || f.country,
+      };
+    });
     setAnalyzing(false);
   };
 
