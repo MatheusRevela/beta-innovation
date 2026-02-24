@@ -102,7 +102,7 @@ export default function MyCRM() {
       </div>
 
       {/* Filters */}
-      <div className="flex gap-2 flex-wrap mb-6">
+      <div className="flex gap-2 flex-wrap mt-6 mb-6">
         <select value={filterStage} onChange={e => setFilterStage(e.target.value)}
           className="border rounded-lg px-3 py-1.5 text-sm" style={{ borderColor: '#A7ADA7' }}>
           <option value="all">Todos os estágios</option>
