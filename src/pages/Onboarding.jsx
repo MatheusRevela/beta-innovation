@@ -242,7 +242,7 @@ export default function Onboarding() {
             </div>
           )}
 
-          <div className="mt-6 flex justify-end">
+          <div className="mt-6 flex items-center justify-between">
             <Button
               onClick={next}
               disabled={
