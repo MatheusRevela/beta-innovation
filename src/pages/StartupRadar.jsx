@@ -223,11 +223,13 @@ Responda em JSON:
       corporate_id: corporateId,
       startup_id: crmModal.startup_id,
       match_id: crmModal.id,
+      session_id: thesis?.session_id || null,
       project_name: `${crmForm.type === "Custom" ? crmForm.custom_type_label : crmForm.type} — ${startup?.name || ""}`,
       type: crmForm.type,
       custom_type_label: crmForm.custom_type_label,
       description: crmForm.description,
-      fit_score: crmModal.fit_score
+      fit_score: crmModal.fit_score,
+      include_in_super_crm: true
     });
     await base44.entities.StartupMatch.update(crmModal.id, { added_to_crm: true });
     setMatches(prev => prev.map(m => m.id === crmModal.id ? { ...m, added_to_crm: true } : m));
