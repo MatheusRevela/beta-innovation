@@ -33,24 +33,189 @@ export default function StartupRadar() {
 
   const loadData = async () => {
     setLoading(true);
+
+    // Resolve corporateId e sessionId automaticamente se não vieram pela URL
+    let resolvedCorporateId = corporateId;
+    let resolvedSessionId = sessionId;
+
+    if (!resolvedCorporateId) {
+      const me = await base44.auth.me();
+      const corps = await base44.entities.Corporate.filter({ contact_email: me.email });
+      resolvedCorporateId = corps[0]?.id;
+    }
+
+    if (!resolvedCorporateId) {
+      setLoading(false);
+      return;
+    }
+
     const [sessions, theses] = await Promise.all([
-      sessionId ? base44.entities.DiagnosticSession.filter({ id: sessionId }) : Promise.resolve([]),
-      corporateId ? base44.entities.InnovationThesis.filter({ corporate_id: corporateId }) : Promise.resolve([])
+      resolvedSessionId
+        ? base44.entities.DiagnosticSession.filter({ id: resolvedSessionId })
+        : base44.entities.DiagnosticSession.filter({ corporate_id: resolvedCorporateId, status: "completed" }, "-completed_at", 1),
+      base44.entities.InnovationThesis.filter({ corporate_id: resolvedCorporateId })
     ]);
+
     const sess = sessions[0];
-    const th = theses[0];
+    const th = theses.find(t => t.session_id === (resolvedSessionId || sess?.id)) || theses[0];
+
+    // Atualiza as refs locais usadas pelas funções seguintes
+    if (!corporateId) {
+      params.set("corporate_id", resolvedCorporateId);
+    }
+
     setSession(sess);
     setThesis(th);
 
-    if (!th && sess && corporateId) {
-      await generateThesis(sess);
+    if (!th && sess) {
+      await generateThesisWithIds(sess, resolvedCorporateId, resolvedSessionId || sess?.id);
       return;
     }
     if (th && th.matching_ran) {
       await loadMatches(th.id);
     } else if (th) {
-      await runMatching(th);
+      await runMatchingWithIds(th, resolvedCorporateId, resolvedSessionId || sess?.id);
     }
+    setLoading(false);
+  };
+
+  const generateThesisWithIds = async (sess, corpId, sessId) => {
+    setRunningMatching(true);
+    const prompt = `Com base nos resultados de diagnóstico de maturidade de inovação abaixo, gere uma tese de inovação para a empresa.
+
+Score geral: ${sess.overall_score}% — Nível: ${sess.maturity_level}
+Scores por pilar: ${JSON.stringify(sess.pillar_scores)}
+Síntese: ${sess.ai_synthesis || "N/A"}
+
+Gere a tese identificando:
+1. As macrocategorias de inovação mais relevantes para esta empresa (com base nos pilares mais fracos e oportunidades)
+2. Top 5 prioridades estratégicas
+3. Tags para matching com startups
+
+Responda em JSON:
+{
+  "thesis_text": "string (2-3 parágrafos)",
+  "macro_categories": ["categoria1", "categoria2", "categoria3", "categoria4", "categoria5"],
+  "top_priorities": ["prioridade1", "prioridade2", "prioridade3", "prioridade4", "prioridade5"],
+  "tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6", "tag7", "tag8"],
+  "sectors": ["setor1", "setor2", "setor3"]
+}`;
+
+    const thesisData = await base44.integrations.Core.InvokeLLM({
+      prompt,
+      response_json_schema: {
+        type: "object",
+        properties: {
+          thesis_text: { type: "string" },
+          macro_categories: { type: "array", items: { type: "string" } },
+          top_priorities: { type: "array", items: { type: "string" } },
+          tags: { type: "array", items: { type: "string" } },
+          sectors: { type: "array", items: { type: "string" } }
+        }
+      }
+    });
+
+    const newThesis = await base44.entities.InnovationThesis.create({
+      corporate_id: corpId,
+      session_id: sessId,
+      ...thesisData
+    });
+    setThesis(newThesis);
+    await runMatchingWithIds(newThesis, corpId, sessId);
+  };
+
+  const runMatchingWithIds = async (th, corpId, sessId) => {
+    setRunningMatching(true);
+    const allStartups = await base44.entities.Startup.filter({ is_deleted: false, is_active: true });
+    if (allStartups.length === 0) {
+      setRunningMatching(false);
+      setLoading(false);
+      return;
+    }
+
+    const startupMap = {};
+    allStartups.forEach(s => { startupMap[s.id] = s; });
+    setStartups(startupMap);
+
+    const startupSummaries = allStartups.slice(0, 200).map(s =>
+      `ID:${s.id} | Nome:${s.name} | Categoria:${s.category || ""} | Vertical:${s.vertical || ""} | Tags:${(s.tags || []).join(",")} | Desc:${(s.description || "").substring(0, 150)}`
+    ).join("\n");
+
+    const matchPrompt = `Você é um especialista em inovação aberta e matching tese-startup.
+
+TESE DE INOVAÇÃO DA EMPRESA:
+${th.thesis_text}
+Macrocategorias: ${(th.macro_categories || []).join(", ")}
+Prioridades: ${(th.top_priorities || []).join(", ")}
+Tags: ${(th.tags || []).join(", ")}
+
+STARTUPS DISPONÍVEIS (ativas):
+${startupSummaries}
+
+Selecione as TOP 20-30 startups com maior fit com a tese. Para cada uma, atribua um score de fit (0-100), category_match (qual macrocategoria da tese ela atende) e reasons.
+
+Responda em JSON:
+{
+  "matches": [
+    {
+      "startup_id": "string",
+      "fit_score": number,
+      "category_match": "string",
+      "fit_reasons": ["reason1", "reason2"],
+      "risk_reasons": ["risk1"],
+      "tags_matched": ["tag1"]
+    }
+  ]
+}`;
+
+    let matchData;
+    try {
+      matchData = await base44.integrations.Core.InvokeLLM({
+        prompt: matchPrompt,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            matches: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  startup_id: { type: "string" },
+                  fit_score: { type: "number" },
+                  category_match: { type: "string" },
+                  fit_reasons: { type: "array", items: { type: "string" } },
+                  risk_reasons: { type: "array", items: { type: "string" } },
+                  tags_matched: { type: "array", items: { type: "string" } }
+                }
+              }
+            }
+          }
+        }
+      });
+    } catch (e) {
+      matchData = { matches: [] };
+    }
+
+    const savedMatches = [];
+    for (const m of (matchData?.matches || []).slice(0, 30)) {
+      if (!startupMap[m.startup_id]) continue;
+      const saved = await base44.entities.StartupMatch.create({
+        corporate_id: corpId,
+        thesis_id: th.id,
+        session_id: sessId,
+        startup_id: m.startup_id,
+        fit_score: m.fit_score,
+        fit_reasons: m.fit_reasons,
+        risk_reasons: m.risk_reasons,
+        category_match: m.category_match,
+        tags_matched: m.tags_matched
+      });
+      savedMatches.push(saved);
+    }
+
+    await base44.entities.InnovationThesis.update(th.id, { matching_ran: true, matching_ran_at: new Date().toISOString() });
+    setMatches(savedMatches);
+    setRunningMatching(false);
     setLoading(false);
   };
 
