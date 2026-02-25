@@ -280,12 +280,12 @@ Responda em JSON:
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Button
-            onClick={() => navigate(createPageUrl("StartupRadar") + `?session_id=${results.sessionId}&corporate_id=${corporateId}`)}
+            onClick={() => navigate(createPageUrl("InnovationTheses"))}
             className="text-white px-8" style={{ background: '#E10867', border: 'none' }}>
-            Ver Radar de Startups →
+            Criar Tese de Inovação →
           </Button>
-          <Button variant="outline" onClick={() => window.print()} style={{ borderColor: '#A7ADA7' }}>
-            Exportar relatório
+          <Button variant="outline" onClick={() => navigate(createPageUrl("MyDiagnostics"))} style={{ borderColor: '#A7ADA7' }}>
+            Ver meus diagnósticos
           </Button>
         </div>
       </div>
