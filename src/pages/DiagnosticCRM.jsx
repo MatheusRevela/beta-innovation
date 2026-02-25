@@ -212,7 +212,7 @@ export default function DiagnosticCRM() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => navigate(createPageUrl("StartupRadar") + `?session_id=${selectedSession?.id}`)}
+            onClick={() => navigate(createPageUrl("StartupRadar") + `?session_id=${selectedSession?.id}&corporate_id=${corporate?.id}`)}
             className="ml-auto flex-shrink-0 text-xs"
             style={{ borderColor: '#A7ADA7' }}
           >
