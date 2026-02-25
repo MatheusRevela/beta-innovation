@@ -42,7 +42,7 @@ export default function DiagnosticCRM() {
     setCorporate(corp);
     if (corp) {
       const allSessions = await base44.entities.DiagnosticSession.filter(
-        { corporate_id: corp.id, status: "completed" }, "-created_date"
+        { corporate_id: corp.id, status: "completed" }, "-completed_at"
       );
       setSessions(allSessions);
       if (allSessions.length > 0) {
