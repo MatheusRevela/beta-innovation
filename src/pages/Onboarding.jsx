@@ -185,8 +185,8 @@ export default function Onboarding() {
                   <Input value={form.contact_name} onChange={e => update("contact_name", e.target.value)} />
                 </div>
                 <div>
-                  <Label>E-mail *</Label>
-                  <Input type="email" value={form.contact_email} onChange={e => update("contact_email", e.target.value)} />
+                  <Label>E-mail</Label>
+                  <Input type="email" value={form.contact_email} readOnly className="bg-gray-50 text-gray-500 cursor-not-allowed" />
                 </div>
                 <div>
                   <Label>Cargo</Label>
