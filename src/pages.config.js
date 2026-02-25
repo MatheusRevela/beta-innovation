@@ -62,6 +62,7 @@ import Onboarding from './pages/Onboarding';
 import Reports from './pages/Reports';
 import StartupManagement from './pages/StartupManagement';
 import StartupRadar from './pages/StartupRadar';
+import InnovationTheses from './pages/InnovationTheses';
 import __Layout from './Layout.jsx';
 
 
@@ -81,6 +82,7 @@ export const PAGES = {
     "Reports": Reports,
     "StartupManagement": StartupManagement,
     "StartupRadar": StartupRadar,
+    "InnovationTheses": InnovationTheses,
 }
 
 export const pagesConfig = {
