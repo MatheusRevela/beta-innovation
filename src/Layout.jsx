@@ -14,6 +14,7 @@ const NAV_ITEMS = {
     { label: "Dashboard", icon: LayoutDashboard, page: "AdminDashboard" },
     { section: "Visão do Usuário" },
     { label: "Diagnósticos", icon: Zap, page: "MyDiagnostics" },
+    { label: "Teses de Inovação", icon: Star, page: "InnovationTheses" },
     { label: "Radar de Startups", icon: Map, page: "StartupRadar" },
     { label: "CRM por Diagnóstico", icon: FileText, page: "DiagnosticCRM" },
     { label: "SuperCRM", icon: Briefcase, page: "MyCRM" },
@@ -27,6 +28,7 @@ const NAV_ITEMS = {
   user: [
     { label: "Início", icon: LayoutDashboard, page: "Dashboard" },
     { label: "Diagnósticos", icon: Zap, page: "MyDiagnostics" },
+    { label: "Teses de Inovação", icon: Star, page: "InnovationTheses" },
     { label: "Radar", icon: Map, page: "StartupRadar" },
     { label: "CRM por Diagnóstico", icon: FileText, page: "DiagnosticCRM" },
     { label: "SuperCRM", icon: Briefcase, page: "MyCRM" },

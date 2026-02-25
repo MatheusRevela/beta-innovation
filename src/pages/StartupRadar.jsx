@@ -13,6 +13,7 @@ export default function StartupRadar() {
   const params = new URLSearchParams(window.location.search);
   const sessionId = params.get("session_id");
   const corporateId = params.get("corporate_id");
+  const thesisId = params.get("thesis_id");
 
   const [thesis, setThesis] = useState(null);
   const [matches, setMatches] = useState([]);
@@ -59,11 +60,15 @@ export default function StartupRadar() {
       resolvedSessionId
         ? base44.entities.DiagnosticSession.filter({ id: resolvedSessionId })
         : base44.entities.DiagnosticSession.filter({ corporate_id: resolvedCorporateId, status: "completed" }, "-completed_at", 1),
-      base44.entities.InnovationThesis.filter({ corporate_id: resolvedCorporateId })
+      thesisId
+        ? base44.entities.InnovationThesis.filter({ id: thesisId })
+        : base44.entities.InnovationThesis.filter({ corporate_id: resolvedCorporateId })
     ]);
 
     const sess = sessions[0];
-    const th = theses.find(t => t.session_id === (resolvedSessionId || sess?.id)) || theses[0];
+    const th = thesisId
+      ? theses[0]
+      : theses.find(t => t.session_id === (resolvedSessionId || sess?.id)) || theses[0];
 
     // Atualiza as refs locais usadas pelas funções seguintes
     if (!corporateId) {

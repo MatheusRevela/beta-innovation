@@ -4,7 +4,7 @@ import { createPageUrl } from "@/utils";
 import { Link } from "react-router-dom";
 import { getMaturidadeLevel } from "@/components/ui/DesignTokens";
 import { MaturityBadge } from "@/components/shared/StatusBadge";
-import { Zap, Map, Briefcase, ChevronRight, Loader2, ClipboardList } from "lucide-react";
+import { Zap, Map, Briefcase, ChevronRight, Loader2, ClipboardList, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Dashboard() {
@@ -12,6 +12,7 @@ export default function Dashboard() {
   const [corporate, setCorporate] = useState(null);
   const [session, setSession] = useState(null);
   const [projects, setProjects] = useState([]);
+  const [theses, setTheses] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -33,9 +34,13 @@ export default function Dashboard() {
     setCorporate(corp);
     setProjects(projs);
     if (corp) {
-      const sessions = await base44.entities.DiagnosticSession.filter({ corporate_id: corp.id });
+      const [sessions, thesesData] = await Promise.all([
+        base44.entities.DiagnosticSession.filter({ corporate_id: corp.id }),
+        base44.entities.InnovationThesis.filter({ corporate_id: corp.id })
+      ]);
       const completed = sessions.filter(s => s.status === "completed").sort((a, b) => new Date(b.completed_at) - new Date(a.completed_at));
       setSession(completed[0] || null);
+      setTheses(thesesData);
     }
     setLoading(false);
   };
@@ -118,25 +123,23 @@ export default function Dashboard() {
             )}
           </div>
 
-          {/* Radar card */}
-          {session && (
-            <div className="bg-white rounded-2xl border p-5" style={{ borderColor: '#A7ADA7' }}>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: '#ECEEEA' }}>
-                    <Map className="w-5 h-5" style={{ color: '#6B2FA0' }} />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-sm" style={{ color: '#111111' }}>Radar de Startups</p>
-                    <p className="text-xs" style={{ color: '#4B4F4B' }}>Startups selecionadas pela IA</p>
-                  </div>
+          {/* Theses card */}
+          <div className="bg-white rounded-2xl border p-5" style={{ borderColor: '#A7ADA7' }}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: '#fce7ef' }}>
+                  <Lightbulb className="w-5 h-5" style={{ color: '#E10867' }} />
                 </div>
-                <Link to={createPageUrl("StartupRadar") + `?session_id=${session.id}&corporate_id=${corporate.id}`}>
-                  <Button variant="outline" style={{ borderColor: '#A7ADA7' }}>Ver radar</Button>
-                </Link>
+                <div>
+                  <p className="font-semibold text-sm" style={{ color: '#111111' }}>Teses de Inovação</p>
+                  <p className="text-xs" style={{ color: '#4B4F4B' }}>{theses.length} tese{theses.length !== 1 ? "s" : ""} criada{theses.length !== 1 ? "s" : ""}</p>
+                </div>
               </div>
+              <Link to={createPageUrl("InnovationTheses")}>
+                <Button variant="outline" style={{ borderColor: '#A7ADA7' }}>Ver teses</Button>
+              </Link>
             </div>
-          )}
+          </div>
 
           {/* CRM card */}
           <div className="bg-white rounded-2xl border p-5" style={{ borderColor: '#A7ADA7' }}>
