@@ -21,11 +21,15 @@ export default function Dashboard() {
   const loadData = async () => {
     const me = await base44.auth.me();
     setUser(me);
-    const [corps, projs] = await Promise.all([
+    const [corpsByEmail, corpsByCreator, projs] = await Promise.all([
       base44.entities.Corporate.filter({ contact_email: me.email }),
+      base44.entities.Corporate.filter({ created_by: me.email }),
       base44.entities.CRMProject.filter({ is_active: true })
     ]);
-    const corp = corps[0];
+    const allCorps = [...corpsByEmail, ...corpsByCreator];
+    const seen = new Set();
+    const uniqueCorps = allCorps.filter(c => seen.has(c.id) ? false : seen.add(c.id));
+    const corp = uniqueCorps[0];
     setCorporate(corp);
     setProjects(projs);
     if (corp) {
