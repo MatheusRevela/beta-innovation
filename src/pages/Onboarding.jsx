@@ -39,6 +39,12 @@ export default function Onboarding() {
     state: "", country: "Brasil", innovation_objectives: [], lgpd_consent: false
   });
 
+  useState(() => {
+    base44.auth.me().then(me => {
+      if (me?.email) setForm(f => ({ ...f, contact_email: me.email }));
+    });
+  }, []);
+
   const update = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
   const toggleObjective = (obj) => {
