@@ -40,8 +40,14 @@ export default function StartupRadar() {
 
     if (!resolvedCorporateId) {
       const me = await base44.auth.me();
-      const corps = await base44.entities.Corporate.filter({ contact_email: me.email });
-      resolvedCorporateId = corps[0]?.id;
+      const [corpsByEmail, corpsByCreator] = await Promise.all([
+        base44.entities.Corporate.filter({ contact_email: me.email }),
+        base44.entities.Corporate.filter({ created_by: me.email }),
+      ]);
+      const allCorps = [...corpsByEmail, ...corpsByCreator];
+      const seen = new Set();
+      const uniqueCorps = allCorps.filter(c => seen.has(c.id) ? false : seen.add(c.id));
+      resolvedCorporateId = uniqueCorps[0]?.id;
     }
 
     if (!resolvedCorporateId) {
