@@ -261,7 +261,7 @@ Responda em JSON:
       corporate_id: corporateId,
       startup_id: crmModal.startup_id,
       match_id: crmModal.id,
-      session_id: thesis?.session_id || null,
+      session_id: thesis?.id || null,
       project_name: `${crmForm.type === "Custom" ? crmForm.custom_type_label : crmForm.type} — ${startup?.name || ""}`,
       type: crmForm.type,
       custom_type_label: crmForm.custom_type_label,
