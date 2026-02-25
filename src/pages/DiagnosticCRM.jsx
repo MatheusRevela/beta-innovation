@@ -4,12 +4,11 @@ import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
 import { PIPELINE_STAGES, STAGE_COLORS, CRM_TYPES } from "@/components/ui/DesignTokens";
 import { StageBadge } from "@/components/shared/StatusBadge";
-import { MaturityBadge } from "@/components/shared/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Plus, Loader2, X, ExternalLink, Check, Trash2,
-  ChevronLeft, ChevronRight, Zap, ToggleLeft, ToggleRight
+  ChevronRight, Lightbulb, ToggleLeft, ToggleRight, Map
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -17,11 +16,10 @@ import { ptBR } from "date-fns/locale";
 export default function DiagnosticCRM() {
   const navigate = useNavigate();
   const [corporate, setCorporate] = useState(null);
-  const [sessions, setSessions] = useState([]);
-  const [selectedSession, setSelectedSession] = useState(null);
+  const [theses, setTheses] = useState([]);
+  const [selectedThesis, setSelectedThesis] = useState(null);
   const [projects, setProjects] = useState([]);
   const [startups, setStartups] = useState({});
-  const [thesis, setThesis] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadingProjects, setLoadingProjects] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -30,9 +28,7 @@ export default function DiagnosticCRM() {
   const [movingStage, setMovingStage] = useState(null);
   const [togglingCrm, setTogglingCrm] = useState(null);
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  useEffect(() => { loadData(); }, []);
 
   const loadData = async () => {
     setLoading(true);
@@ -47,30 +43,26 @@ export default function DiagnosticCRM() {
     const corp = uniqueCorps[0];
     setCorporate(corp);
     if (corp) {
-      const allSessions = await base44.entities.DiagnosticSession.filter(
-        { corporate_id: corp.id, status: "completed" }, "-completed_at"
-      );
-      setSessions(allSessions);
-      if (allSessions.length > 0) {
-        await loadSession(allSessions[0], corp.id);
+      const thesesData = await base44.entities.InnovationThesis.filter({ corporate_id: corp.id }, "-created_date");
+      setTheses(thesesData);
+      if (thesesData.length > 0) {
+        await loadThesis(thesesData[0], corp.id);
       }
     }
     setLoading(false);
   };
 
-  const loadSession = async (session, corpId) => {
-    setSelectedSession(session);
+  const loadThesis = async (thesis, corpId) => {
+    setSelectedThesis(thesis);
     setLoadingProjects(true);
-    const [ps, ss, theses] = await Promise.all([
-      base44.entities.CRMProject.filter({ corporate_id: corpId || corporate?.id, session_id: session.id }),
+    const [ps, ss] = await Promise.all([
+      base44.entities.CRMProject.filter({ corporate_id: corpId || corporate?.id, session_id: thesis.id }),
       base44.entities.Startup.filter({ is_deleted: false }),
-      base44.entities.InnovationThesis.filter({ session_id: session.id })
     ]);
     setProjects(ps);
     const map = {};
     ss.forEach(s => { map[s.id] = s; });
     setStartups(map);
-    setThesis(theses[0] || null);
     setLoadingProjects(false);
     setSelected(null);
   };
@@ -144,17 +136,17 @@ export default function DiagnosticCRM() {
     </div>
   );
 
-  if (sessions.length === 0) return (
+  if (theses.length === 0) return (
     <div className="max-w-xl mx-auto px-4 py-16 text-center">
       <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: '#fce7ef' }}>
-        <Zap className="w-7 h-7" style={{ color: '#E10867' }} />
+        <Lightbulb className="w-7 h-7" style={{ color: '#E10867' }} />
       </div>
-      <h2 className="font-bold text-lg mb-2" style={{ color: '#111111' }}>Nenhum diagnóstico concluído</h2>
+      <h2 className="font-bold text-lg mb-2" style={{ color: '#111111' }}>Nenhuma tese de inovação criada</h2>
       <p className="text-sm mb-5" style={{ color: '#4B4F4B' }}>
-        Conclua um diagnóstico para começar a construir seu CRM de inovação.
+        Crie uma tese de inovação para começar a construir seu CRM de startups.
       </p>
-      <Button onClick={() => navigate(createPageUrl("MyDiagnostics"))} className="text-white" style={{ background: '#E10867', border: 'none' }}>
-        Ver diagnósticos
+      <Button onClick={() => navigate(createPageUrl("InnovationTheses"))} className="text-white" style={{ background: '#E10867', border: 'none' }}>
+        Criar Tese de Inovação
       </Button>
     </div>
   );
@@ -164,9 +156,9 @@ export default function DiagnosticCRM() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold" style={{ color: '#111111' }}>CRM por Diagnóstico</h1>
+          <h1 className="text-2xl font-bold" style={{ color: '#111111' }}>CRM por Tese</h1>
           <p className="text-sm mt-1" style={{ color: '#4B4F4B' }}>
-            Pipeline de startups gerado a partir da tese de cada diagnóstico
+            Pipeline de startups gerado a partir das suas teses de inovação
           </p>
         </div>
         <Button
@@ -179,38 +171,39 @@ export default function DiagnosticCRM() {
         </Button>
       </div>
 
-      {/* Session selector */}
+      {/* Thesis selector */}
       <div className="flex gap-2 overflow-x-auto pb-2 mb-6">
-        {sessions.map(s => (
+        {theses.map(t => (
           <button
-            key={s.id}
-            onClick={() => loadSession(s)}
-            className="flex-shrink-0 px-4 py-2.5 rounded-xl border text-sm font-medium transition-all"
+            key={t.id}
+            onClick={() => loadThesis(t)}
+            className="flex-shrink-0 px-4 py-2.5 rounded-xl border text-sm font-medium transition-all text-left"
             style={{
-              background: selectedSession?.id === s.id ? '#1E0B2E' : '#fff',
-              borderColor: selectedSession?.id === s.id ? '#1E0B2E' : '#A7ADA7',
-              color: selectedSession?.id === s.id ? '#fff' : '#111111'
+              background: selectedThesis?.id === t.id ? '#1E0B2E' : '#fff',
+              borderColor: selectedThesis?.id === t.id ? '#1E0B2E' : '#A7ADA7',
+              color: selectedThesis?.id === t.id ? '#fff' : '#111111',
+              maxWidth: 220
             }}
           >
             <span className="block text-xs opacity-70 mb-0.5">
-              {format(new Date(s.completed_at || s.created_date), "dd/MM/yyyy", { locale: ptBR })}
+              {format(new Date(t.created_date), "dd/MM/yyyy", { locale: ptBR })}
             </span>
-            Score {s.overall_score || "—"} · {s.maturity_level || ""}
+            <span className="block truncate">{(t.macro_categories || []).slice(0, 2).join(", ") || `Tese #${t.id?.slice(-6)}`}</span>
           </button>
         ))}
       </div>
 
       {/* Thesis summary */}
-      {thesis && (
+      {selectedThesis && (
         <div className="bg-white rounded-2xl border p-4 mb-6 flex items-start gap-3" style={{ borderColor: '#B4D1D7' }}>
           <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#fce7ef' }}>
-            <Zap className="w-4 h-4" style={{ color: '#E10867' }} />
+            <Lightbulb className="w-4 h-4" style={{ color: '#E10867' }} />
           </div>
-          <div>
+          <div className="flex-1 min-w-0">
             <p className="text-xs font-semibold mb-1" style={{ color: '#E10867' }}>Tese de Inovação</p>
-            <p className="text-sm" style={{ color: '#4B4F4B' }}>{thesis.thesis_text?.split("\n")[0]}</p>
-            <div className="flex flex-wrap gap-1.5 mt-2">
-              {(thesis.macro_categories || []).map(c => (
+            <p className="text-sm mb-2" style={{ color: '#4B4F4B' }}>{selectedThesis.thesis_text?.split("\n")[0]}</p>
+            <div className="flex flex-wrap gap-1.5">
+              {(selectedThesis.macro_categories || []).map(c => (
                 <span key={c} className="px-2 py-0.5 rounded-full text-xs font-medium" style={{ background: '#fce7ef', color: '#E10867' }}>{c}</span>
               ))}
             </div>
@@ -218,11 +211,11 @@ export default function DiagnosticCRM() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => navigate(createPageUrl("StartupRadar") + `?session_id=${selectedSession?.id}&corporate_id=${corporate?.id}`)}
-            className="ml-auto flex-shrink-0 text-xs"
+            onClick={() => navigate(createPageUrl("StartupRadar") + `?thesis_id=${selectedThesis?.id}&corporate_id=${corporate?.id}`)}
+            className="ml-auto flex-shrink-0 text-xs gap-1"
             style={{ borderColor: '#A7ADA7' }}
           >
-            Radar <ChevronRight className="w-3 h-3 ml-1" />
+            <Map className="w-3 h-3" /> Radar <ChevronRight className="w-3 h-3" />
           </Button>
         </div>
       )}
@@ -234,12 +227,12 @@ export default function DiagnosticCRM() {
       ) : projects.length === 0 ? (
         <div className="bg-white rounded-2xl border p-12 text-center" style={{ borderColor: '#A7ADA7' }}>
           <div className="text-4xl mb-3">📋</div>
-          <h3 className="font-bold mb-2" style={{ color: '#111111' }}>Nenhum projeto neste diagnóstico</h3>
+          <h3 className="font-bold mb-2" style={{ color: '#111111' }}>Nenhum projeto nesta tese</h3>
           <p className="text-sm mb-5" style={{ color: '#4B4F4B' }}>
             Adicione startups ao CRM a partir do Radar de Startups.
           </p>
           <Button
-            onClick={() => navigate(createPageUrl("StartupRadar"))}
+            onClick={() => navigate(createPageUrl("StartupRadar") + `?thesis_id=${selectedThesis?.id}&corporate_id=${corporate?.id}`)}
             className="text-white" style={{ background: '#E10867', border: 'none' }}
           >
             Ir ao Radar
@@ -265,7 +258,7 @@ export default function DiagnosticCRM() {
                       return (
                         <div key={proj.id}
                           className="bg-white rounded-xl border p-3 cursor-pointer hover:shadow-md transition-shadow"
-                          style={{ borderColor: proj.include_in_super_crm === false ? '#A7ADA7' : '#A7ADA7', opacity: proj.include_in_super_crm === false ? 0.75 : 1 }}
+                          style={{ borderColor: '#A7ADA7', opacity: proj.include_in_super_crm === false ? 0.75 : 1 }}
                           onClick={() => openProject(proj)}>
                           <div className="flex items-start gap-2 mb-2">
                             {startup?.logo_url ? (
