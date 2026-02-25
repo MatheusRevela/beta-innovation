@@ -16,7 +16,7 @@ const NAV_ITEMS = {
     { label: "Diagnósticos", icon: Zap, page: "MyDiagnostics" },
     { label: "Teses de Inovação", icon: Star, page: "InnovationTheses" },
     { label: "Radar de Startups", icon: Map, page: "StartupRadar" },
-    { label: "CRM por Diagnóstico", icon: FileText, page: "DiagnosticCRM" },
+    { label: "CRM por Tese", icon: FileText, page: "DiagnosticCRM" },
     { label: "SuperCRM", icon: Briefcase, page: "MyCRM" },
     { section: "Gestão" },
     { label: "Startups", icon: Database, page: "StartupManagement" },
@@ -30,7 +30,7 @@ const NAV_ITEMS = {
     { label: "Diagnósticos", icon: Zap, page: "MyDiagnostics" },
     { label: "Teses de Inovação", icon: Star, page: "InnovationTheses" },
     { label: "Radar", icon: Map, page: "StartupRadar" },
-    { label: "CRM por Diagnóstico", icon: FileText, page: "DiagnosticCRM" },
+    { label: "CRM por Tese", icon: FileText, page: "DiagnosticCRM" },
     { label: "SuperCRM", icon: Briefcase, page: "MyCRM" },
   ],
 };
