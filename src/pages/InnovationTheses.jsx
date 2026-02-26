@@ -251,6 +251,10 @@ Responda em JSON:
                 </div>
               </div>
               <div className="flex items-center gap-2">
+                <button onClick={() => setReportThesis(thesis)}
+                  className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors" title="Gerar relatório">
+                  <FileText className="w-4 h-4" style={{ color: '#6B2FA0' }} />
+                </button>
                 <button onClick={() => deleteThesis(thesis.id)} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
                   <Trash2 className="w-4 h-4" style={{ color: '#A7ADA7' }} />
                 </button>
