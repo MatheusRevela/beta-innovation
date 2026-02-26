@@ -354,6 +354,16 @@ Responda em JSON:
         </div>
       )}
 
+      {/* AI Prioritization Panel */}
+      {thesis && matches.length > 0 && (
+        <AIPrioritizationPanel
+          thesis={thesis}
+          matches={matches}
+          startups={startups}
+          onPrioritized={(map) => setPriorityMap(map)}
+        />
+      )}
+
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1">
