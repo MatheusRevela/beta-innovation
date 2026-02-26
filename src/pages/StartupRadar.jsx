@@ -6,7 +6,8 @@ import { CRM_TYPES } from "@/components/ui/DesignTokens";
 import { FitScoreBadge } from "@/components/shared/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, Zap, Search, Plus, ExternalLink, MessageCircle, X } from "lucide-react";
+import { Loader2, Zap, Search, Plus, ExternalLink, MessageCircle, X, Sparkles } from "lucide-react";
+import AIPrioritizationPanel from "@/components/radar/AIPrioritizationPanel";
 
 export default function StartupRadar() {
   const navigate = useNavigate();
