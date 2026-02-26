@@ -330,6 +330,12 @@ Responda em JSON:
         <h1 className="text-2xl font-bold mb-1" style={{ color: '#111111' }}>Radar de Startups</h1>
         <p className="text-sm" style={{ color: '#4B4F4B' }}>
           {filtered.length} startups selecionadas pela IA com base na sua tese de inovação
+          {hasPriority && (
+            <span className="ml-2 inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium"
+              style={{ background: '#fce7ef', color: '#E10867' }}>
+              <Sparkles className="w-3 h-3" /> Priorização ativa
+            </span>
+          )}
         </p>
       </div>
 
