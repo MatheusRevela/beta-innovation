@@ -288,6 +288,23 @@ Responda em JSON:
         ))}
       </div>
 
+      {/* Compare modal */}
+      {showCompare && (
+        <ThesisCompare
+          theses={theses.filter(t => compareIds.includes(t.id))}
+          onClose={() => setShowCompare(false)}
+        />
+      )}
+
+      {/* Report modal */}
+      {reportThesis && (
+        <ThesisReportModal
+          thesis={reportThesis}
+          corporate={corporate}
+          onClose={() => setReportThesis(null)}
+        />
+      )}
+
       {/* Create thesis form modal */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
