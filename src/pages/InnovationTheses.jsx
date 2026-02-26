@@ -137,6 +137,12 @@ Responda em JSON:
     setGenerating(false);
   };
 
+  const toggleCompare = (id) => {
+    setCompareIds(prev =>
+      prev.includes(id) ? prev.filter(x => x !== id) : prev.length < 3 ? [...prev, id] : prev
+    );
+  };
+
   const goToRadar = (thesis) => {
     navigate(createPageUrl("StartupRadar") + `?thesis_id=${thesis.id}&corporate_id=${corporate.id}`);
   };
