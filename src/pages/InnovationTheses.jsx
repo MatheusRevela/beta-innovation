@@ -2,11 +2,13 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
-import { Lightbulb, Plus, ChevronRight, Loader2, Zap, Map, Trash2, X, Check } from "lucide-react";
+import { Lightbulb, Plus, ChevronRight, Loader2, Zap, Map, Trash2, X, Check, Sparkles, GitMerge } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import ThesisAnalysisDrawer from "@/components/theses/ThesisAnalysisDrawer";
+import ThesisCompareModal from "@/components/theses/ThesisCompareModal";
 
 const SECTORS = [
   "Energia", "Saúde", "Financeiro", "Agro", "Varejo", "Indústria",
