@@ -160,9 +160,17 @@ Responda em JSON:
           </p>
         </div>
         {corporate && (
-          <Button onClick={() => setShowForm(true)} className="text-white gap-2" style={{ background: '#E10867', border: 'none' }}>
-            <Plus className="w-4 h-4" /> Nova Tese
-          </Button>
+          <div className="flex gap-2">
+            {theses.length >= 2 && (
+              <Button onClick={() => setShowCompare(true)} variant="outline" className="gap-2 text-sm"
+                style={{ borderColor: '#6B2FA0', color: '#6B2FA0' }}>
+                <GitMerge className="w-4 h-4" /> Comparar
+              </Button>
+            )}
+            <Button onClick={() => setShowForm(true)} className="text-white gap-2" style={{ background: '#E10867', border: 'none' }}>
+              <Plus className="w-4 h-4" /> Nova Tese
+            </Button>
+          </div>
         )}
       </div>
 
