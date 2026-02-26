@@ -270,6 +270,16 @@ Responda em JSON:
         ))}
       </div>
 
+      {/* Analysis drawer */}
+      {analysisThesis && (
+        <ThesisAnalysisDrawer thesis={analysisThesis} onClose={() => setAnalysisThesis(null)} />
+      )}
+
+      {/* Compare modal */}
+      {showCompare && (
+        <ThesisCompareModal theses={theses} onClose={() => setShowCompare(false)} />
+      )}
+
       {/* Create thesis form modal */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
