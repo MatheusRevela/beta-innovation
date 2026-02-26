@@ -2,13 +2,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
-import { Lightbulb, Plus, ChevronRight, Loader2, Zap, Map, Trash2, X, Check, Sparkles, GitMerge } from "lucide-react";
+import { Lightbulb, Plus, ChevronRight, Loader2, Zap, Map, Trash2, X, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import ThesisAnalysisDrawer from "@/components/theses/ThesisAnalysisDrawer";
-import ThesisCompareModal from "@/components/theses/ThesisCompareModal";
 
 const SECTORS = [
   "Energia", "Saúde", "Financeiro", "Agro", "Varejo", "Indústria",
@@ -30,8 +28,6 @@ export default function InnovationTheses() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [generating, setGenerating] = useState(false);
-  const [analysisThesis, setAnalysisThesis] = useState(null);
-  const [showCompare, setShowCompare] = useState(false);
   const [form, setForm] = useState({
     title: "",
     sectors: [],
@@ -160,17 +156,9 @@ Responda em JSON:
           </p>
         </div>
         {corporate && (
-          <div className="flex gap-2">
-            {theses.length >= 2 && (
-              <Button onClick={() => setShowCompare(true)} variant="outline" className="gap-2 text-sm"
-                style={{ borderColor: '#6B2FA0', color: '#6B2FA0' }}>
-                <GitMerge className="w-4 h-4" /> Comparar
-              </Button>
-            )}
-            <Button onClick={() => setShowForm(true)} className="text-white gap-2" style={{ background: '#E10867', border: 'none' }}>
-              <Plus className="w-4 h-4" /> Nova Tese
-            </Button>
-          </div>
+          <Button onClick={() => setShowForm(true)} className="text-white gap-2" style={{ background: '#E10867', border: 'none' }}>
+            <Plus className="w-4 h-4" /> Nova Tese
+          </Button>
         )}
       </div>
 
@@ -252,15 +240,11 @@ Responda em JSON:
               ))}
             </div>
 
-            <div className="flex items-center gap-2 pt-3 border-t flex-wrap" style={{ borderColor: '#ECEEEA' }}>
+            <div className="flex items-center gap-2 pt-3 border-t" style={{ borderColor: '#ECEEEA' }}>
               <span className="text-xs" style={{ color: thesis.matching_ran ? '#2C4425' : '#A7ADA7' }}>
                 {thesis.matching_ran ? "✓ Matching já realizado" : "⏳ Matching pendente"}
               </span>
               <div className="flex-1" />
-              <Button onClick={() => setAnalysisThesis(thesis)} size="sm" variant="outline"
-                className="gap-1.5 text-xs" style={{ borderColor: '#E10867', color: '#E10867' }}>
-                <Sparkles className="w-3 h-3" /> Analisar
-              </Button>
               <Button onClick={() => goToRadar(thesis)} size="sm" className="text-white gap-1.5" style={{ background: '#6B2FA0', border: 'none' }}>
                 <Map className="w-3.5 h-3.5" />
                 {thesis.matching_ran ? "Ver Radar" : "Gerar Radar"}
@@ -269,16 +253,6 @@ Responda em JSON:
           </div>
         ))}
       </div>
-
-      {/* Analysis drawer */}
-      {analysisThesis && (
-        <ThesisAnalysisDrawer thesis={analysisThesis} onClose={() => setAnalysisThesis(null)} />
-      )}
-
-      {/* Compare modal */}
-      {showCompare && (
-        <ThesisCompareModal theses={theses} onClose={() => setShowCompare(false)} />
-      )}
 
       {/* Create thesis form modal */}
       {showForm && (

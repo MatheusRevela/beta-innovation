@@ -6,8 +6,7 @@ import { CRM_TYPES } from "@/components/ui/DesignTokens";
 import { FitScoreBadge } from "@/components/shared/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, Zap, Search, Plus, ExternalLink, MessageCircle, X, Sparkles, ArrowUp } from "lucide-react";
-import AIPrioritizationPanel from "@/components/radar/AIPrioritizationPanel";
+import { Loader2, Zap, Search, Plus, ExternalLink, MessageCircle, X } from "lucide-react";
 
 export default function StartupRadar() {
   const navigate = useNavigate();
@@ -28,7 +27,6 @@ export default function StartupRadar() {
   const [crmForm, setCrmForm] = useState({ type: "", custom_type_label: "", description: "" });
   const [savingCrm, setSavingCrm] = useState(false);
   const [session, setSession] = useState(null);
-  const [priorityMap, setPriorityMap] = useState({}); // match_id -> { score, reason }
 
   useEffect(() => {
     loadData();
@@ -277,8 +275,6 @@ Responda em JSON:
     setCrmModal(null);
   };
 
-  const hasPriority = Object.keys(priorityMap).length > 0;
-
   const categories = ["all", ...new Set(matches.map(m => m.category_match).filter(Boolean))];
   const filtered = matches
     .filter(m => selectedCategory === "all" || m.category_match === selectedCategory)
@@ -286,14 +282,7 @@ Responda em JSON:
       const s = startups[m.startup_id];
       return !search || (s?.name || "").toLowerCase().includes(search.toLowerCase());
     })
-    .sort((a, b) => {
-      if (hasPriority) {
-        const pa = priorityMap[a.id]?.score ?? a.fit_score;
-        const pb = priorityMap[b.id]?.score ?? b.fit_score;
-        return pb - pa;
-      }
-      return b.fit_score - a.fit_score;
-    });
+    .sort((a, b) => b.fit_score - a.fit_score);
 
   const groupedByCategory = {};
   filtered.forEach(m => {
@@ -330,12 +319,6 @@ Responda em JSON:
         <h1 className="text-2xl font-bold mb-1" style={{ color: '#111111' }}>Radar de Startups</h1>
         <p className="text-sm" style={{ color: '#4B4F4B' }}>
           {filtered.length} startups selecionadas pela IA com base na sua tese de inovação
-          {hasPriority && (
-            <span className="ml-2 inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium"
-              style={{ background: '#fce7ef', color: '#E10867' }}>
-              <Sparkles className="w-3 h-3" /> Priorização ativa
-            </span>
-          )}
         </p>
       </div>
 
@@ -358,16 +341,6 @@ Responda em JSON:
             ))}
           </div>
         </div>
-      )}
-
-      {/* AI Prioritization Panel */}
-      {thesis && matches.length > 0 && (
-        <AIPrioritizationPanel
-          thesis={thesis}
-          matches={matches}
-          startups={startups}
-          onPrioritized={(map) => setPriorityMap(map)}
-        />
       )}
 
       {/* Filters */}
@@ -439,16 +412,8 @@ Responda em JSON:
                         </div>
                       </div>
                       <FitScoreBadge score={match.fit_score || 0} />
-                      </div>
-                      {hasPriority && priorityMap[match.id] && (
-                       <div className="flex items-center gap-1.5 mb-2 px-2 py-1 rounded-lg" style={{ background: '#fce7ef' }}>
-                         <Sparkles className="w-3 h-3 flex-shrink-0" style={{ color: '#E10867' }} />
-                         <p className="text-xs truncate" style={{ color: '#E10867' }}>
-                           <strong>{priorityMap[match.id].score}pts</strong> — {priorityMap[match.id].reason}
-                         </p>
-                       </div>
-                      )}
-                       <p className="text-xs line-clamp-2 mb-3" style={{ color: '#4B4F4B' }}>{s.description}</p>
+                    </div>
+                    <p className="text-xs line-clamp-2 mb-3" style={{ color: '#4B4F4B' }}>{s.description}</p>
                     <div className="flex flex-wrap gap-1 mb-3">
                       {(s.tags || []).slice(0, 3).map(t => (
                         <span key={t} className="px-1.5 py-0.5 rounded text-xs" style={{ background: '#ECEEEA', color: '#4B4F4B' }}>
