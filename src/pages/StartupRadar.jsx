@@ -433,8 +433,16 @@ Responda em JSON:
                         </div>
                       </div>
                       <FitScoreBadge score={match.fit_score || 0} />
-                    </div>
-                    <p className="text-xs line-clamp-2 mb-3" style={{ color: '#4B4F4B' }}>{s.description}</p>
+                      </div>
+                      {hasPriority && priorityMap[match.id] && (
+                       <div className="flex items-center gap-1.5 mb-2 px-2 py-1 rounded-lg" style={{ background: '#fce7ef' }}>
+                         <Sparkles className="w-3 h-3 flex-shrink-0" style={{ color: '#E10867' }} />
+                         <p className="text-xs truncate" style={{ color: '#E10867' }}>
+                           <strong>{priorityMap[match.id].score}pts</strong> — {priorityMap[match.id].reason}
+                         </p>
+                       </div>
+                      )}
+                       <p className="text-xs line-clamp-2 mb-3" style={{ color: '#4B4F4B' }}>{s.description}</p>
                     <div className="flex flex-wrap gap-1 mb-3">
                       {(s.tags || []).slice(0, 3).map(t => (
                         <span key={t} className="px-1.5 py-0.5 rounded text-xs" style={{ background: '#ECEEEA', color: '#4B4F4B' }}>
