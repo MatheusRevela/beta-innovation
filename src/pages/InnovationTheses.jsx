@@ -208,6 +208,16 @@ Responda em JSON:
         </div>
       )}
 
+      {/* Timeline */}
+      {theses.length > 1 && (
+        <ThesisTimeline
+          theses={theses}
+          selectedIds={compareIds}
+          onSelect={toggleCompare}
+          onGoToRadar={goToRadar}
+        />
+      )}
+
       {/* Thesis list */}
       {theses.length === 0 && corporate && (
         <div className="bg-white rounded-2xl border p-10 text-center" style={{ borderColor: '#A7ADA7' }}>
