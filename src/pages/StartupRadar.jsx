@@ -277,6 +277,14 @@ Responda em JSON:
     setCrmModal(null);
   };
 
+  const handleAIPriority = (ranked) => {
+    const map = {};
+    ranked.forEach(r => { map[r.match_id] = r; });
+    setAiPriorityMap(map);
+  };
+
+  const hasAIPriority = Object.keys(aiPriorityMap).length > 0;
+
   const categories = ["all", ...new Set(matches.map(m => m.category_match).filter(Boolean))];
   const filtered = matches
     .filter(m => selectedCategory === "all" || m.category_match === selectedCategory)
@@ -284,7 +292,15 @@ Responda em JSON:
       const s = startups[m.startup_id];
       return !search || (s?.name || "").toLowerCase().includes(search.toLowerCase());
     })
-    .sort((a, b) => b.fit_score - a.fit_score);
+    .sort((a, b) => {
+      // If AI prioritization ran, sort by priority_score first
+      if (hasAIPriority) {
+        const aScore = aiPriorityMap[a.id]?.priority_score ?? -1;
+        const bScore = aiPriorityMap[b.id]?.priority_score ?? -1;
+        return bScore - aScore;
+      }
+      return b.fit_score - a.fit_score;
+    });
 
   const groupedByCategory = {};
   filtered.forEach(m => {
