@@ -252,11 +252,15 @@ Responda em JSON:
               ))}
             </div>
 
-            <div className="flex items-center gap-2 pt-3 border-t" style={{ borderColor: '#ECEEEA' }}>
+            <div className="flex items-center gap-2 pt-3 border-t flex-wrap" style={{ borderColor: '#ECEEEA' }}>
               <span className="text-xs" style={{ color: thesis.matching_ran ? '#2C4425' : '#A7ADA7' }}>
                 {thesis.matching_ran ? "✓ Matching já realizado" : "⏳ Matching pendente"}
               </span>
               <div className="flex-1" />
+              <Button onClick={() => setAnalysisThesis(thesis)} size="sm" variant="outline"
+                className="gap-1.5 text-xs" style={{ borderColor: '#E10867', color: '#E10867' }}>
+                <Sparkles className="w-3 h-3" /> Analisar
+              </Button>
               <Button onClick={() => goToRadar(thesis)} size="sm" className="text-white gap-1.5" style={{ background: '#6B2FA0', border: 'none' }}>
                 <Map className="w-3.5 h-3.5" />
                 {thesis.matching_ran ? "Ver Radar" : "Gerar Radar"}
