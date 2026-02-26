@@ -30,6 +30,8 @@ export default function InnovationTheses() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [analysisThesis, setAnalysisThesis] = useState(null);
+  const [showCompare, setShowCompare] = useState(false);
   const [form, setForm] = useState({
     title: "",
     sectors: [],
