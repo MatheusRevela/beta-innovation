@@ -449,8 +449,14 @@ Responda em JSON:
                           <p className="text-xs" style={{ color: '#4B4F4B' }}>{s.category || s.vertical || ""}</p>
                         </div>
                       </div>
-                      <FitScoreBadge score={match.fit_score || 0} />
+                      <FitScoreBadge score={hasAIPriority && aiPriorityMap[match.id] ? aiPriorityMap[match.id].priority_score : (match.fit_score || 0)} />
                     </div>
+                    {hasAIPriority && aiPriorityMap[match.id] && (
+                      <p className="text-xs mb-2 flex items-center gap-1" style={{ color: '#6B2FA0' }}>
+                        <Sparkles className="w-3 h-3 flex-shrink-0" />
+                        {aiPriorityMap[match.id].reason}
+                      </p>
+                    )}
                     <p className="text-xs line-clamp-2 mb-3" style={{ color: '#4B4F4B' }}>{s.description}</p>
                     <div className="flex flex-wrap gap-1 mb-3">
                       {(s.tags || []).slice(0, 3).map(t => (
