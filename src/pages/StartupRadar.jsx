@@ -277,6 +277,8 @@ Responda em JSON:
     setCrmModal(null);
   };
 
+  const hasPriority = Object.keys(priorityMap).length > 0;
+
   const categories = ["all", ...new Set(matches.map(m => m.category_match).filter(Boolean))];
   const filtered = matches
     .filter(m => selectedCategory === "all" || m.category_match === selectedCategory)
@@ -284,7 +286,14 @@ Responda em JSON:
       const s = startups[m.startup_id];
       return !search || (s?.name || "").toLowerCase().includes(search.toLowerCase());
     })
-    .sort((a, b) => b.fit_score - a.fit_score);
+    .sort((a, b) => {
+      if (hasPriority) {
+        const pa = priorityMap[a.id]?.score ?? a.fit_score;
+        const pb = priorityMap[b.id]?.score ?? b.fit_score;
+        return pb - pa;
+      }
+      return b.fit_score - a.fit_score;
+    });
 
   const groupedByCategory = {};
   filtered.forEach(m => {
