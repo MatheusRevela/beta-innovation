@@ -361,6 +361,26 @@ Responda em JSON:
         </div>
       )}
 
+      {/* AI Prioritization Panel */}
+      {matches.length > 0 && thesis && (
+        <AIPrioritizationPanel
+          thesis={thesis}
+          matches={matches}
+          startups={startups}
+          onResultsReady={handleAIPriority}
+        />
+      )}
+
+      {/* AI Priority notice */}
+      {hasAIPriority && (
+        <div className="flex items-center gap-2 px-3 py-2 rounded-xl mb-4 text-xs font-medium"
+          style={{ background: '#F3EEF8', color: '#6B2FA0' }}>
+          <Sparkles className="w-3.5 h-3.5" />
+          Lista reordenada pela IA com base nos seus critérios. Primeiros resultados são os mais prioritários.
+          <button className="ml-auto underline" onClick={() => setAiPriorityMap({})}>Limpar</button>
+        </div>
+      )}
+
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1">
