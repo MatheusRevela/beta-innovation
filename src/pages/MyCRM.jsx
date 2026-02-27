@@ -4,7 +4,7 @@ import { PIPELINE_STAGES, STAGE_COLORS, CRM_TYPES } from "@/components/ui/Design
 import { StageBadge } from "@/components/shared/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Loader2, X, ExternalLink, Check, Trash2 } from "lucide-react";
+import { Plus, Loader2, X, ExternalLink, Check, Trash2, MapPin, Tag, Lightbulb, AlertTriangle } from "lucide-react";
 import { createPageUrl } from "@/utils";
 
 export default function MyCRM() {
