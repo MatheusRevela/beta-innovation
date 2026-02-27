@@ -67,8 +67,8 @@ export default function FollowUpModal({ project, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/50" onClick={e => { e.stopPropagation(); onClose(); }} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
         <div className="flex items-center justify-between p-5 border-b" style={{ borderColor: '#ECEEEA' }}>
           <div>
