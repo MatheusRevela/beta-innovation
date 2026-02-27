@@ -5,7 +5,7 @@ import { base44 } from "@/api/base44Client";
 import {
   LayoutDashboard, Zap, Map, Briefcase, Settings,
   ChevronLeft, ChevronRight, LogOut, User, Menu, X,
-  Building2, Star, Database, BarChart3, FileText
+  Building2, Star, Database, BarChart3, FileText, Bell
 } from "lucide-react";
 
 const NAV_ITEMS = {
