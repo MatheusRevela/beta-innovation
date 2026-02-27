@@ -344,9 +344,7 @@ export default function MyCRM() {
                 );
               })()}
 
-              {selected.description && (
-                <p className="text-sm mb-5" style={{ color: '#4B4F4B' }}>{selected.description}</p>
-              )}
+
 
               {/* Tasks */}
               <div>
