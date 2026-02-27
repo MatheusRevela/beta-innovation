@@ -22,17 +22,33 @@ export default function MyCRM() {
     loadData();
   }, []);
 
+  const [theses, setTheses] = useState({});
+  const [matches, setMatches] = useState({});
+
   const loadData = async () => {
     setLoading(true);
-    const [ps, ss] = await Promise.all([
+    const [ps, ss, ts, ms] = await Promise.all([
       base44.entities.CRMProject.list("-created_date", 200),
-      base44.entities.Startup.filter({ is_deleted: false })
+      base44.entities.Startup.filter({ is_deleted: false }),
+      base44.entities.InnovationThesis.list("-created_date", 100),
+      base44.entities.StartupMatch.list("-created_date", 500),
     ]);
     // SuperCRM: only include projects not explicitly excluded
     setProjects(ps.filter(p => p.include_in_super_crm !== false));
-    const map = {};
-    ss.forEach(s => { map[s.id] = s; });
-    setStartups(map);
+    const sMap = {};
+    ss.forEach(s => { sMap[s.id] = s; });
+    setStartups(sMap);
+    const tMap = {};
+    ts.forEach(t => { tMap[t.id] = t; });
+    setTheses(tMap);
+    // Map startup_id -> match (to get fit_reasons, risk_reasons, thesis_id)
+    const mMap = {};
+    ms.forEach(m => {
+      if (!mMap[m.startup_id] || (m.fit_score || 0) > (mMap[m.startup_id].fit_score || 0)) {
+        mMap[m.startup_id] = m;
+      }
+    });
+    setMatches(mMap);
     setLoading(false);
   };
 
