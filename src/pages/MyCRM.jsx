@@ -216,26 +216,133 @@ export default function MyCRM() {
               </div>
 
               {/* Startup info */}
-              {startups[selected.startup_id] && (
-                <div className="flex items-center gap-3 p-3 rounded-xl mb-5" style={{ background: '#ECEEEA' }}>
-                  {startups[selected.startup_id].logo_url ? (
-                    <img src={startups[selected.startup_id].logo_url} className="w-9 h-9 rounded-lg border object-contain" />
-                  ) : (
-                    <div className="w-9 h-9 rounded-lg flex items-center justify-center font-bold"
-                      style={{ background: '#fce7ef', color: '#E10867' }}>
-                      {startups[selected.startup_id].name?.[0]}
+              {startups[selected.startup_id] && (() => {
+                const s = startups[selected.startup_id];
+                const match = matches[selected.startup_id];
+                const thesis = match?.thesis_id ? theses[match.thesis_id] : null;
+                return (
+                  <div className="mb-5">
+                    {/* Header */}
+                    <div className="flex items-start gap-3 p-4 rounded-xl mb-3" style={{ background: '#ECEEEA' }}>
+                      {s.logo_url ? (
+                        <img src={s.logo_url} className="w-10 h-10 rounded-lg border object-contain flex-shrink-0" />
+                      ) : (
+                        <div className="w-10 h-10 rounded-lg flex items-center justify-center font-bold flex-shrink-0"
+                          style={{ background: '#fce7ef', color: '#E10867' }}>
+                          {s.name?.[0]}
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="font-semibold text-sm">{s.name}</p>
+                          {match?.fit_score && (
+                            <span className="text-xs font-bold px-1.5 py-0.5 rounded-full"
+                              style={{ background: '#fce7ef', color: '#E10867' }}>{match.fit_score}%</span>
+                          )}
+                        </div>
+                        <p className="text-xs" style={{ color: '#4B4F4B' }}>{s.category}</p>
+                      </div>
+                      {s.website && (
+                        <a href={s.website} target="_blank" rel="noreferrer">
+                          <ExternalLink className="w-4 h-4" style={{ color: '#A7ADA7' }} />
+                        </a>
+                      )}
                     </div>
-                  )}
-                  <div>
-                    <p className="font-semibold text-sm">{startups[selected.startup_id].name}</p>
-                    <p className="text-xs" style={{ color: '#4B4F4B' }}>{startups[selected.startup_id].category}</p>
+
+                    {/* Description */}
+                    {s.description && (
+                      <p className="text-sm mb-3 leading-relaxed" style={{ color: '#4B4F4B' }}>{s.description}</p>
+                    )}
+
+                    {/* Metadata grid */}
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs mb-3 p-3 rounded-xl border" style={{ borderColor: '#ECEEEA' }}>
+                      {s.vertical && (
+                        <>
+                          <span style={{ color: '#A7ADA7' }}>Vertical</span>
+                          <span className="font-semibold text-right" style={{ color: '#111111' }}>{s.vertical}</span>
+                        </>
+                      )}
+                      {s.business_model && (
+                        <>
+                          <span style={{ color: '#A7ADA7' }}>Modelo</span>
+                          <span className="font-semibold text-right" style={{ color: '#111111' }}>{s.business_model}</span>
+                        </>
+                      )}
+                      {s.stage && (
+                        <>
+                          <span style={{ color: '#A7ADA7' }}>Estágio</span>
+                          <span className="font-semibold text-right" style={{ color: '#111111' }}>{s.stage}</span>
+                        </>
+                      )}
+                      {(s.state || s.country) && (
+                        <>
+                          <span style={{ color: '#A7ADA7' }}>Localização</span>
+                          <span className="font-semibold text-right" style={{ color: '#111111' }}>{[s.state, s.country].filter(Boolean).join(', ')}</span>
+                        </>
+                      )}
+                      {s.price_range && (
+                        <>
+                          <span style={{ color: '#A7ADA7' }}>Investimento</span>
+                          <span className="font-semibold text-right" style={{ color: '#111111' }}>{s.price_range}</span>
+                        </>
+                      )}
+                    </div>
+
+                    {/* Thesis origin */}
+                    {thesis && (
+                      <div className="flex items-start gap-2 p-3 rounded-xl mb-3"
+                        style={{ background: '#f3e8ff', border: '1px solid #d8b4fe' }}>
+                        <Lightbulb className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" style={{ color: '#6B2FA0' }} />
+                        <div className="min-w-0">
+                          <p className="text-xs font-semibold mb-0.5" style={{ color: '#6B2FA0' }}>Tese de origem</p>
+                          <p className="text-xs leading-relaxed line-clamp-2" style={{ color: '#3B145A' }}>
+                            {thesis.thesis_text?.slice(0, 120)}…
+                          </p>
+                          {thesis.macro_categories?.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-1.5">
+                              {thesis.macro_categories.slice(0, 3).map(c => (
+                                <span key={c} className="text-xs px-1.5 py-0.5 rounded-full"
+                                  style={{ background: '#d8b4fe', color: '#3B145A' }}>{c}</span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Fit & risk reasons */}
+                    {match?.fit_reasons?.length > 0 && (
+                      <div className="p-3 rounded-xl mb-3" style={{ background: '#f0fdf4', border: '1px solid #bbf7d0' }}>
+                        <p className="text-xs font-semibold mb-1.5" style={{ color: '#2C4425' }}>✓ Pontos de fit</p>
+                        <ul className="space-y-1">
+                          {match.fit_reasons.map((r, i) => (
+                            <li key={i} className="text-xs" style={{ color: '#2C4425' }}>• {r}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {match?.risk_reasons?.length > 0 && (
+                      <div className="p-3 rounded-xl mb-3" style={{ background: '#fff7ed', border: '1px solid #fed7aa' }}>
+                        <p className="text-xs font-semibold mb-1.5" style={{ color: '#9a3412' }}>⚠ Pontos de atenção</p>
+                        <ul className="space-y-1">
+                          {match.risk_reasons.map((r, i) => (
+                            <li key={i} className="text-xs" style={{ color: '#9a3412' }}>• {r}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {/* Visit site */}
+                    {s.website && (
+                      <a href={s.website} target="_blank" rel="noreferrer"
+                        className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border text-sm font-medium transition-all hover:bg-gray-50"
+                        style={{ borderColor: '#A7ADA7', color: '#111111' }}>
+                        <ExternalLink className="w-4 h-4" /> Visitar site
+                      </a>
+                    )}
                   </div>
-                  {startups[selected.startup_id].website && (
-                    <a href={startups[selected.startup_id].website} target="_blank" rel="noreferrer"
-                      className="ml-auto"><ExternalLink className="w-4 h-4" style={{ color: '#A7ADA7' }} /></a>
-                  )}
-                </div>
-              )}
+                );
+              })()}
 
               {selected.description && (
                 <p className="text-sm mb-5" style={{ color: '#4B4F4B' }}>{selected.description}</p>
