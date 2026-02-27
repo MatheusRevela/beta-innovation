@@ -33,6 +33,7 @@ const NAV_ITEMS = {
     { label: "Radar", icon: Map, page: "StartupRadar" },
     { label: "CRM por Tese", icon: FileText, page: "DiagnosticCRM" },
     { label: "SuperCRM", icon: Briefcase, page: "MyCRM" },
+    { label: "Notificações", icon: Bell, page: "Notifications" },
   ],
 };
 
