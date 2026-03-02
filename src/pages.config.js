@@ -59,11 +59,11 @@ import Home from './pages/Home';
 import InnovationTheses from './pages/InnovationTheses';
 import MyCRM from './pages/MyCRM';
 import MyDiagnostics from './pages/MyDiagnostics';
+import Notifications from './pages/Notifications';
 import Onboarding from './pages/Onboarding';
 import Reports from './pages/Reports';
 import StartupManagement from './pages/StartupManagement';
 import StartupRadar from './pages/StartupRadar';
-import Notifications from './pages/Notifications';
 import __Layout from './Layout.jsx';
 
 
@@ -80,11 +80,11 @@ export const PAGES = {
     "InnovationTheses": InnovationTheses,
     "MyCRM": MyCRM,
     "MyDiagnostics": MyDiagnostics,
+    "Notifications": Notifications,
     "Onboarding": Onboarding,
     "Reports": Reports,
     "StartupManagement": StartupManagement,
     "StartupRadar": StartupRadar,
-    "Notifications": Notifications,
 }
 
 export const pagesConfig = {
