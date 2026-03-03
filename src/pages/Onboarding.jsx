@@ -326,7 +326,7 @@ export default function Onboarding() {
               className="gap-2 text-white px-6"
               style={{ background: '#E10867', border: 'none' }}
             >
-              {loading ? "Salvando…" : step === 4 ? "Iniciar Diagnóstico" : "Próximo"}
+              {loading ? "Salvando…" : step === 5 ? "Iniciar Diagnóstico" : "Próximo"}
               {!loading && <ChevronRight className="w-4 h-4" />}
             </Button>
           </div>
