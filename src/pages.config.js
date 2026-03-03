@@ -64,6 +64,8 @@ import Onboarding from './pages/Onboarding';
 import Reports from './pages/Reports';
 import StartupManagement from './pages/StartupManagement';
 import StartupRadar from './pages/StartupRadar';
+import TeamManagement from './pages/TeamManagement';
+import JoinCorporate from './pages/JoinCorporate';
 import __Layout from './Layout.jsx';
 
 
@@ -85,6 +87,8 @@ export const PAGES = {
     "Reports": Reports,
     "StartupManagement": StartupManagement,
     "StartupRadar": StartupRadar,
+    "TeamManagement": TeamManagement,
+    "JoinCorporate": JoinCorporate,
 }
 
 export const pagesConfig = {
