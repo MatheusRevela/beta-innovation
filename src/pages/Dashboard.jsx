@@ -38,7 +38,7 @@ export default function Dashboard() {
     setLoading(false);
   };
 
-  if (loading) return (
+  if (loading || accessLoading) return (
     <div className="flex items-center justify-center min-h-64">
       <Loader2 className="w-6 h-6 animate-spin" style={{ color: '#E10867' }} />
     </div>
