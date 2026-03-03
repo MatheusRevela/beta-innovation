@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
+import { useCorporateAccess } from "@/components/hooks/useCorporateAccess";
 import { PIPELINE_STAGES, STAGE_COLORS, CRM_TYPES } from "@/components/ui/DesignTokens";
 import { StageBadge } from "@/components/shared/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Loader2, X, ExternalLink, Check, Trash2, MapPin, Tag, Lightbulb, AlertTriangle } from "lucide-react";
+import { Plus, Loader2, X, ExternalLink, Check, Trash2, MapPin, Tag, Lightbulb, AlertTriangle, EyeOff } from "lucide-react";
 import { createPageUrl } from "@/utils";
 
 export default function MyCRM() {
+  const { loading: accessLoading, corporate, hasSuperCRMAccess, corporateId } = useCorporateAccess();
   const [projects, setProjects] = useState([]);
   const [startups, setStartups] = useState({});
   const [loading, setLoading] = useState(true);
@@ -19,8 +21,9 @@ export default function MyCRM() {
   const [filterType, setFilterType] = useState("all");
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (!accessLoading && corporateId) loadData();
+    else if (!accessLoading) setLoading(false);
+  }, [accessLoading, corporateId]);
 
   const [theses, setTheses] = useState({});
   const [matches, setMatches] = useState({});
@@ -28,10 +31,10 @@ export default function MyCRM() {
   const loadData = async () => {
     setLoading(true);
     const [ps, ss, ts, ms] = await Promise.all([
-      base44.entities.CRMProject.list("-created_date", 200),
+      base44.entities.CRMProject.filter({ corporate_id: corporateId }, "-created_date"),
       base44.entities.Startup.filter({ is_deleted: false }),
-      base44.entities.InnovationThesis.list("-created_date", 100),
-      base44.entities.StartupMatch.list("-created_date", 500),
+      base44.entities.InnovationThesis.filter({ corporate_id: corporateId }, "-created_date"),
+      base44.entities.StartupMatch.filter({ corporate_id: corporateId }, "-created_date"),
     ]);
     // SuperCRM: only include projects not explicitly excluded
     setProjects(ps.filter(p => p.include_in_super_crm !== false));
