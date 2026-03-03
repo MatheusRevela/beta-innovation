@@ -88,6 +88,7 @@ export default function Onboarding() {
   };
 
   const progress = ((step - 1) / (STEPS.length - 1)) * 100;
+  const isManager = form.is_manager !== false; // default true
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4" style={{ background: '#ECEEEA' }}>
