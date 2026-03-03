@@ -262,11 +262,6 @@ Responda em JSON:
     const startup = startups[crmModal.startup_id];
     const matchId = crmModal.id;
     const effectiveCorporateId = urlCorporateId || resolvedCorpId || hookCorporateId;
-    // Optimistically close modal and mark as added
-    setMatches(prev => prev.map(m => m.id === matchId ? { ...m, added_to_crm: true } : m));
-    setCrmModal(null);
-    setSavingCrm(false);
-    // Fire both requests in parallel in background
     await Promise.all([
       base44.entities.CRMProject.create({
         corporate_id: effectiveCorporateId,
@@ -282,6 +277,9 @@ Responda em JSON:
       }),
       base44.entities.StartupMatch.update(matchId, { added_to_crm: true }),
     ]);
+    setMatches(prev => prev.map(m => m.id === matchId ? { ...m, added_to_crm: true } : m));
+    setCrmModal(null);
+    setSavingCrm(false);
   };
 
   const handleAIPriority = (ranked) => {
