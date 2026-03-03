@@ -32,19 +32,24 @@ export default function TeamManagement() {
   };
 
   const invite = async () => {
-    if (!inviteEmail.trim()) return;
+    const email = inviteEmail.trim().toLowerCase();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
     setInviting(true);
-    // Check if already member
-    const existing = members.find(m => m.email === inviteEmail.trim().toLowerCase());
+    // Check if already member (normalize case on both sides)
+    const existing = members.find(m => m.email?.toLowerCase() === email) ||
+      pendingRequests.find(m => m.email?.toLowerCase() === email);
     if (!existing) {
+      // Use inviteUser to send email notification, then create CorporateMember as active
       const newMember = await base44.entities.CorporateMember.create({
         corporate_id: corporate.id,
-        email: inviteEmail.trim().toLowerCase(),
+        email,
         role: inviteRole,
         super_crm_access: true,
         status: "active",
         invited_by: member?.email
       });
+      // Send platform invite so user gets email notification
+      base44.users.inviteUser(email, "user").catch(() => {}); // best-effort
       setMembers(prev => [...prev, newMember]);
     }
     setInviteEmail("");
