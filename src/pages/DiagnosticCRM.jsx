@@ -70,10 +70,16 @@ export default function DiagnosticCRM() {
   const loadThesis = async (thesis, corpId) => {
     setSelectedThesis(thesis);
     setLoadingProjects(true);
-    const [ps, ss] = await Promise.all([
-      base44.entities.CRMProject.filter({ corporate_id: corpId || corporate?.id, session_id: thesis.id }),
-      base44.entities.Startup.filter({ is_deleted: false }),
+    const effectiveCorpId = corpId || corporate?.id;
+    const [ps, allProjects] = await Promise.all([
+      base44.entities.CRMProject.filter({ corporate_id: effectiveCorpId, session_id: thesis.id }),
+      base44.entities.CRMProject.filter({ corporate_id: effectiveCorpId }),
     ]);
+    // Collect only the startup IDs we actually need instead of fetching all
+    const startupIds = [...new Set(ps.map(p => p.startup_id).filter(Boolean))];
+    const ss = startupIds.length > 0
+      ? await Promise.all(startupIds.map(id => base44.entities.Startup.filter({ id }))).then(r => r.flat())
+      : [];
     setProjects(ps);
     const map = {};
     ss.forEach(s => { map[s.id] = s; });
