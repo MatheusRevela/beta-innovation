@@ -35,35 +35,17 @@ export default function DiagnosticCRM() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showFollowUp, setShowFollowUp] = useState(false);
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => {
+    if (!accessLoading && corporateId) loadData();
+    else if (!accessLoading) setLoading(false);
+  }, [accessLoading, corporateId]);
 
   const loadData = async () => {
     setLoading(true);
-    const me = await base44.auth.me();
-
-    // Resolve corporate via CorporateMember (novo sistema) ou fallback legado
-    const memberships = await base44.entities.CorporateMember.filter({ email: me.email, status: "active" });
-    let corp = null;
-    if (memberships.length > 0) {
-      const corps = await base44.entities.Corporate.filter({ id: memberships[0].corporate_id });
-      corp = corps[0] || null;
-    } else {
-      const [corpsByEmail, corpsByCreator] = await Promise.all([
-        base44.entities.Corporate.filter({ contact_email: me.email }),
-        base44.entities.Corporate.filter({ created_by: me.email }),
-      ]);
-      const allCorps = [...corpsByEmail, ...corpsByCreator];
-      const seen = new Set();
-      corp = allCorps.filter(c => seen.has(c.id) ? false : seen.add(c.id))[0] || null;
-    }
-
-    setCorporate(corp);
-    if (corp) {
-      const thesesData = await base44.entities.InnovationThesis.filter({ corporate_id: corp.id }, "-created_date");
-      setTheses(thesesData);
-      if (thesesData.length > 0) {
-        await loadThesis(thesesData[0], corp.id);
-      }
+    const thesesData = await base44.entities.InnovationThesis.filter({ corporate_id: corporateId }, "-created_date");
+    setTheses(thesesData);
+    if (thesesData.length > 0) {
+      await loadThesis(thesesData[0], corporateId);
     }
     setLoading(false);
   };
