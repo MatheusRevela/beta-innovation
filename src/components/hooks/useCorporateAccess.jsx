@@ -24,8 +24,8 @@ export function useCorporateAccess() {
 
     if (memberships.length > 0) {
       const mem = memberships[0];
-      setMember(mem);
       const corps = await base44.entities.Corporate.filter({ id: mem.corporate_id });
+      setMember(mem);
       if (corps.length > 0) setCorporate(corps[0]);
       setLoading(false);
       return;
@@ -42,21 +42,22 @@ export function useCorporateAccess() {
 
     if (unique.length > 0) {
       const corp = unique[0];
-      setCorporate(corp);
       // Criar membership de gestor automaticamente para migração
       const existingMem = await base44.entities.CorporateMember.filter({ corporate_id: corp.id, email: me.email });
+      let mem;
       if (existingMem.length === 0) {
-        const newMem = await base44.entities.CorporateMember.create({
+        mem = await base44.entities.CorporateMember.create({
           corporate_id: corp.id,
           email: me.email,
           role: "gestor",
           super_crm_access: true,
           status: "active"
         });
-        setMember(newMem);
       } else {
-        setMember(existingMem[0]);
+        mem = existingMem[0];
       }
+      setCorporate(corp);
+      setMember(mem);
     }
 
     setLoading(false);
