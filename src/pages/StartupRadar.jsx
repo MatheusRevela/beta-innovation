@@ -36,15 +36,16 @@ export default function StartupRadar() {
 
   useEffect(() => {
     loadData();
-  }, [sessionId, corporateId]);
+  }, [sessionId, urlCorporateId, hookCorporateId]);
 
   const loadData = async () => {
     setLoading(true);
 
-    // Resolve corporateId e sessionId automaticamente se não vieram pela URL
-    let resolvedCorporateId = corporateId;
+    // Prioridade: URL param > hook (CorporateMember)
+    let resolvedCorporateId = urlCorporateId || hookCorporateId || null;
     let resolvedSessionId = sessionId;
 
+    // Fallback legado apenas se hook ainda não resolveu
     if (!resolvedCorporateId) {
       const me = await base44.auth.me();
       const [corpsByEmail, corpsByCreator] = await Promise.all([
