@@ -14,8 +14,10 @@ export default function StartupRadar() {
   const navigate = useNavigate();
   const params = new URLSearchParams(window.location.search);
   const sessionId = params.get("session_id");
-  const corporateId = params.get("corporate_id");
+  const urlCorporateId = params.get("corporate_id");
   const thesisId = params.get("thesis_id");
+
+  const { corporateId: hookCorporateId } = useCorporateAccess();
 
   const [thesis, setThesis] = useState(null);
   const [matches, setMatches] = useState([]);
