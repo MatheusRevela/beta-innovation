@@ -18,17 +18,9 @@ export default function InnovationTheses() {
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [generating, setGenerating] = useState(false);
   const [compareIds, setCompareIds] = useState([]);
   const [showCompare, setShowCompare] = useState(false);
   const [reportThesis, setReportThesis] = useState(null);
-  const [form, setForm] = useState({
-    title: "",
-    sectors: [],
-    themes: [],
-    context: "",
-    session_id: ""
-  });
 
   useEffect(() => { loadData(); }, []);
 
