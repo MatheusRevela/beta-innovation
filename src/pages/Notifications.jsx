@@ -80,7 +80,7 @@ export default function Notifications() {
     return followups.filter(fu => {
       const d = new Date(fu.due_date);
       if (tab === "today") return isToday(d);
-      if (tab === "week") return isThisWeek(d, { locale: ptBR }) && !isPast(d) || isToday(d);
+      if (tab === "week") return isThisWeek(d, { locale: ptBR }) && (!isPast(d) || isToday(d));
       if (tab === "month") return isThisMonth(d);
       if (tab === "overdue") return isPast(d) && !isToday(d) && fu.status !== "done";
       return true;
