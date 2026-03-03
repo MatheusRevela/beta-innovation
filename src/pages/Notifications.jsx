@@ -28,12 +28,21 @@ export default function Notifications() {
   const loadData = async () => {
     setLoading(true);
     const me = await base44.auth.me();
-    const [corpsByEmail, corpsByCreator] = await Promise.all([
-      base44.entities.Corporate.filter({ contact_email: me.email }),
-      base44.entities.Corporate.filter({ created_by: me.email }),
-    ]);
-    const seen = new Set();
-    const corp = [...corpsByEmail, ...corpsByCreator].filter(c => seen.has(c.id) ? false : seen.add(c.id))[0];
+
+    // Resolve corporate via CorporateMember (novo sistema) ou fallback legado
+    const memberships = await base44.entities.CorporateMember.filter({ email: me.email, status: "active" });
+    let corp = null;
+    if (memberships.length > 0) {
+      const corps = await base44.entities.Corporate.filter({ id: memberships[0].corporate_id });
+      corp = corps[0] || null;
+    } else {
+      const [corpsByEmail, corpsByCreator] = await Promise.all([
+        base44.entities.Corporate.filter({ contact_email: me.email }),
+        base44.entities.Corporate.filter({ created_by: me.email }),
+      ]);
+      const seen = new Set();
+      corp = [...corpsByEmail, ...corpsByCreator].filter(c => seen.has(c.id) ? false : seen.add(c.id))[0] || null;
+    }
 
     if (!corp) { setLoading(false); return; }
 
