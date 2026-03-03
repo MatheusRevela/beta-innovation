@@ -94,10 +94,16 @@ export default function MyDiagnostics() {
             <Zap className="w-7 h-7" style={{ color: '#E10867' }} />
           </div>
           <h2 className="font-bold text-lg mb-2" style={{ color: '#111111' }}>Nenhum diagnóstico ainda</h2>
-          <p className="text-sm mb-5" style={{ color: '#4B4F4B' }}>Inicie seu primeiro diagnóstico de maturidade em inovação.</p>
-          <Button onClick={startNew} className="text-white px-8" style={{ background: '#E10867', border: 'none' }}>
-            Iniciar diagnóstico <ChevronRight className="w-4 h-4 ml-1" />
-          </Button>
+          {isGestor ? (
+            <>
+              <p className="text-sm mb-5" style={{ color: '#4B4F4B' }}>Inicie o primeiro diagnóstico de maturidade da sua empresa.</p>
+              <Button onClick={startNew} className="text-white px-8" style={{ background: '#E10867', border: 'none' }}>
+                Iniciar diagnóstico <ChevronRight className="w-4 h-4 ml-1" />
+              </Button>
+            </>
+          ) : (
+            <p className="text-sm" style={{ color: '#4B4F4B' }}>O gestor da sua empresa ainda não realizou o diagnóstico de maturidade.</p>
+          )}
         </div>
       )}
 
