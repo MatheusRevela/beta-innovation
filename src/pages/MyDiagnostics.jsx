@@ -65,9 +65,16 @@ export default function MyDiagnostics() {
             {sessions.length} diagnóstico{sessions.length !== 1 ? 's' : ''} no total
           </p>
         </div>
-        <Button onClick={startNew} className="text-white gap-2" style={{ background: '#E10867', border: 'none' }}>
-          <Plus className="w-4 h-4" /> Novo Diagnóstico
-        </Button>
+        {isGestor && (
+          <Button onClick={startNew} className="text-white gap-2" style={{ background: '#E10867', border: 'none' }}>
+            <Plus className="w-4 h-4" /> Novo Diagnóstico
+          </Button>
+        )}
+        {!isGestor && corporate && (
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs" style={{ background: '#ECEEEA', color: '#4B4F4B' }}>
+            <Lock className="w-3.5 h-3.5" /> Somente o gestor pode criar
+          </div>
+        )}
       </div>
 
       {!corporate && (
