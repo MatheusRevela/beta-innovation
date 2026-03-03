@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
-import { Check, ChevronRight, Star, Building2, User, Target, Shield } from "lucide-react";
+import { Check, ChevronRight, Star, Building2, User, Target, Shield, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,7 +12,8 @@ const STEPS = [
   { id: 1, label: "Empresa", icon: Building2 },
   { id: 2, label: "Responsável", icon: User },
   { id: 3, label: "Objetivos", icon: Target },
-  { id: 4, label: "LGPD", icon: Shield },
+  { id: 4, label: "Acesso", icon: Users },
+  { id: 5, label: "LGPD", icon: Shield },
 ];
 
 const OBJECTIVES = [
@@ -63,14 +64,23 @@ export default function Onboarding() {
   const next = async () => {
     if (step === 2) awardBadge("🏢 Empresa cadastrada");
     if (step === 3) awardBadge("🎯 Objetivos definidos");
-    if (step < 4) { setStep(s => s + 1); return; }
+    if (step < 5) { setStep(s => s + 1); return; }
 
     setLoading(true);
+    const me = await base44.auth.me();
     const corp = await base44.entities.Corporate.create({
       ...form,
       lgpd_consent_date: new Date().toISOString(),
       onboarding_completed: true,
-      onboarding_step: 4
+      onboarding_step: 5
+    });
+    // Create CorporateMember as gestor
+    await base44.entities.CorporateMember.create({
+      corporate_id: corp.id,
+      email: me.email,
+      role: "gestor",
+      super_crm_access: true,
+      status: "active"
     });
     awardBadge("✅ Onboarding concluído");
     setLoading(false);
