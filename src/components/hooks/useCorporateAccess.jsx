@@ -42,19 +42,24 @@ export function useCorporateAccess() {
 
     if (unique.length > 0) {
       const corp = unique[0];
-      // Criar membership de gestor automaticamente para migração
+      // Criar membership de gestor automaticamente para migração (safe: verifica antes de criar)
       const existingMem = await base44.entities.CorporateMember.filter({ corporate_id: corp.id, email: me.email });
-      let mem;
-      if (existingMem.length === 0) {
-        mem = await base44.entities.CorporateMember.create({
-          corporate_id: corp.id,
-          email: me.email,
-          role: "gestor",
-          super_crm_access: true,
-          status: "active"
-        });
-      } else {
-        mem = existingMem[0];
+      let mem = existingMem[0] || null;
+      if (!mem) {
+        // Pequeno delay para evitar race condition em duplo-tab/mount
+        await new Promise(r => setTimeout(r, 50));
+        const recheck = await base44.entities.CorporateMember.filter({ corporate_id: corp.id, email: me.email });
+        if (recheck.length === 0) {
+          mem = await base44.entities.CorporateMember.create({
+            corporate_id: corp.id,
+            email: me.email,
+            role: "gestor",
+            super_crm_access: true,
+            status: "active"
+          });
+        } else {
+          mem = recheck[0];
+        }
       }
       setCorporate(corp);
       setMember(mem);
