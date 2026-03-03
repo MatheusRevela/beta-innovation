@@ -74,11 +74,11 @@ export default function Onboarding() {
       onboarding_completed: true,
       onboarding_step: 5
     });
-    // Create CorporateMember as gestor
+    // Create CorporateMember with appropriate role
     await base44.entities.CorporateMember.create({
       corporate_id: corp.id,
       email: me.email,
-      role: "gestor",
+      role: form.is_manager === false ? "usuario" : "gestor",
       super_crm_access: true,
       status: "active"
     });
