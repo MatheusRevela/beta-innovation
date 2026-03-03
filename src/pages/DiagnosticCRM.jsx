@@ -39,14 +39,23 @@ export default function DiagnosticCRM() {
   const loadData = async () => {
     setLoading(true);
     const me = await base44.auth.me();
-    const [corpsByEmail, corpsByCreator] = await Promise.all([
-      base44.entities.Corporate.filter({ contact_email: me.email }),
-      base44.entities.Corporate.filter({ created_by: me.email }),
-    ]);
-    const allCorps = [...corpsByEmail, ...corpsByCreator];
-    const seen = new Set();
-    const uniqueCorps = allCorps.filter(c => seen.has(c.id) ? false : seen.add(c.id));
-    const corp = uniqueCorps[0];
+
+    // Resolve corporate via CorporateMember (novo sistema) ou fallback legado
+    const memberships = await base44.entities.CorporateMember.filter({ email: me.email, status: "active" });
+    let corp = null;
+    if (memberships.length > 0) {
+      const corps = await base44.entities.Corporate.filter({ id: memberships[0].corporate_id });
+      corp = corps[0] || null;
+    } else {
+      const [corpsByEmail, corpsByCreator] = await Promise.all([
+        base44.entities.Corporate.filter({ contact_email: me.email }),
+        base44.entities.Corporate.filter({ created_by: me.email }),
+      ]);
+      const allCorps = [...corpsByEmail, ...corpsByCreator];
+      const seen = new Set();
+      corp = allCorps.filter(c => seen.has(c.id) ? false : seen.add(c.id))[0] || null;
+    }
+
     setCorporate(corp);
     if (corp) {
       const thesesData = await base44.entities.InnovationThesis.filter({ corporate_id: corp.id }, "-created_date");
