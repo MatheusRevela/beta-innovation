@@ -95,9 +95,21 @@ export default function MyCRM() {
       if (stageGroups[p.stage]) stageGroups[p.stage].push(p);
     });
 
-  if (loading) return (
+  if (loading || accessLoading) return (
     <div className="flex items-center justify-center min-h-64">
       <Loader2 className="animate-spin w-6 h-6" style={{ color: '#E10867' }} />
+    </div>
+  );
+
+  if (!hasSuperCRMAccess) return (
+    <div className="max-w-xl mx-auto px-4 py-16 text-center">
+      <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: '#ECEEEA' }}>
+        <EyeOff className="w-7 h-7" style={{ color: '#A7ADA7' }} />
+      </div>
+      <h2 className="font-bold text-lg mb-2" style={{ color: '#111111' }}>Acesso ao SuperCRM restrito</h2>
+      <p className="text-sm" style={{ color: '#4B4F4B' }}>
+        O gestor da sua empresa não habilitou o seu acesso ao SuperCRM. Entre em contato com ele para solicitar acesso.
+      </p>
     </div>
   );
 
