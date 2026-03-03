@@ -220,111 +220,13 @@ export default function InnovationTheses() {
         />
       )}
 
-      {/* Create thesis form modal */}
       {showForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-fade-in-up">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-5">
-                <h2 className="font-bold text-lg" style={{ color: '#111111' }}>Nova Tese de Inovação</h2>
-                <button onClick={() => setShowForm(false)}>
-                  <X className="w-5 h-5" style={{ color: '#A7ADA7' }} />
-                </button>
-              </div>
-
-              {sessions.length > 0 && (
-                <div className="mb-5">
-                  <label className="text-xs font-semibold block mb-2" style={{ color: '#4B4F4B' }}>
-                    Vincular a um diagnóstico (opcional)
-                  </label>
-                  <select
-                    value={form.session_id}
-                    onChange={e => setForm(f => ({ ...f, session_id: e.target.value }))}
-                    className="w-full border rounded-lg px-3 py-2 text-sm"
-                    style={{ borderColor: '#A7ADA7' }}>
-                    <option value="">Nenhum (tese independente)</option>
-                    {sessions.map(s => (
-                      <option key={s.id} value={s.id}>
-                        Diagnóstico #{s.id?.slice(-6)} — Score: {s.overall_score} ({s.maturity_level})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              <div className="mb-5">
-                <label className="text-xs font-semibold block mb-2" style={{ color: '#4B4F4B' }}>
-                  Setores de interesse *
-                </label>
-                <div className="flex flex-wrap gap-2">
-                  {SECTORS.map(s => (
-                    <button key={s} onClick={() => toggleItem("sectors", s)}
-                      className="px-3 py-1.5 rounded-full text-xs border transition-all"
-                      style={{
-                        borderColor: form.sectors.includes(s) ? '#E10867' : '#A7ADA7',
-                        background: form.sectors.includes(s) ? '#fce7ef' : '#fff',
-                        color: form.sectors.includes(s) ? '#E10867' : '#4B4F4B'
-                      }}>
-                      {form.sectors.includes(s) && <Check className="w-3 h-3 inline mr-1" />}
-                      {s}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mb-5">
-                <label className="text-xs font-semibold block mb-2" style={{ color: '#4B4F4B' }}>
-                  Temas de inovação prioritários *
-                </label>
-                <div className="flex flex-wrap gap-2">
-                  {INNOVATION_THEMES.map(t => (
-                    <button key={t} onClick={() => toggleItem("themes", t)}
-                      className="px-3 py-1.5 rounded-full text-xs border transition-all"
-                      style={{
-                        borderColor: form.themes.includes(t) ? '#6B2FA0' : '#A7ADA7',
-                        background: form.themes.includes(t) ? '#f3e8ff' : '#fff',
-                        color: form.themes.includes(t) ? '#6B2FA0' : '#4B4F4B'
-                      }}>
-                      {form.themes.includes(t) && <Check className="w-3 h-3 inline mr-1" />}
-                      {t}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mb-6">
-                <label className="text-xs font-semibold block mb-2" style={{ color: '#4B4F4B' }}>
-                  Contexto adicional (opcional)
-                </label>
-                <textarea
-                  value={form.context}
-                  onChange={e => setForm(f => ({ ...f, context: e.target.value }))}
-                  placeholder="Ex: Queremos explorar soluções de energia distribuída para nosso portfólio de ativos renováveis no Nordeste..."
-                  rows={3}
-                  className="w-full border rounded-lg px-3 py-2 text-sm resize-none"
-                  style={{ borderColor: '#A7ADA7' }}
-                />
-              </div>
-
-              <div className="flex justify-end gap-3">
-                <Button variant="outline" onClick={() => setShowForm(false)} disabled={generating}>
-                  Cancelar
-                </Button>
-                <Button
-                  onClick={generateThesis}
-                  disabled={generating || (!form.sectors.length && !form.themes.length)}
-                  className="text-white gap-2"
-                  style={{ background: '#E10867', border: 'none' }}>
-                  {generating ? (
-                    <><Loader2 className="w-4 h-4 animate-spin" /> Gerando tese…</>
-                  ) : (
-                    <><Zap className="w-4 h-4" /> Gerar Tese com IA</>
-                  )}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ThesisWizard
+          corporate={corporate}
+          sessions={sessions}
+          onClose={() => setShowForm(false)}
+          onCreated={handleThesisCreated}
+        />
       )}
     </div>
   );
