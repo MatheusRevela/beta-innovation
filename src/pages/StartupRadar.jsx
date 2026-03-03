@@ -28,6 +28,7 @@ export default function StartupRadar() {
   const [crmForm, setCrmForm] = useState({ type: "", custom_type_label: "", description: "" });
   const [savingCrm, setSavingCrm] = useState(false);
   const [session, setSession] = useState(null);
+  const [resolvedCorpId, setResolvedCorpId] = useState(null);
   const [aiPriorityMap, setAiPriorityMap] = useState({}); // match_id -> { priority_score, reason }
 
   useEffect(() => {
