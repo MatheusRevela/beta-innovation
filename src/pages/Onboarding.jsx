@@ -321,7 +321,7 @@ export default function Onboarding() {
                 loading ||
                 (step === 1 && !form.company_name) ||
                 (step === 2 && !form.contact_name) ||
-                (step === 4 && !form.lgpd_consent)
+                (step === 5 && !form.lgpd_consent)
               }
               className="gap-2 text-white px-6"
               style={{ background: '#E10867', border: 'none' }}
