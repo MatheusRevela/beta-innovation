@@ -87,7 +87,7 @@ export default function DiagnosticCRM() {
 
     // Load follow-up counts (tasks with due_date)
     if (ps.length > 0) {
-      const allTasks = await base44.entities.CRMTask.filter({ corporate_id: corpId || corporate?.id });
+      const allTasks = await base44.entities.CRMTask.filter({ corporate_id: effectiveCorpId });
       const counts = {};
       allTasks.filter(t => t.due_date && t.status !== "done").forEach(t => {
         counts[t.project_id] = (counts[t.project_id] || 0) + 1;
