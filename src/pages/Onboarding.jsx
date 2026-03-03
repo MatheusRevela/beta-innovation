@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
@@ -40,7 +40,8 @@ export default function Onboarding() {
     state: "", country: "Brasil", innovation_objectives: [], lgpd_consent: false
   });
 
-  useState(() => {
+  // Pré-preenche email do usuário autenticado
+  useEffect(() => {
     base44.auth.me().then(me => {
       if (me?.email) setForm(f => ({ ...f, contact_email: me.email }));
     });
