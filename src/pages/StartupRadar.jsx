@@ -261,7 +261,7 @@ Responda em JSON:
     setSavingCrm(true);
     const startup = startups[crmModal.startup_id];
     const matchId = crmModal.id;
-    const effectiveCorporateId = corporateId || resolvedCorpId;
+    const effectiveCorporateId = urlCorporateId || resolvedCorpId || hookCorporateId;
     // Optimistically close modal and mark as added
     setMatches(prev => prev.map(m => m.id === matchId ? { ...m, added_to_crm: true } : m));
     setCrmModal(null);
