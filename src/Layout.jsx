@@ -34,6 +34,7 @@ const NAV_ITEMS = {
     { label: "CRM por Tese", icon: FileText, page: "DiagnosticCRM" },
     { label: "SuperCRM", icon: Briefcase, page: "MyCRM" },
     { label: "Notificações", icon: Bell, page: "Notifications" },
+    { label: "Gestão de Equipe", icon: Building2, page: "TeamManagement" },
   ],
 };
 
