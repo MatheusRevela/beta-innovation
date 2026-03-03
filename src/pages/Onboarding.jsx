@@ -241,7 +241,54 @@ export default function Onboarding() {
 
           {step === 4 && (
             <div className="space-y-5">
-              <h2 className="font-bold text-lg" style={{ color: '#111111' }}>4/4 — Consentimento LGPD</h2>
+              <h2 className="font-bold text-lg" style={{ color: '#111111' }}>4/5 — Seu papel na empresa</h2>
+              <p className="text-sm" style={{ color: '#4B4F4B' }}>
+                Como você se identifica nesta empresa?
+              </p>
+              <div className="space-y-3">
+                <button
+                  onClick={() => update("is_manager", true)}
+                  className="w-full flex items-start gap-4 p-4 rounded-xl border-2 text-left transition-all"
+                  style={{
+                    borderColor: form.is_manager !== false ? '#E10867' : '#A7ADA7',
+                    background: form.is_manager !== false ? '#fce7ef' : '#fff'
+                  }}>
+                  <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: '#fce7ef' }}>
+                    <Shield className="w-5 h-5" style={{ color: '#E10867' }} />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-sm" style={{ color: '#111111' }}>Sou o Gestor de Inovação</p>
+                    <p className="text-xs mt-1" style={{ color: '#4B4F4B' }}>
+                      Serei responsável pelo diagnóstico, convite de usuários e administração da conta da empresa.
+                    </p>
+                  </div>
+                  {form.is_manager !== false && <Check className="w-4 h-4 ml-auto mt-1 flex-shrink-0" style={{ color: '#E10867' }} />}
+                </button>
+                <button
+                  onClick={() => update("is_manager", false)}
+                  className="w-full flex items-start gap-4 p-4 rounded-xl border-2 text-left transition-all"
+                  style={{
+                    borderColor: form.is_manager === false ? '#6B2FA0' : '#A7ADA7',
+                    background: form.is_manager === false ? '#f3e8ff' : '#fff'
+                  }}>
+                  <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: '#f3e8ff' }}>
+                    <User className="w-5 h-5" style={{ color: '#6B2FA0' }} />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-sm" style={{ color: '#111111' }}>Sou um Usuário da empresa</p>
+                    <p className="text-xs mt-1" style={{ color: '#4B4F4B' }}>
+                      Posso criar teses de inovação e visualizar diagnósticos, mas não realizo diagnósticos.
+                    </p>
+                  </div>
+                  {form.is_manager === false && <Check className="w-4 h-4 ml-auto mt-1 flex-shrink-0" style={{ color: '#6B2FA0' }} />}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {step === 5 && (
+            <div className="space-y-5">
+              <h2 className="font-bold text-lg" style={{ color: '#111111' }}>5/5 — Consentimento LGPD</h2>
               <div className="rounded-xl p-4 text-sm space-y-2" style={{ background: '#ECEEEA', color: '#4B4F4B' }}>
                 <p>Seus dados serão utilizados <strong>exclusivamente</strong> para fins de diagnóstico de maturidade de inovação e direcionamento de soluções personalizadas pela Beta-i Brasil.</p>
                 <p>Não compartilharemos suas informações com terceiros sem seu consentimento explícito. Você pode solicitar a exclusão dos seus dados a qualquer momento.</p>
