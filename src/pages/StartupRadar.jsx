@@ -73,11 +73,7 @@ export default function StartupRadar() {
       ? theses[0]
       : theses.find(t => t.session_id === (resolvedSessionId || sess?.id)) || theses[0];
 
-    // Atualiza as refs locais usadas pelas funções seguintes
-    if (!corporateId) {
-      params.set("corporate_id", resolvedCorporateId);
-    }
-
+    setResolvedCorpId(resolvedCorporateId);
     setSession(sess);
     setThesis(th);
 
