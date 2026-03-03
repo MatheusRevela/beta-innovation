@@ -53,7 +53,7 @@ export default function Dashboard() {
           Olá, {user?.full_name?.split(" ")[0] || "bem-vindo(a)"} 👋
         </h1>
         <p className="text-sm mt-1" style={{ color: '#4B4F4B' }}>
-          {corporate ? corporate.trade_name || corporate.company_name : "Configure sua empresa para começar"}
+          {corporate ? (corporate.trade_name || corporate.company_name) : "Configure sua empresa para começar"}
         </p>
       </div>
 
