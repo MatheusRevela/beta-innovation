@@ -257,6 +257,7 @@ Responda em JSON:
     setSavingCrm(true);
     const startup = startups[crmModal.startup_id];
     const matchId = crmModal.id;
+    const effectiveCorporateId = corporateId || resolvedCorpId;
     // Optimistically close modal and mark as added
     setMatches(prev => prev.map(m => m.id === matchId ? { ...m, added_to_crm: true } : m));
     setCrmModal(null);
@@ -264,7 +265,7 @@ Responda em JSON:
     // Fire both requests in parallel in background
     await Promise.all([
       base44.entities.CRMProject.create({
-        corporate_id: corporateId,
+        corporate_id: effectiveCorporateId,
         startup_id: crmModal.startup_id,
         match_id: matchId,
         session_id: thesis?.id || null,
