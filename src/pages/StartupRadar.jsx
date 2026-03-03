@@ -34,7 +34,10 @@ export default function StartupRadar() {
   const [resolvedCorpId, setResolvedCorpId] = useState(null);
   const [aiPriorityMap, setAiPriorityMap] = useState({}); // match_id -> { priority_score, reason }
 
+  // Aguarda o hook resolver antes de chamar loadData para evitar double-run de matching
+  const hookResolved = !loading || urlCorporateId;
   useEffect(() => {
+    if (!hookResolved) return;
     loadData();
   }, [sessionId, urlCorporateId, hookCorporateId]);
 
