@@ -31,16 +31,11 @@ export default function JoinCorporate() {
 
   const autoSuggest = async (domain) => {
     setLoadingSuggestions(true);
-    // Find all active members with the same domain and get their corporates
-    const members = await base44.entities.CorporateMember.filter({ status: "active" });
-    const domainMembers = members.filter(m => m.email?.split("@")[1] === domain);
-    if (domainMembers.length > 0) {
-      const corpIds = [...new Set(domainMembers.map(m => m.corporate_id))];
-      const corpPromises = corpIds.map(id => base44.entities.Corporate.filter({ id }));
-      const results = await Promise.all(corpPromises);
-      const corps = results.flat();
-      setSuggestedCorps(corps);
-    }
+    // Busca corporates pelo domínio do website ou setor — sem expor membros de terceiras empresas
+    // Estratégia segura: buscar corporates cujo contact_email termina com o domínio
+    const corps = await base44.entities.Corporate.filter({});
+    const matched = corps.filter(c => c.contact_email?.split("@")[1] === domain);
+    setSuggestedCorps(matched);
     setLoadingSuggestions(false);
   };
 

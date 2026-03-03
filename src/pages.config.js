@@ -57,6 +57,7 @@ import Diagnostic from './pages/Diagnostic';
 import DiagnosticCRM from './pages/DiagnosticCRM';
 import Home from './pages/Home';
 import InnovationTheses from './pages/InnovationTheses';
+import JoinCorporate from './pages/JoinCorporate';
 import MyCRM from './pages/MyCRM';
 import MyDiagnostics from './pages/MyDiagnostics';
 import Notifications from './pages/Notifications';
@@ -65,7 +66,6 @@ import Reports from './pages/Reports';
 import StartupManagement from './pages/StartupManagement';
 import StartupRadar from './pages/StartupRadar';
 import TeamManagement from './pages/TeamManagement';
-import JoinCorporate from './pages/JoinCorporate';
 import __Layout from './Layout.jsx';
 
 
@@ -80,6 +80,7 @@ export const PAGES = {
     "DiagnosticCRM": DiagnosticCRM,
     "Home": Home,
     "InnovationTheses": InnovationTheses,
+    "JoinCorporate": JoinCorporate,
     "MyCRM": MyCRM,
     "MyDiagnostics": MyDiagnostics,
     "Notifications": Notifications,
@@ -88,7 +89,6 @@ export const PAGES = {
     "StartupManagement": StartupManagement,
     "StartupRadar": StartupRadar,
     "TeamManagement": TeamManagement,
-    "JoinCorporate": JoinCorporate,
 }
 
 export const pagesConfig = {
