@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
+import { useCorporateAccess } from "@/components/hooks/useCorporateAccess";
 import { PIPELINE_STAGES, STAGE_COLORS, CRM_TYPES } from "@/components/ui/DesignTokens";
 import { StageBadge } from "@/components/shared/StatusBadge";
 import { Button } from "@/components/ui/button";
@@ -18,7 +19,7 @@ import { ptBR } from "date-fns/locale";
 
 export default function DiagnosticCRM() {
   const navigate = useNavigate();
-  const [corporate, setCorporate] = useState(null);
+  const { loading: accessLoading, corporate, corporateId } = useCorporateAccess();
   const [theses, setTheses] = useState([]);
   const [selectedThesis, setSelectedThesis] = useState(null);
   const [projects, setProjects] = useState([]);
