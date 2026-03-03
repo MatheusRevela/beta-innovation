@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
+import { useCorporateAccess } from "@/components/hooks/useCorporateAccess";
 import { getMaturidadeLevel } from "@/components/ui/DesignTokens";
 import { MaturityBadge } from "@/components/shared/StatusBadge";
-import { Zap, Plus, ChevronRight, Loader2, Clock, CheckCircle2, PlayCircle, Hourglass, XCircle } from "lucide-react";
+import { Zap, Plus, ChevronRight, Loader2, Clock, CheckCircle2, PlayCircle, Hourglass, XCircle, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -19,29 +20,18 @@ const STATUS_CONFIG = {
 
 export default function MyDiagnostics() {
   const navigate = useNavigate();
+  const { loading: accessLoading, corporate, isGestor } = useCorporateAccess();
   const [sessions, setSessions] = useState([]);
-  const [corporate, setCorporate] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (!accessLoading && corporate) loadSessions();
+    else if (!accessLoading) setLoading(false);
+  }, [accessLoading, corporate]);
 
-  const loadData = async () => {
-    const me = await base44.auth.me();
-    const [corpsByEmail, corpsByCreator] = await Promise.all([
-      base44.entities.Corporate.filter({ contact_email: me.email }),
-      base44.entities.Corporate.filter({ created_by: me.email }),
-    ]);
-    const allCorps = [...corpsByEmail, ...corpsByCreator];
-    const seen = new Set();
-    const uniqueCorps = allCorps.filter(c => seen.has(c.id) ? false : seen.add(c.id));
-    const corp = uniqueCorps[0];
-    setCorporate(corp);
-    if (corp) {
-      const all = await base44.entities.DiagnosticSession.filter({ corporate_id: corp.id }, "-created_date");
-      setSessions(all);
-    }
+  const loadSessions = async () => {
+    const all = await base44.entities.DiagnosticSession.filter({ corporate_id: corporate.id }, "-created_date");
+    setSessions(all);
     setLoading(false);
   };
 
