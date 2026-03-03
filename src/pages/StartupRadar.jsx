@@ -17,7 +17,7 @@ export default function StartupRadar() {
   const urlCorporateId = params.get("corporate_id");
   const thesisId = params.get("thesis_id");
 
-  const { corporateId: hookCorporateId } = useCorporateAccess();
+  const { corporateId: hookCorporateId, loading: hookLoading } = useCorporateAccess();
 
   const [thesis, setThesis] = useState(null);
   const [matches, setMatches] = useState([]);
