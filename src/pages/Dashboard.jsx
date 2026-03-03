@@ -22,25 +22,36 @@ export default function Dashboard() {
   const loadData = async () => {
     const me = await base44.auth.me();
     setUser(me);
-    const [corpsByEmail, corpsByCreator, projs] = await Promise.all([
-      base44.entities.Corporate.filter({ contact_email: me.email }),
-      base44.entities.Corporate.filter({ created_by: me.email }),
-      base44.entities.CRMProject.filter({ is_active: true })
-    ]);
-    const allCorps = [...corpsByEmail, ...corpsByCreator];
-    const seen = new Set();
-    const uniqueCorps = allCorps.filter(c => seen.has(c.id) ? false : seen.add(c.id));
-    const corp = uniqueCorps[0];
+
+    // Resolve corporate via CorporateMember (novo sistema) ou fallback legado
+    const memberships = await base44.entities.CorporateMember.filter({ email: me.email, status: "active" });
+    let corp = null;
+
+    if (memberships.length > 0) {
+      const corps = await base44.entities.Corporate.filter({ id: memberships[0].corporate_id });
+      corp = corps[0] || null;
+    } else {
+      const [corpsByEmail, corpsByCreator] = await Promise.all([
+        base44.entities.Corporate.filter({ contact_email: me.email }),
+        base44.entities.Corporate.filter({ created_by: me.email }),
+      ]);
+      const allCorps = [...corpsByEmail, ...corpsByCreator];
+      const seen = new Set();
+      corp = allCorps.filter(c => seen.has(c.id) ? false : seen.add(c.id))[0] || null;
+    }
+
     setCorporate(corp);
-    setProjects(projs);
+
     if (corp) {
-      const [sessions, thesesData] = await Promise.all([
+      const [sessions, thesesData, projs] = await Promise.all([
         base44.entities.DiagnosticSession.filter({ corporate_id: corp.id }),
-        base44.entities.InnovationThesis.filter({ corporate_id: corp.id })
+        base44.entities.InnovationThesis.filter({ corporate_id: corp.id }),
+        base44.entities.CRMProject.filter({ corporate_id: corp.id }),
       ]);
       const completed = sessions.filter(s => s.status === "completed").sort((a, b) => new Date(b.completed_at) - new Date(a.completed_at));
       setSession(completed[0] || null);
       setTheses(thesesData);
+      setProjects(projs.filter(p => p.is_active !== false));
     }
     setLoading(false);
   };
