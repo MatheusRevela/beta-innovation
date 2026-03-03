@@ -259,22 +259,27 @@ Responda em JSON:
     if (!crmModal || !crmForm.type) return;
     setSavingCrm(true);
     const startup = startups[crmModal.startup_id];
-    await base44.entities.CRMProject.create({
-      corporate_id: corporateId,
-      startup_id: crmModal.startup_id,
-      match_id: crmModal.id,
-      session_id: thesis?.id || null,
-      project_name: `${crmForm.type === "Custom" ? crmForm.custom_type_label : crmForm.type} — ${startup?.name || ""}`,
-      type: crmForm.type,
-      custom_type_label: crmForm.custom_type_label,
-      description: crmForm.description,
-      fit_score: crmModal.fit_score,
-      include_in_super_crm: true
-    });
-    await base44.entities.StartupMatch.update(crmModal.id, { added_to_crm: true });
-    setMatches(prev => prev.map(m => m.id === crmModal.id ? { ...m, added_to_crm: true } : m));
-    setSavingCrm(false);
+    const matchId = crmModal.id;
+    // Optimistically close modal and mark as added
+    setMatches(prev => prev.map(m => m.id === matchId ? { ...m, added_to_crm: true } : m));
     setCrmModal(null);
+    setSavingCrm(false);
+    // Fire both requests in parallel in background
+    await Promise.all([
+      base44.entities.CRMProject.create({
+        corporate_id: corporateId,
+        startup_id: crmModal.startup_id,
+        match_id: matchId,
+        session_id: thesis?.id || null,
+        project_name: `${crmForm.type === "Custom" ? crmForm.custom_type_label : crmForm.type} — ${startup?.name || ""}`,
+        type: crmForm.type,
+        custom_type_label: crmForm.custom_type_label,
+        description: crmForm.description,
+        fit_score: crmModal.fit_score,
+        include_in_super_crm: true
+      }),
+      base44.entities.StartupMatch.update(matchId, { added_to_crm: true }),
+    ]);
   };
 
   const handleAIPriority = (ranked) => {
