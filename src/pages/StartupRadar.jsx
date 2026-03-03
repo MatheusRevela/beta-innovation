@@ -212,10 +212,9 @@ Responda em JSON:
       matchData = { matches: [] };
     }
 
-    const savedMatches = [];
-    for (const m of (matchData?.matches || []).slice(0, 30)) {
-      if (!startupMap[m.startup_id]) continue;
-      const saved = await base44.entities.StartupMatch.create({
+    const validMatches = (matchData?.matches || []).slice(0, 30).filter(m => startupMap[m.startup_id]);
+    const savedMatches = await Promise.all(
+      validMatches.map(m => base44.entities.StartupMatch.create({
         corporate_id: corpId,
         thesis_id: th.id,
         session_id: sessId,
@@ -225,9 +224,8 @@ Responda em JSON:
         risk_reasons: m.risk_reasons,
         category_match: m.category_match,
         tags_matched: m.tags_matched
-      });
-      savedMatches.push(saved);
-    }
+      }))
+    );
 
     await base44.entities.InnovationThesis.update(th.id, { matching_ran: true, matching_ran_at: new Date().toISOString() });
     setMatches(savedMatches);
