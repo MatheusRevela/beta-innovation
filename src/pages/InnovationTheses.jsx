@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
+import { useCorporateAccess } from "@/components/hooks/useCorporateAccess";
 import { Lightbulb, Plus, ChevronRight, Loader2, Zap, Map, Trash2, GitCompare, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
@@ -13,8 +14,8 @@ import ThesisWizard from "@/components/theses/ThesisWizard";
 
 export default function InnovationTheses() {
   const navigate = useNavigate();
+  const { loading: accessLoading, corporate, corporateId } = useCorporateAccess();
   const [theses, setTheses] = useState([]);
-  const [corporate, setCorporate] = useState(null);
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -22,36 +23,18 @@ export default function InnovationTheses() {
   const [showCompare, setShowCompare] = useState(false);
   const [reportThesis, setReportThesis] = useState(null);
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => {
+    if (!accessLoading && corporateId) loadData();
+    else if (!accessLoading) setLoading(false);
+  }, [accessLoading, corporateId]);
 
   const loadData = async () => {
-    const me = await base44.auth.me();
-
-    // Resolve corporate via CorporateMember (novo sistema) ou fallback legado
-    const memberships = await base44.entities.CorporateMember.filter({ email: me.email, status: "active" });
-    let corp = null;
-    if (memberships.length > 0) {
-      const corps = await base44.entities.Corporate.filter({ id: memberships[0].corporate_id });
-      corp = corps[0] || null;
-    } else {
-      const [corpsByEmail, corpsByCreator] = await Promise.all([
-        base44.entities.Corporate.filter({ contact_email: me.email }),
-        base44.entities.Corporate.filter({ created_by: me.email }),
-      ]);
-      const allCorps = [...corpsByEmail, ...corpsByCreator];
-      const seen = new Set();
-      corp = allCorps.filter(c => seen.has(c.id) ? false : seen.add(c.id))[0] || null;
-    }
-    setCorporate(corp);
-
-    if (corp) {
-      const [thesesData, sessionsData] = await Promise.all([
-        base44.entities.InnovationThesis.filter({ corporate_id: corp.id }, "-created_date"),
-        base44.entities.DiagnosticSession.filter({ corporate_id: corp.id, status: "completed" }, "-completed_at")
-      ]);
-      setTheses(thesesData);
-      setSessions(sessionsData);
-    }
+    const [thesesData, sessionsData] = await Promise.all([
+      base44.entities.InnovationThesis.filter({ corporate_id: corporateId }, "-created_date"),
+      base44.entities.DiagnosticSession.filter({ corporate_id: corporateId, status: "completed" }, "-completed_at")
+    ]);
+    setTheses(thesesData);
+    setSessions(sessionsData);
     setLoading(false);
   };
 
