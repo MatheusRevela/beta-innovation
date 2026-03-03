@@ -47,74 +47,9 @@ export default function InnovationTheses() {
     setLoading(false);
   };
 
-  const toggleItem = (field, value) => {
-    setForm(f => {
-      const arr = f[field].includes(value)
-        ? f[field].filter(x => x !== value)
-        : [...f[field], value];
-      return { ...f, [field]: arr };
-    });
-  };
-
-  const generateThesis = async () => {
-    if (!form.sectors.length && !form.themes.length) return;
-    setGenerating(true);
-
-    const selectedSession = sessions.find(s => s.id === form.session_id) || sessions[0];
-
-    const prompt = `Você é um especialista em inovação aberta e teses de inovação corporativa.
-
-Crie uma tese de inovação detalhada para uma empresa com o seguinte perfil:
-Empresa: ${corporate.company_name || corporate.trade_name}
-Setor da empresa: ${corporate.sector || "N/A"}
-Porte: ${corporate.size || "N/A"}
-
-Setores de interesse para inovação: ${form.sectors.join(", ") || "Geral"}
-Temas / áreas de inovação prioritários: ${form.themes.join(", ") || "Geral"}
-Contexto adicional fornecido: ${form.context || "N/A"}
-${selectedSession ? `Diagnóstico de maturidade (score): ${selectedSession.overall_score}% — Nível: ${selectedSession.maturity_level}` : ""}
-
-Gere uma tese de inovação aprofundada com:
-1. Texto narrativo da tese (3-4 parágrafos, contextualizando o porquê daqueles setores/temas)
-2. Macrocategorias de inovação (ex: para Energia → VPP, Energy as a Service, Smart Grid; para Bancos → Infra, Crédito, Payments)
-3. Top 5 prioridades estratégicas concretas
-4. Tags específicas para matching com startups (mínimo 10, seja específico como "virtual power plant", "embedded finance", "digital twin")
-5. Setores-alvo confirmados
-
-Responda em JSON:
-{
-  "thesis_text": "string",
-  "macro_categories": ["cat1", "cat2", "cat3", "cat4", "cat5"],
-  "top_priorities": ["p1", "p2", "p3", "p4", "p5"],
-  "tags": ["tag1", "tag2", ...],
-  "sectors": ["setor1", "setor2"]
-}`;
-
-    const data = await base44.integrations.Core.InvokeLLM({
-      prompt,
-      response_json_schema: {
-        type: "object",
-        properties: {
-          thesis_text: { type: "string" },
-          macro_categories: { type: "array", items: { type: "string" } },
-          top_priorities: { type: "array", items: { type: "string" } },
-          tags: { type: "array", items: { type: "string" } },
-          sectors: { type: "array", items: { type: "string" } }
-        }
-      }
-    });
-
-    const newThesis = await base44.entities.InnovationThesis.create({
-      corporate_id: corporate.id,
-      session_id: form.session_id || selectedSession?.id || null,
-      ...data,
-      matching_ran: false
-    });
-
+  const handleThesisCreated = (newThesis) => {
     setTheses(prev => [newThesis, ...prev]);
     setShowForm(false);
-    setForm({ title: "", sectors: [], themes: [], context: "", session_id: "" });
-    setGenerating(false);
   };
 
   const toggleCompare = (id) => {
