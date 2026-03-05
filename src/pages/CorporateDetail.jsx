@@ -27,6 +27,7 @@ export default function CorporateDetail() {
   const params = new URLSearchParams(window.location.search);
   const corporateId = params.get("corporate_id");
 
+  const [currentUser, setCurrentUser] = useState(null);
   const [corporate, setCorporate] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
@@ -37,12 +38,19 @@ export default function CorporateDetail() {
   const [projects, setProjects] = useState([]);
   const [startups, setStartups] = useState({});
   const [members, setMembers] = useState([]);
+  const [pendingRequests, setPendingRequests] = useState([]);
   const [matches, setMatches] = useState({});
 
   // CRM selected
   const [selectedProject, setSelectedProject] = useState(null);
   const [movingStage, setMovingStage] = useState(null);
   const [filterStage, setFilterStage] = useState("all");
+
+  // Team management state
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState("usuario");
+  const [inviting, setInviting] = useState(false);
+  const [savingId, setSavingId] = useState(null);
 
   useEffect(() => {
     if (corporateId) loadAll();
