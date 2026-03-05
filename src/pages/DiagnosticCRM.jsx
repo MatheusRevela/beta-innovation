@@ -141,9 +141,12 @@ export default function DiagnosticCRM() {
 
   const stageGroups = {};
   PIPELINE_STAGES.forEach(s => { stageGroups[s] = []; });
-  projects.forEach(p => {
-    if (stageGroups[p.stage]) stageGroups[p.stage].push(p);
-  });
+  projects
+    .filter(p => filterStage === "all" || p.stage === filterStage)
+    .filter(p => filterType === "all" || p.type === filterType)
+    .forEach(p => {
+      if (stageGroups[p.stage]) stageGroups[p.stage].push(p);
+    });
 
   // Summary stats
   const totalActive = projects.filter(p => p.stage !== "Encerrado").length;
