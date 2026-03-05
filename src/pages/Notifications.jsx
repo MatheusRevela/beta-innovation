@@ -21,6 +21,7 @@ export default function Notifications() {
   const [startups, setStartups] = useState({});
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState("today");
+  const [statusFilter, setStatusFilter] = useState("pending");
   const [completing, setCompleting] = useState(null);
 
   const [me, setMe] = useState(null);
