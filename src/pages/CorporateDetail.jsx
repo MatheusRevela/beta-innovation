@@ -502,31 +502,121 @@ export default function CorporateDetail() {
 
       {/* Tab: Team */}
       {activeTab === "team" && (
-        <div className="max-w-2xl space-y-3">
-          {members.length === 0 && (
-            <div className="text-center py-12 text-sm" style={{ color: '#A7ADA7' }}>Nenhum membro ativo.</div>
-          )}
-          {members.map(mem => (
-            <div key={mem.id} className="bg-white rounded-2xl border p-4 flex items-center gap-3" style={{ borderColor: '#A7ADA7' }}>
-              <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
-                style={{ background: mem.role === "gestor" ? '#fce7ef' : '#ECEEEA', color: mem.role === "gestor" ? '#E10867' : '#4B4F4B' }}>
-                {mem.email?.[0]?.toUpperCase()}
+        <div className="max-w-3xl space-y-5">
+          {/* Pending requests */}
+          {pendingRequests.length > 0 && (
+            <div className="rounded-2xl border p-5" style={{ borderColor: '#fed7aa', background: '#fff7ed' }}>
+              <div className="flex items-center gap-2 mb-4">
+                <Clock className="w-4 h-4" style={{ color: '#ea580c' }} />
+                <h2 className="font-semibold text-sm" style={{ color: '#9a3412' }}>
+                  {pendingRequests.length} solicitação(ões) pendentes
+                </h2>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate" style={{ color: '#111111' }}>{mem.email}</p>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <span className="text-xs px-1.5 py-0.5 rounded-full font-medium"
-                    style={{ background: mem.role === "gestor" ? '#fce7ef' : '#f3e8ff', color: mem.role === "gestor" ? '#E10867' : '#6B2FA0' }}>
-                    {mem.role === "gestor" ? "🛡 Gestor" : "👤 Usuário"}
-                  </span>
-                  <span className="text-xs flex items-center gap-0.5" style={{ color: mem.super_crm_access !== false ? '#2C4425' : '#A7ADA7' }}>
-                    {mem.super_crm_access !== false ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
-                    SuperCRM
-                  </span>
-                </div>
+              <div className="space-y-3">
+                {pendingRequests.map(req => (
+                  <div key={req.id} className="flex items-center justify-between gap-3 bg-white rounded-xl p-3 border" style={{ borderColor: '#fed7aa' }}>
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
+                        style={{ background: '#fce7ef', color: '#E10867' }}>
+                        {req.email?.[0]?.toUpperCase()}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium truncate" style={{ color: '#111111' }}>{req.email}</p>
+                        <p className="text-xs" style={{ color: '#4B4F4B' }}>Quer se vincular como {req.role}</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-2 flex-shrink-0">
+                      <button onClick={() => approveRequest(req)} disabled={savingId === req.id}
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-white"
+                        style={{ background: '#2C4425' }}>
+                        <Check className="w-3.5 h-3.5" /> Aprovar
+                      </button>
+                      <button onClick={() => rejectRequest(req)} disabled={savingId === req.id}
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium border"
+                        style={{ borderColor: '#A7ADA7', color: '#4B4F4B' }}>
+                        <X className="w-3.5 h-3.5" /> Recusar
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          ))}
+          )}
+
+          {/* Invite new member */}
+          <div className="bg-white rounded-2xl border p-5" style={{ borderColor: '#A7ADA7' }}>
+            <h2 className="font-semibold text-sm mb-4" style={{ color: '#111111' }}>Convidar novo membro</h2>
+            <div className="flex gap-2 flex-wrap">
+              <Input
+                value={inviteEmail}
+                onChange={e => setInviteEmail(e.target.value)}
+                placeholder="email@empresa.com"
+                type="email"
+                className="flex-1 min-w-48"
+                onKeyDown={e => e.key === "Enter" && inviteMember()}
+              />
+              <select value={inviteRole} onChange={e => setInviteRole(e.target.value)}
+                className="border rounded-lg px-3 py-2 text-sm" style={{ borderColor: '#A7ADA7' }}>
+                <option value="usuario">Usuário</option>
+                <option value="gestor">Gestor</option>
+              </select>
+              <Button onClick={inviteMember} disabled={inviting || !inviteEmail.trim()}
+                className="text-white gap-2" style={{ background: '#E10867', border: 'none' }}>
+                {inviting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                Adicionar
+              </Button>
+            </div>
+          </div>
+
+          {/* Members list */}
+          <div className="bg-white rounded-2xl border p-5" style={{ borderColor: '#A7ADA7' }}>
+            <h2 className="font-semibold text-sm mb-4" style={{ color: '#111111' }}>Membros ativos ({members.length})</h2>
+            <div className="space-y-3">
+              {members.length === 0 && (
+                <p className="text-sm text-center py-4" style={{ color: '#A7ADA7' }}>Nenhum membro ainda.</p>
+              )}
+              {members.map(mem => (
+                <div key={mem.id} className="flex items-center gap-3 p-3 rounded-xl border" style={{ borderColor: '#ECEEEA' }}>
+                  <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
+                    style={{ background: mem.role === "gestor" ? '#fce7ef' : '#ECEEEA', color: mem.role === "gestor" ? '#E10867' : '#4B4F4B' }}>
+                    {mem.email?.[0]?.toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate" style={{ color: '#111111' }}>{mem.email}</p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-xs px-1.5 py-0.5 rounded-full font-medium"
+                        style={{ background: mem.role === "gestor" ? '#fce7ef' : '#f3e8ff', color: mem.role === "gestor" ? '#E10867' : '#6B2FA0' }}>
+                        {mem.role === "gestor" ? "🛡 Gestor" : "👤 Usuário"}
+                      </span>
+                      <span className="text-xs flex items-center gap-0.5"
+                        style={{ color: mem.super_crm_access !== false ? '#2C4425' : '#A7ADA7' }}>
+                        {mem.super_crm_access !== false ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                        SuperCRM
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 flex-shrink-0">
+                    <button onClick={() => toggleSuperCRM(mem)} disabled={savingId === mem.id}
+                      title={mem.super_crm_access !== false ? "Revogar acesso ao SuperCRM" : "Liberar acesso ao SuperCRM"}
+                      className="p-1.5 rounded-lg border transition-all hover:bg-gray-50" style={{ borderColor: '#ECEEEA' }}>
+                      {savingId === mem.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> :
+                        mem.super_crm_access !== false ? <Eye className="w-3.5 h-3.5" style={{ color: '#2C4425' }} /> : <EyeOff className="w-3.5 h-3.5" style={{ color: '#A7ADA7' }} />}
+                    </button>
+                    <button onClick={() => changeRole(mem, mem.role === "gestor" ? "usuario" : "gestor")}
+                      disabled={savingId === mem.id}
+                      title={mem.role === "gestor" ? "Rebaixar para usuário" : "Promover a gestor"}
+                      className="p-1.5 rounded-lg border transition-all hover:bg-gray-50" style={{ borderColor: '#ECEEEA' }}>
+                      {mem.role === "gestor" ? <User className="w-3.5 h-3.5" style={{ color: '#6B2FA0' }} /> : <Shield className="w-3.5 h-3.5" style={{ color: '#E10867' }} />}
+                    </button>
+                    <button onClick={() => removeMember(mem)}
+                      className="p-1.5 rounded-lg border transition-all hover:bg-red-50" style={{ borderColor: '#ECEEEA' }}>
+                      <Trash2 className="w-3.5 h-3.5" style={{ color: '#A7ADA7' }} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       )}
     </div>
