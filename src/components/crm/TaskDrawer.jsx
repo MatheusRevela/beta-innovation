@@ -49,62 +49,74 @@ function TaskCard({ task, onToggle, onDelete, onEdit }) {
   const StatusIcon = sCfg.icon;
   const overdue = task.due_date && isPast(new Date(task.due_date)) && !isToday(new Date(task.due_date)) && task.status !== "done";
   const daysLeft = task.due_date ? differenceInDays(new Date(task.due_date), new Date()) : null;
+  const isDone = task.status === "done";
 
   return (
-    <div className="rounded-xl border p-3 transition-all"
+    <div className="rounded-xl border transition-all group"
       style={{
-        borderColor: overdue ? '#fecaca' : '#ECEEEA',
-        background: task.status === "done" ? '#fafafa' : overdue ? '#fffbfb' : '#fff'
+        borderColor: overdue ? '#fecaca' : '#E8EAE8',
+        background: isDone ? '#fafafa' : overdue ? '#fffcfc' : '#fff',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
       }}>
-      <div className="flex items-start gap-2">
-        {/* Toggle button */}
+
+      {/* Top accent bar for overdue */}
+      {overdue && (
+        <div className="h-0.5 rounded-t-xl w-full" style={{ background: '#fca5a5' }} />
+      )}
+
+      <div className="flex items-start gap-2.5 p-3">
+        {/* Toggle */}
         <button onClick={() => onToggle(task)}
-          className="w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all"
+          className="w-4.5 h-4.5 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all"
           style={{
-            borderColor: task.status === "done" ? '#2C4425' : '#A7ADA7',
-            background: task.status === "done" ? '#2C4425' : 'transparent'
+            borderColor: isDone ? '#2C4425' : overdue ? '#fca5a5' : '#C8CAC8',
+            background: isDone ? '#2C4425' : 'transparent',
+            width: 18, height: 18,
           }}>
-          {task.status === "done" && <Check className="w-3 h-3 text-white" />}
+          {isDone && <Check className="w-2.5 h-2.5 text-white" />}
         </button>
 
         <div className="flex-1 min-w-0 cursor-pointer" onClick={() => onEdit(task)}>
-          <p className="text-sm font-medium leading-snug"
+          {/* Title */}
+          <p className="text-sm font-semibold leading-snug"
             style={{
-              color: task.status === "done" ? '#A7ADA7' : '#111111',
-              textDecoration: task.status === "done" ? 'line-through' : 'none'
+              color: isDone ? '#A7ADA7' : '#111111',
+              textDecoration: isDone ? 'line-through' : 'none',
             }}>
             {task.title}
           </p>
 
-          {/* Meta row */}
-          <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-            {/* Priority */}
-            <span className="text-xs px-1.5 py-0.5 rounded-md font-medium"
-              style={{ background: pCfg.bg, color: pCfg.color }}>
+          {/* Pill row: priority + status + type + due */}
+          <div className="flex flex-wrap items-center gap-1 mt-1.5">
+            <span className="text-xs px-2 py-0.5 rounded-full font-semibold"
+              style={{ background: pCfg.bg, color: pCfg.color, letterSpacing: '0.01em' }}>
               {pCfg.label}
             </span>
-            {/* Status */}
-            <span className="flex items-center gap-1 text-xs px-1.5 py-0.5 rounded-md font-medium"
+            <span className="flex items-center gap-0.5 text-xs px-2 py-0.5 rounded-full font-medium"
               style={{ background: sCfg.bg, color: sCfg.color }}>
-              <StatusIcon className="w-3 h-3" />
+              <StatusIcon className="w-2.5 h-2.5" />
               {sCfg.label}
             </span>
-            {/* Type */}
-            {task.type && (
-              <span className="text-xs px-1.5 py-0.5 rounded-md"
-                style={{ background: '#ECEEEA', color: '#4B4F4B' }}>
+            {task.type && task.type !== "follow_up" && (
+              <span className="text-xs px-2 py-0.5 rounded-full"
+                style={{ background: '#F0F1F0', color: '#4B4F4B' }}>
                 {TYPE_CONFIG[task.type] || task.type}
               </span>
             )}
-            {/* Due date */}
+            {task.type === "follow_up" && (
+              <span className="text-xs px-2 py-0.5 rounded-full"
+                style={{ background: '#F0F1F0', color: '#4B4F4B' }}>
+                Follow-up
+              </span>
+            )}
             {task.due_date && (
               <span className="flex items-center gap-0.5 text-xs font-medium"
-                style={{ color: overdue ? '#dc2626' : isToday(new Date(task.due_date)) ? '#E10867' : '#4B4F4B' }}>
-                <Calendar className="w-3 h-3" />
+                style={{ color: overdue ? '#dc2626' : isToday(new Date(task.due_date)) ? '#E10867' : '#A7ADA7' }}>
+                <Calendar className="w-2.5 h-2.5" />
                 {isToday(new Date(task.due_date))
                   ? "Hoje"
                   : overdue
-                    ? `Atrasado ${Math.abs(daysLeft)}d`
+                    ? `${Math.abs(daysLeft)}d atraso`
                     : format(new Date(task.due_date), "dd/MM", { locale: ptBR })}
               </span>
             )}
@@ -114,7 +126,7 @@ function TaskCard({ task, onToggle, onDelete, onEdit }) {
           {task.tags?.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-1.5">
               {task.tags.map(tag => (
-                <span key={tag} className="text-xs px-1.5 py-0.5 rounded-full"
+                <span key={tag} className="text-xs px-1.5 py-0.5 rounded-full font-medium"
                   style={{ background: '#f3e8ff', color: '#6B2FA0' }}>
                   #{tag}
                 </span>
@@ -122,24 +134,25 @@ function TaskCard({ task, onToggle, onDelete, onEdit }) {
             </div>
           )}
 
-          {/* Responsible / created_by */}
+          {/* Responsible */}
           {(task.responsible || task.created_by_name) && (
-            <div className="flex items-center gap-1 mt-1.5 text-xs" style={{ color: '#A7ADA7' }}>
-              <User className="w-3 h-3" />
+            <div className="flex items-center gap-1 mt-1.5 text-xs" style={{ color: '#B8BAB8' }}>
+              <User className="w-2.5 h-2.5" />
               <span>{task.responsible || task.created_by_name}</span>
             </div>
           )}
 
-          {/* Completion date */}
-          {task.status === "done" && task.completion_date && (
-            <p className="text-xs mt-1" style={{ color: '#2C4425' }}>
-              ✓ Concluída em {format(new Date(task.completion_date), "dd/MM/yyyy", { locale: ptBR })}
+          {/* Completion */}
+          {isDone && task.completion_date && (
+            <p className="text-xs mt-1 font-medium" style={{ color: '#2C4425' }}>
+              ✓ {format(new Date(task.completion_date), "dd/MM/yyyy", { locale: ptBR })}
             </p>
           )}
         </div>
 
-        <button onClick={() => onDelete(task.id)} className="flex-shrink-0 mt-0.5">
-          <Trash2 className="w-3.5 h-3.5" style={{ color: '#A7ADA7' }} />
+        <button onClick={() => onDelete(task.id)}
+          className="flex-shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+          <Trash2 className="w-3.5 h-3.5" style={{ color: '#C8CAC8' }} />
         </button>
       </div>
     </div>
