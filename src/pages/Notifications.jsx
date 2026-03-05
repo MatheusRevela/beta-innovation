@@ -219,6 +219,32 @@ export default function Notifications() {
                       Criado por <span className="font-medium" style={{ color: '#4B4F4B' }}>{fu.created_by_name}</span>
                     </p>
                   )}
+                  {/* Type + Priority badges */}
+                  <div className="flex flex-wrap gap-1.5 mt-1">
+                    {fu.type && fu.type !== "follow_up" && (
+                      <span className="text-xs px-1.5 py-0.5 rounded-md"
+                        style={{ background: '#ECEEEA', color: '#4B4F4B' }}>
+                        {{ reuniao: "Reunião", proposta: "Proposta", contrato: "Contrato", pesquisa: "Pesquisa", outro: "Outro" }[fu.type] || fu.type}
+                      </span>
+                    )}
+                    {fu.priority === "high" && (
+                      <span className="text-xs px-1.5 py-0.5 rounded-md font-medium"
+                        style={{ background: '#fef2f2', color: '#dc2626' }}>Alta prioridade</span>
+                    )}
+                    {fu.responsible && (
+                      <span className="flex items-center gap-0.5 text-xs" style={{ color: '#A7ADA7' }}>
+                        <User className="w-3 h-3" /> {fu.responsible}
+                      </span>
+                    )}
+                  </div>
+                  {fu.tags?.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {fu.tags.map(tag => (
+                        <span key={tag} className="text-xs px-1.5 py-0.5 rounded-full"
+                          style={{ background: '#f3e8ff', color: '#6B2FA0' }}>#{tag}</span>
+                      ))}
+                    </div>
+                  )}
                   {fu.notes && (
                     <p className="text-xs mt-0.5" style={{ color: '#4B4F4B' }}>{fu.notes}</p>
                   )}
