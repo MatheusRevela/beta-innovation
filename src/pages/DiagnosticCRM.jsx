@@ -131,6 +131,13 @@ export default function DiagnosticCRM() {
     setTogglingCrm(null);
   };
 
+  const deleteProject = async (proj) => {
+    if (!window.confirm(`Remover "${proj.project_name}" do CRM?`)) return;
+    await base44.entities.CRMProject.delete(proj.id);
+    setProjects(prev => prev.filter(p => p.id !== proj.id));
+    setSelected(null);
+  };
+
   const handleProjectAdded = (proj, startupId, startupData) => {
     setProjects(prev => [...prev, proj]);
     if (startupData) {
