@@ -92,10 +92,12 @@ export default function DiagnosticCRM() {
 
   const addTask = async () => {
     if (!newTask.trim() || !selected) return;
+    const me = await base44.auth.me();
     const t = await base44.entities.CRMTask.create({
       project_id: selected.id,
       corporate_id: selected.corporate_id,
-      title: newTask.trim()
+      title: newTask.trim(),
+      created_by_name: me.full_name || me.email,
     });
     setTasks(prev => [...prev, t]);
     setNewTask("");
