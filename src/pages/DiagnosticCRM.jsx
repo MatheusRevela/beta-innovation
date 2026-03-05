@@ -9,10 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import AddManualStartupModal from "@/components/crm/AddManualStartupModal";
 import FollowUpModal from "@/components/crm/FollowUpModal";
+import TaskDrawer from "@/components/crm/TaskDrawer";
 import {
   Plus, Loader2, X, ExternalLink, Check, Trash2,
   ChevronRight, Lightbulb, ToggleLeft, ToggleRight,
-  Map, Bell, UserPlus, ArrowRight
+  Map, Bell, UserPlus, ArrowRight, ClipboardList
 } from "lucide-react";
 import { format, isPast, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale";
