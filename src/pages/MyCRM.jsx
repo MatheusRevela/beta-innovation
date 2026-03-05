@@ -78,6 +78,13 @@ export default function MyCRM() {
     setTasks(prev => prev.filter(t => t.id !== taskId));
   };
 
+  const deleteProject = async (proj) => {
+    if (!window.confirm(`Remover "${proj.project_name}" do CRM?`)) return;
+    await base44.entities.CRMProject.delete(proj.id);
+    setProjects(prev => prev.filter(p => p.id !== proj.id));
+    setSelected(null);
+  };
+
   const moveStage = async (proj, stage) => {
     setMovingStage(proj.id);
     const updated = await base44.entities.CRMProject.update(proj.id, { stage });
