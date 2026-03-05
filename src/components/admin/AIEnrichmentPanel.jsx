@@ -30,7 +30,7 @@ Retorne:
 - vertical: vertical específica dentro da categoria (ex: "Telemedicina", "Open Banking", "Precision Agriculture")
 - business_model: um de ["SaaS", "Hardware", "Marketplace", "Serviço", "Plataforma", "Outro"]
 - stage: um de ["Ideação", "MVP", "PMF", "Scale", "Growth"]
-- tags: array de 5-10 palavras-chave relevantes para matching com corporações (em português ou inglês, termos técnicos e de negócio)
+- tags: array de PELO MENOS 15 palavras-chave relevantes para matching com corporações. Inclua: termos técnicos, verticais de mercado, tecnologias usadas, problemas resolvidos, setores atendidos, modelos de negócio, tipo de cliente, palavras-chave do produto e tendências relacionadas (em português ou inglês)
 - keywords: array de 3-5 problemas que a startup resolve (frases curtas)
 - target_customers: quem são os clientes ideais (1 frase)
 - value_proposition: proposta de valor central (1 frase objetiva)

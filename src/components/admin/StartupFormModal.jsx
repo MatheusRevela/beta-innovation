@@ -39,10 +39,13 @@ export default function StartupFormModal({ startup, onClose, onSaved }) {
     if (!aiUrl) return;
     setAnalyzing(true);
     const res = await base44.integrations.Core.InvokeLLM({
-      prompt: `Você é um analista de inovação. Analise a startup com site: ${aiUrl}.
+      prompt: `Você é um analista de inovação especialista em ecossistema de startups. Analise a startup com site: ${aiUrl}.
 ${aiDesc ? `Contexto adicional fornecido: "${aiDesc}"` : ""}
 Acesse o site e extraia o máximo de informações possíveis para pré-preencher um cadastro de startup.
-Retorne todos os campos que conseguir identificar com precisão.`,
+Retorne todos os campos que conseguir identificar com precisão.
+
+Para o campo "tags", gere PELO MENOS 15 tags de alta qualidade para maximizar o matching com corporações. 
+Inclua: termos técnicos, verticais de mercado, tecnologias usadas, problemas resolvidos, setores atendidos, modelos de negócio, tipo de cliente, palavras-chave do produto e tendências relacionadas.`,
       add_context_from_internet: true,
       response_json_schema: {
         type: "object",
@@ -53,7 +56,7 @@ Retorne todos os campos que conseguir identificar com precisão.`,
           vertical: { type: "string" },
           business_model: { type: "string", enum: ["SaaS", "Hardware", "Marketplace", "Serviço", "Plataforma", "Outro"] },
           stage: { type: "string", enum: ["Ideação", "MVP", "PMF", "Scale", "Growth"] },
-          tags: { type: "array", items: { type: "string" } },
+          tags: { type: "array", items: { type: "string" }, description: "Mínimo de 15 tags para matching" },
           contact_email: { type: "string" },
           state: { type: "string" },
           country: { type: "string" },
