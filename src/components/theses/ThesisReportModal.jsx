@@ -62,6 +62,11 @@ Responda em JSON:
     });
 
     setReport(result);
+    // Persist to entity so it survives modal close
+    await base44.entities.InnovationThesis.update(thesis.id, {
+      cached_report: result,
+      cached_report_at: new Date().toISOString(),
+    });
     setLoading(false);
   };
 
