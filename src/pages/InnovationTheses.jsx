@@ -148,11 +148,15 @@ export default function InnovationTheses() {
                 </div>
                 <div>
                   <p className="font-semibold text-sm" style={{ color: '#111111' }}>
-                    Tese #{thesis.id?.slice(-6)}
+                    {thesis.macro_categories?.length > 0
+                      ? `Estratégia: ${thesis.macro_categories[0]}${thesis.macro_categories.length > 1 ? ` +${thesis.macro_categories.length - 1}` : ''}`
+                      : `Tese de Inovação · ${format(new Date(thesis.created_date), "MMM yyyy", { locale: ptBR })}`
+                    }
                   </p>
                   <p className="text-xs" style={{ color: '#4B4F4B' }}>
                     Criada em {format(new Date(thesis.created_date), "dd 'de' MMM 'de' yyyy", { locale: ptBR })}
                     {thesis.session_id && " · Com diagnóstico"}
+                    {thesis.created_by && ` · por ${thesis.created_by.split('@')[0]}`}
                   </p>
                 </div>
               </div>
