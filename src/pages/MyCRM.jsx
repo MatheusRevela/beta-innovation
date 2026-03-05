@@ -5,7 +5,8 @@ import { PIPELINE_STAGES, STAGE_COLORS, CRM_TYPES } from "@/components/ui/Design
 import { StageBadge } from "@/components/shared/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, X, ExternalLink, Trash2, MapPin, Tag, Lightbulb, AlertTriangle, EyeOff } from "lucide-react";
+import { Loader2, X, ExternalLink, Trash2, Lightbulb, EyeOff } from "lucide-react";
+import TaskDrawer from "@/components/crm/TaskDrawer";
 import TaskDrawer from "@/components/crm/TaskDrawer";
 import { createPageUrl } from "@/utils";
 
