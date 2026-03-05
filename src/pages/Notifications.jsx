@@ -91,14 +91,19 @@ export default function Notifications() {
   };
 
   const filterFollowups = () => {
-    const today = startOfDay(new Date());
     return followups.filter(fu => {
       const d = new Date(fu.due_date);
-      if (tab === "today") return isToday(d);
-      if (tab === "week") return isThisWeek(d, { locale: ptBR }) && (!isPast(d) || isToday(d));
-      if (tab === "month") return isThisMonth(d);
-      if (tab === "overdue") return isPast(d) && !isToday(d) && fu.status !== "done";
-      return true;
+      // Date tab filter
+      let dateMatch = true;
+      if (tab === "today") dateMatch = isToday(d);
+      else if (tab === "week") dateMatch = isThisWeek(d, { locale: ptBR }) && (!isPast(d) || isToday(d));
+      else if (tab === "month") dateMatch = isThisMonth(d);
+      else if (tab === "overdue") dateMatch = isPast(d) && !isToday(d) && fu.status !== "done";
+      // Status filter
+      let statusMatch = true;
+      if (statusFilter === "pending") statusMatch = fu.status !== "done";
+      else if (statusFilter === "resolved") statusMatch = fu.status === "done";
+      return dateMatch && statusMatch;
     });
   };
 
