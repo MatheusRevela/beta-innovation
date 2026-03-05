@@ -87,33 +87,6 @@ export default function DiagnosticCRM() {
 
   const openProject = async (proj) => {
     setSelected(proj);
-    const t = await base44.entities.CRMTask.filter({ project_id: proj.id });
-    setTasks(t.filter(tk => !tk.due_date)); // regular tasks (no due_date)
-  };
-
-  const addTask = async () => {
-    if (!newTask.trim() || !selected) return;
-    const me = await base44.auth.me();
-    const t = await base44.entities.CRMTask.create({
-      project_id: selected.id,
-      corporate_id: selected.corporate_id,
-      title: newTask.trim(),
-      created_by_name: me.full_name || me.email,
-    });
-    setTasks(prev => [...prev, t]);
-    setNewTask("");
-  };
-
-  const toggleTask = async (task) => {
-    const updated = await base44.entities.CRMTask.update(task.id, {
-      status: task.status === "done" ? "pending" : "done"
-    });
-    setTasks(prev => prev.map(t => t.id === updated.id ? updated : t));
-  };
-
-  const deleteTask = async (taskId) => {
-    await base44.entities.CRMTask.delete(taskId);
-    setTasks(prev => prev.filter(t => t.id !== taskId));
   };
 
   const moveStage = async (proj, stage) => {
