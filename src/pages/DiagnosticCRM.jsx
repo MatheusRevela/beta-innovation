@@ -223,6 +223,20 @@ export default function DiagnosticCRM() {
         </div>
       )}
 
+      {/* Filters */}
+      <div className="flex gap-2 flex-wrap mb-4">
+        <select value={filterStage} onChange={e => setFilterStage(e.target.value)}
+          className="border rounded-lg px-3 py-1.5 text-sm" style={{ borderColor: '#A7ADA7' }}>
+          <option value="all">Todos os estágios</option>
+          {PIPELINE_STAGES.map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
+        <select value={filterType} onChange={e => setFilterType(e.target.value)}
+          className="border rounded-lg px-3 py-1.5 text-sm" style={{ borderColor: '#A7ADA7' }}>
+          <option value="all">Todos os tipos</option>
+          {CRM_TYPES.filter(t => t.value !== "Custom").map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+        </select>
+      </div>
+
       {/* Thesis selector */}
       <div className="flex gap-2 overflow-x-auto pb-2 mb-6">
         {theses.map(t => (
