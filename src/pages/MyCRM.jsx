@@ -63,7 +63,8 @@ export default function MyCRM() {
 
   const addTask = async () => {
     if (!newTask.trim() || !selected) return;
-    const t = await base44.entities.CRMTask.create({ project_id: selected.id, corporate_id: selected.corporate_id, title: newTask.trim() });
+    const me = await base44.auth.me();
+    const t = await base44.entities.CRMTask.create({ project_id: selected.id, corporate_id: selected.corporate_id, title: newTask.trim(), created_by_name: me.full_name || me.email });
     setTasks(prev => [...prev, t]);
     setNewTask("");
   };
