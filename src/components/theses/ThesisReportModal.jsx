@@ -187,7 +187,7 @@ Responda em JSON:
               )}
 
               <div className="flex justify-end gap-2 pt-2">
-                <Button variant="outline" onClick={() => setReport(null)} size="sm">
+                <Button variant="outline" onClick={() => { setReport(null); generateReport(true); }} size="sm">
                   Regenerar
                 </Button>
                 <Button onClick={onClose} size="sm" className="text-white" style={{ background: '#E10867', border: 'none' }}>
