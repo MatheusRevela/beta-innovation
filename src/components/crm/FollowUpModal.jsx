@@ -27,6 +27,7 @@ export default function FollowUpModal({ project, onClose }) {
   const addFollowUp = async () => {
     if (!title.trim() || !date) return;
     setSaving(true);
+    const me = await base44.auth.me();
     const t = await base44.entities.CRMTask.create({
       project_id: project.id,
       corporate_id: project.corporate_id,
@@ -35,6 +36,7 @@ export default function FollowUpModal({ project, onClose }) {
       due_date: date,
       status: "pending",
       priority: "medium",
+      created_by_name: me.full_name || me.email,
     });
     setFollowups(prev => [...prev, t].sort((a, b) => new Date(a.due_date) - new Date(b.due_date)));
     setTitle(""); setDate(""); setNotes("");
