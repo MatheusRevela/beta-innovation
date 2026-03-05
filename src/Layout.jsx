@@ -24,6 +24,7 @@ const NAV_ITEMS = {
     { label: "Corporates", icon: Building2, page: "CorporateManagement" },
     { label: "CRM Board", icon: Briefcase, page: "CRMBoard" },
     { label: "Relatórios", icon: BarChart3, page: "Reports" },
+    { label: "Corporate Detail", icon: Building2, page: "CorporateDetail" },
     { label: "Audit Log", icon: FileText, page: "AuditLogs" },
   ],
   user: [
