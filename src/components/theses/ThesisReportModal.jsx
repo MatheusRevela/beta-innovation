@@ -68,7 +68,7 @@ Responda em JSON:
           <div>
             <h2 className="font-bold text-lg flex items-center gap-2" style={{ color: '#111111' }}>
               <FileText className="w-5 h-5" style={{ color: '#E10867' }} />
-              Relatório da Tese #{thesis.id?.slice(-6)}
+              Relatório de Inovação — {corporate?.company_name || "Empresa"}
             </h2>
             <p className="text-xs mt-0.5" style={{ color: '#4B4F4B' }}>
               {format(new Date(thesis.created_date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
