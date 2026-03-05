@@ -6,7 +6,7 @@ import PageHeader from "@/components/shared/PageHeader";
 import { MaturityBadge } from "@/components/shared/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, Search, Eye, Zap } from "lucide-react";
+import { Loader2, Search, Eye, Zap, ChevronRight } from "lucide-react";
 
 export default function CorporateManagement() {
   const [corporates, setCorporates] = useState([]);
