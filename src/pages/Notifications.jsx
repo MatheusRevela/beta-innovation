@@ -214,6 +214,11 @@ export default function Notifications() {
                     textDecoration: isDone ? 'line-through' : 'none' }}>
                     {fu.title}
                   </p>
+                  {fu.created_by_name && (
+                    <p className="text-xs mt-0.5" style={{ color: '#A7ADA7' }}>
+                      Criado por <span className="font-medium" style={{ color: '#4B4F4B' }}>{fu.created_by_name}</span>
+                    </p>
+                  )}
                   {fu.notes && (
                     <p className="text-xs mt-0.5" style={{ color: '#4B4F4B' }}>{fu.notes}</p>
                   )}
