@@ -262,6 +262,7 @@ Responda em JSON:
     const startup = startups[crmModal.startup_id];
     const matchId = crmModal.id;
     const effectiveCorporateId = urlCorporateId || resolvedCorpId || hookCorporateId;
+    const me = await base44.auth.me();
     await Promise.all([
       base44.entities.CRMProject.create({
         corporate_id: effectiveCorporateId,
@@ -273,7 +274,8 @@ Responda em JSON:
         custom_type_label: crmForm.custom_type_label,
         description: crmForm.description,
         fit_score: crmModal.fit_score,
-        include_in_super_crm: true
+        include_in_super_crm: true,
+        added_by_name: me.full_name || me.email,
       }),
       base44.entities.StartupMatch.update(matchId, { added_to_crm: true }),
     ]);
