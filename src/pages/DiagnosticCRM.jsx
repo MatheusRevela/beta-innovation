@@ -29,8 +29,7 @@ export default function DiagnosticCRM() {
   const [loading, setLoading] = useState(true);
   const [loadingProjects, setLoadingProjects] = useState(false);
   const [selected, setSelected] = useState(null);
-  const [tasks, setTasks] = useState([]);
-  const [newTask, setNewTask] = useState("");
+  const [showTaskDrawer, setShowTaskDrawer] = useState(false);
   const [movingStage, setMovingStage] = useState(null);
   const [togglingCrm, setTogglingCrm] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
