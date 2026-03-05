@@ -452,6 +452,11 @@ export default function DiagnosticCRM() {
                     selected.include_in_super_crm === false ? <ToggleLeft className="w-3.5 h-3.5" /> : <ToggleRight className="w-3.5 h-3.5" />}
                   {selected.include_in_super_crm === false ? "Off SuperCRM" : "No SuperCRM"}
                 </Button>
+                <Button size="sm" variant="outline"
+                  onClick={() => deleteProject(selected)}
+                  className="gap-1.5 text-xs" style={{ borderColor: '#A7ADA7', color: '#A7ADA7' }}>
+                  <Trash2 className="w-3.5 h-3.5" />
+                </Button>
               </div>
             </div>
 
