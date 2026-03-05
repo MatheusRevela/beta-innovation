@@ -14,8 +14,6 @@ export default function MyCRM() {
   const [startups, setStartups] = useState({});
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(null);
-  const [tasks, setTasks] = useState([]);
-  const [newTask, setNewTask] = useState("");
   const [movingStage, setMovingStage] = useState(null);
   const [filterStage, setFilterStage] = useState("all");
   const [filterType, setFilterType] = useState("all");
