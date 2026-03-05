@@ -277,6 +277,13 @@ export default function MyCRM() {
                       )}
                     </div>
 
+                    {selected.added_by_name && (
+                      <div className="flex items-center gap-1.5 text-xs mb-3" style={{ color: '#A7ADA7' }}>
+                        <span>Adicionada por:</span>
+                        <span className="font-medium" style={{ color: '#4B4F4B' }}>{selected.added_by_name}</span>
+                      </div>
+                    )}
+
                     {/* Description */}
                     {s.description && (
                       <p className="text-sm mb-3 leading-relaxed" style={{ color: '#4B4F4B' }}>{s.description}</p>
