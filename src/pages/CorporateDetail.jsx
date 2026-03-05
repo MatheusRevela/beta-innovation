@@ -3,13 +3,14 @@ import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { MaturityBadge, StageBadge } from "@/components/shared/StatusBadge";
 import { PIPELINE_STAGES, STAGE_COLORS, CRM_TYPES } from "@/components/ui/DesignTokens";
 import TaskDrawer from "@/components/crm/TaskDrawer";
 import {
   Loader2, ArrowLeft, Building2, Zap, Users, Briefcase, Star, Map,
   ExternalLink, Eye, EyeOff, Shield, User, Trash2, X, ChevronRight,
-  Lightbulb, CheckCircle2, Calendar
+  Lightbulb, CheckCircle2, Calendar, Plus, Check, Clock, Mail
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
