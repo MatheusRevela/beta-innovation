@@ -34,6 +34,8 @@ export default function DiagnosticCRM() {
   const [togglingCrm, setTogglingCrm] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showFollowUp, setShowFollowUp] = useState(false);
+  const [filterStage, setFilterStage] = useState("all");
+  const [filterType, setFilterType] = useState("all");
 
   useEffect(() => {
     if (!accessLoading && corporateId) loadData();
