@@ -53,6 +53,7 @@ export default function CorporateDetail() {
   const [savingId, setSavingId] = useState(null);
 
   useEffect(() => {
+    base44.auth.me().then(u => setCurrentUser(u)).catch(() => {});
     if (corporateId) loadAll();
   }, [corporateId]);
 
@@ -75,6 +76,7 @@ export default function CorporateDetail() {
     ss.forEach(s => { sMap[s.id] = s; });
     setStartups(sMap);
     setMembers(mems.filter(m => m.status === "active"));
+    setPendingRequests(mems.filter(m => m.status === "pending"));
     const mMap = {};
     ms.forEach(m => {
       if (!mMap[m.startup_id] || (m.fit_score || 0) > (mMap[m.startup_id].fit_score || 0)) {
@@ -83,6 +85,60 @@ export default function CorporateDetail() {
     });
     setMatches(mMap);
     setLoading(false);
+  };
+
+  const inviteMember = async () => {
+    const email = inviteEmail.trim().toLowerCase();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
+    setInviting(true);
+    const existing = members.find(m => m.email?.toLowerCase() === email) ||
+      pendingRequests.find(m => m.email?.toLowerCase() === email);
+    if (!existing) {
+      const newMember = await base44.entities.CorporateMember.create({
+        corporate_id: corporateId,
+        email,
+        role: inviteRole,
+        super_crm_access: true,
+        status: "active",
+        invited_by: currentUser?.email
+      });
+      base44.users.inviteUser(email, "user").catch(() => {});
+      setMembers(prev => [...prev, newMember]);
+    }
+    setInviteEmail("");
+    setInviting(false);
+  };
+
+  const toggleSuperCRM = async (mem) => {
+    setSavingId(mem.id);
+    const updated = await base44.entities.CorporateMember.update(mem.id, { super_crm_access: !mem.super_crm_access });
+    setMembers(prev => prev.map(m => m.id === updated.id ? updated : m));
+    setSavingId(null);
+  };
+
+  const changeRole = async (mem, role) => {
+    setSavingId(mem.id);
+    const updated = await base44.entities.CorporateMember.update(mem.id, { role });
+    setMembers(prev => prev.map(m => m.id === updated.id ? updated : m));
+    setSavingId(null);
+  };
+
+  const removeMember = async (mem) => {
+    await base44.entities.CorporateMember.delete(mem.id);
+    setMembers(prev => prev.filter(m => m.id !== mem.id));
+  };
+
+  const approveRequest = async (req) => {
+    setSavingId(req.id);
+    const updated = await base44.entities.CorporateMember.update(req.id, { status: "active" });
+    setPendingRequests(prev => prev.filter(r => r.id !== req.id));
+    setMembers(prev => [...prev, updated]);
+    setSavingId(null);
+  };
+
+  const rejectRequest = async (req) => {
+    await base44.entities.CorporateMember.update(req.id, { status: "rejected" });
+    setPendingRequests(prev => prev.filter(r => r.id !== req.id));
   };
 
   const moveStage = async (proj, stage) => {
