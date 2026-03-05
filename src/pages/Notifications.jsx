@@ -23,28 +23,37 @@ export default function Notifications() {
   const [tab, setTab] = useState("today");
   const [completing, setCompleting] = useState(null);
 
+  const [me, setMe] = useState(null);
+  const [myMembership, setMyMembership] = useState(null);
+
   useEffect(() => { loadData(); }, []);
 
   const loadData = async () => {
     setLoading(true);
-    const me = await base44.auth.me();
+    const currentUser = await base44.auth.me();
+    setMe(currentUser);
 
     // Resolve corporate via CorporateMember (novo sistema) ou fallback legado
-    const memberships = await base44.entities.CorporateMember.filter({ email: me.email, status: "active" });
+    const memberships = await base44.entities.CorporateMember.filter({ email: currentUser.email, status: "active" });
     let corp = null;
+    let membership = null;
     if (memberships.length > 0) {
+      membership = memberships[0];
       const corps = await base44.entities.Corporate.filter({ id: memberships[0].corporate_id });
       corp = corps[0] || null;
     } else {
       const [corpsByEmail, corpsByCreator] = await Promise.all([
-        base44.entities.Corporate.filter({ contact_email: me.email }),
-        base44.entities.Corporate.filter({ created_by: me.email }),
+        base44.entities.Corporate.filter({ contact_email: currentUser.email }),
+        base44.entities.Corporate.filter({ created_by: currentUser.email }),
       ]);
       const seen = new Set();
       corp = [...corpsByEmail, ...corpsByCreator].filter(c => seen.has(c.id) ? false : seen.add(c.id))[0] || null;
     }
+    setMyMembership(membership);
 
     if (!corp) { setLoading(false); return; }
+
+    const isManager = currentUser.role === 'admin' || membership?.role === 'gestor';
 
     const [allTasks, allProjects, allStartups] = await Promise.all([
       base44.entities.CRMTask.filter({ corporate_id: corp.id }),
@@ -52,7 +61,12 @@ export default function Notifications() {
       base44.entities.Startup.filter({ is_deleted: false }),
     ]);
 
-    const fus = allTasks.filter(t => t.due_date);
+    // Managers see all; regular users see only their own tasks
+    const visibleTasks = isManager
+      ? allTasks
+      : allTasks.filter(t => !t.created_by_name || t.created_by_name === (currentUser.full_name || currentUser.email) || t.created_by === currentUser.email);
+
+    const fus = visibleTasks.filter(t => t.due_date);
     setFollowups(fus.sort((a, b) => new Date(a.due_date) - new Date(b.due_date)));
 
     const projMap = {};
