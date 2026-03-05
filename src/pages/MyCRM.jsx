@@ -217,7 +217,13 @@ export default function MyCRM() {
             <div className="p-6">
               <div className="flex items-center justify-between mb-5">
                 <h2 className="font-bold text-lg" style={{ color: '#111111' }}>{selected.project_name}</h2>
-                <button onClick={() => setSelected(null)}><X className="w-5 h-5" style={{ color: '#A7ADA7' }} /></button>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => deleteProject(selected)}
+                    className="p-1.5 rounded-lg hover:bg-red-50 transition-colors" title="Remover do CRM">
+                    <Trash2 className="w-4 h-4" style={{ color: '#A7ADA7' }} />
+                  </button>
+                  <button onClick={() => setSelected(null)}><X className="w-5 h-5" style={{ color: '#A7ADA7' }} /></button>
+                </div>
               </div>
               <StageBadge stage={selected.stage} />
 
