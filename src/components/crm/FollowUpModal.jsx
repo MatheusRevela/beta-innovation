@@ -138,6 +138,11 @@ export default function FollowUpModal({ project, onClose }) {
                     <p className="text-xs flex items-center gap-1 mt-0.5" style={getDateStyle(fu)}>
                       <Calendar className="w-3 h-3" /> {getDateLabel(fu)}
                     </p>
+                    {fu.created_by_name && (
+                      <p className="text-xs mt-0.5" style={{ color: '#A7ADA7' }}>
+                        por <span style={{ color: '#4B4F4B' }}>{fu.created_by_name}</span>
+                      </p>
+                    )}
                     {fu.notes && (
                       <p className="text-xs mt-1" style={{ color: '#4B4F4B' }}>{fu.notes}</p>
                     )}
