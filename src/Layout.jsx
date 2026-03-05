@@ -172,7 +172,7 @@ export default function Layout({ children, currentPageName }) {
           )}
           <div className="flex gap-1">
             <button
-              onClick={() => base44.auth.logout()}
+              onClick={() => base44.auth.logout(createPageUrl("Home"))}
               className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-all text-xs"
               title="Sair"
             >
