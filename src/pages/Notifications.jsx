@@ -143,6 +143,21 @@ export default function Notifications() {
         </div>
       </div>
 
+      {/* Status filter */}
+      <div className="flex gap-2 mb-4">
+        {[{ key: "pending", label: "Pendentes" }, { key: "resolved", label: "Resolvidos" }, { key: "all", label: "Todos" }].map(s => (
+          <button key={s.key} onClick={() => setStatusFilter(s.key)}
+            className="px-4 py-1.5 rounded-full text-sm font-medium transition-all border"
+            style={{
+              background: statusFilter === s.key ? '#111111' : '#fff',
+              color: statusFilter === s.key ? '#fff' : '#4B4F4B',
+              borderColor: statusFilter === s.key ? '#111111' : '#ECEEEA',
+            }}>
+            {s.label}
+          </button>
+        ))}
+      </div>
+
       {/* Tabs */}
       <div className="flex gap-1 bg-white rounded-xl border p-1 mb-6 overflow-x-auto" style={{ borderColor: '#ECEEEA' }}>
         {TABS.map(t => (
