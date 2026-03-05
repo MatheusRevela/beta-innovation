@@ -499,6 +499,13 @@ export default function DiagnosticCRM() {
                 </div>
               )}
 
+              {selected.added_by_name && (
+                <div className="flex items-center gap-1.5 text-xs" style={{ color: '#A7ADA7' }}>
+                  <span>Adicionada por:</span>
+                  <span className="font-medium" style={{ color: '#4B4F4B' }}>{selected.added_by_name}</span>
+                </div>
+              )}
+
               {selected.description && (
                 <p className="text-sm" style={{ color: '#4B4F4B' }}>{selected.description}</p>
               )}
