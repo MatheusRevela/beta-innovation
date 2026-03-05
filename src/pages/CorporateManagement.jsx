@@ -97,20 +97,12 @@ export default function CorporateManagement() {
                       )}
                     </td>
                     <td className="p-3">
-                      <div className="flex gap-1">
-                        {sess && (
-                          <Link to={createPageUrl("Diagnostic") + `?session_id=${sess.id}&corporate_id=${corp.id}`}>
-                            <button className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors" title="Ver diagnóstico">
-                              <Zap className="w-3.5 h-3.5" style={{ color: '#E10867' }} />
-                            </button>
-                          </Link>
-                        )}
-                        <Link to={createPageUrl("StartupRadar") + `?corporate_id=${corp.id}${sess ? `&session_id=${sess.id}` : ""}`}>
-                          <button className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors" title="Ver radar">
-                            <Eye className="w-3.5 h-3.5" style={{ color: '#A7ADA7' }} />
-                          </button>
-                        </Link>
-                      </div>
+                      <Link to={createPageUrl("CorporateDetail") + `?corporate_id=${corp.id}`}>
+                        <button className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium border hover:bg-gray-50 transition-colors"
+                          style={{ borderColor: '#A7ADA7', color: '#4B4F4B' }}>
+                          Ver detalhes <ChevronRight className="w-3.5 h-3.5" />
+                        </button>
+                      </Link>
                     </td>
                   </tr>
                 );
