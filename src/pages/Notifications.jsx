@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Bell, Calendar, Check, Loader2, ChevronRight, Clock, AlertTriangle } from "lucide-react";
+import { Bell, Calendar, Check, Loader2, ChevronRight, Clock, AlertTriangle, User, Tag } from "lucide-react";
 import { format, isToday, isThisWeek, isThisMonth, isPast, startOfDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { createPageUrl } from "@/utils";
