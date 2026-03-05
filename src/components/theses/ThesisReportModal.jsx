@@ -7,9 +7,13 @@ import { ptBR } from "date-fns/locale";
 
 export default function ThesisReportModal({ thesis, corporate, onClose }) {
   const [loading, setLoading] = useState(false);
-  const [report, setReport] = useState(null);
+  const [report, setReport] = useState(thesis.cached_report || null);
 
-  const generateReport = async () => {
+  const generateReport = async (force = false) => {
+    if (!force && thesis.cached_report) {
+      setReport(thesis.cached_report);
+      return;
+    }
     setLoading(true);
     const prompt = `Você é um analista de inovação estratégica da Beta-i.
 
