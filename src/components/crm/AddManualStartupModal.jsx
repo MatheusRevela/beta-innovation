@@ -38,6 +38,7 @@ export default function AddManualStartupModal({ thesis, corporate, onClose, onAd
   const save = async () => {
     setSaving(true);
     let startupId = selected?.id;
+    const me = await base44.auth.me();
 
     if (tab === "manual") {
       if (!manualName.trim()) { setSaving(false); return; }
@@ -63,6 +64,7 @@ export default function AddManualStartupModal({ thesis, corporate, onClose, onAd
       custom_type_label: type === "Custom" ? customType : undefined,
       stage,
       include_in_super_crm: true,
+      added_by_name: me.full_name || me.email,
     });
     setSaving(false);
     onAdded(proj, startupId, tab === "manual" ? { id: startupId, name: manualName, category: manualCategory } : selected);
