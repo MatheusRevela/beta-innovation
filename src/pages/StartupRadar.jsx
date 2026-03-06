@@ -257,7 +257,7 @@ Responda em JSON:
       matchData = { matches: [] };
     }
 
-    const validMatches = (matchData?.matches || []).slice(0, 30).filter(m => startupMap[m.startup_id]);
+    const validMatches = (matchData?.matches || []).slice(0, 50).filter(m => startupMap[m.startup_id]);
     const savedMatches = await Promise.all(
       validMatches.map(m => base44.entities.StartupMatch.create({
         corporate_id: corpId,
