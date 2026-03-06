@@ -208,12 +208,30 @@ TESE DE INOVAÇÃO DA EMPRESA:
 ${th.thesis_text}
 Macrocategorias: ${(th.macro_categories || []).join(", ")}
 Prioridades: ${(th.top_priorities || []).join(", ")}
-Tags: ${(th.tags || []).join(", ")}
+Tags da tese: ${(th.tags || []).join(", ")}
+Setores: ${(th.sectors || []).join(", ")}
 
 STARTUPS PRÉ-SELECIONADAS (candidatos com maior potencial):
 ${startupSummaries}
 
-Analise cada startup em profundidade e selecione as TOP 30-50 com maior fit real com a tese. Para cada uma, atribua um score de fit (0-100), category_match (qual macrocategoria da tese ela atende), razões de fit e pontos de atenção.
+METODOLOGIA DE SCORING OBRIGATÓRIA:
+Para cada startup, calcule o fit_score (0-100) usando EXATAMENTE os seguintes pesos ponderados:
+
+1. ALINHAMENTO DE TAGS (peso 50%): Avalie 0-100 a sobreposição semântica entre as tags/categoria/vertical da startup e as tags/macrocategorias da tese. Considere sinônimos e termos relacionados. Startups sem nenhuma tag relevante devem receber ≤20 neste critério.
+
+2. RELEVÂNCIA DO MODELO DE NEGÓCIO (peso 30%): Avalie 0-100 se o modelo de negócio da startup (SaaS, Marketplace, Hardware, etc.) e seu setor são compatíveis com os objetivos estratégicos e prioridades da tese. Considere o estágio da startup e viabilidade de parceria corporativa.
+
+3. POTENCIAL DE IMPACTO TECNOLÓGICO (peso 20%): Avalie 0-100 o potencial desta startup de gerar impacto tecnológico real e inovação incremental ou disruptiva para a empresa, baseado na descrição da solução e das prioridades estratégicas da tese.
+
+CÁLCULO: fit_score = (score_tags × 0.50) + (score_modelo × 0.30) + (score_impacto × 0.20)
+Arredonde para inteiro. Inclua apenas startups com fit_score ≥ 40.
+Selecione as TOP 30-50 com maior fit_score final.
+
+Para cada startup selecionada, forneça:
+- fit_reasons: explique os principais pontos de alinhamento, mencionando especificamente tags coincidentes e o porquê do modelo de negócio ser relevante
+- risk_reasons: aponte lacunas ou incompatibilidades reais
+- tags_matched: liste apenas as tags que realmente coincidem com a tese
+- category_match: qual macrocategoria da tese esta startup atende melhor
 
 Responda em JSON:
 {
@@ -221,6 +239,9 @@ Responda em JSON:
     {
       "startup_id": "string",
       "fit_score": number,
+      "score_tags": number,
+      "score_modelo": number,
+      "score_impacto": number,
       "category_match": "string",
       "fit_reasons": ["reason1", "reason2"],
       "risk_reasons": ["risk1"],
