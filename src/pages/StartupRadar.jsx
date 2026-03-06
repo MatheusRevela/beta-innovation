@@ -264,6 +264,9 @@ Responda em JSON:
                 properties: {
                   startup_id: { type: "string" },
                   fit_score: { type: "number" },
+                  score_tags: { type: "number" },
+                  score_modelo: { type: "number" },
+                  score_impacto: { type: "number" },
                   category_match: { type: "string" },
                   fit_reasons: { type: "array", items: { type: "string" } },
                   risk_reasons: { type: "array", items: { type: "string" } },
