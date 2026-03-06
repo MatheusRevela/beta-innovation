@@ -153,8 +153,53 @@ Responda em JSON:
     allStartups.forEach(s => { startupMap[s.id] = s; });
     setStartups(startupMap);
 
-    const startupSummaries = allStartups.slice(0, 200).map(s =>
-      `ID:${s.id} | Nome:${s.name} | Categoria:${s.category || ""} | Vertical:${s.vertical || ""} | Tags:${(s.tags || []).join(",")} | Desc:${(s.description || "").substring(0, 150)}`
+    // ── ESTÁGIO 1: Pré-filtro leve sobre TODAS as startups ──
+    // Envia apenas ID + tags + categoria (compacto) para o LLM selecionar os candidatos mais promissores
+    const thesisContext = `Tese: ${th.thesis_text?.substring(0, 300) || ""}
+Macrocategorias: ${(th.macro_categories || []).join(", ")}
+Prioridades: ${(th.top_priorities || []).join(", ")}
+Tags: ${(th.tags || []).join(", ")}
+Setores: ${(th.sectors || []).join(", ")}`;
+
+    const compactSummaries = allStartups.map(s =>
+      `${s.id}|${s.name}|${s.category || ""}|${s.vertical || ""}|${(s.tags || []).join(",")}`
+    ).join("\n");
+
+    const preFilterPrompt = `Você é especialista em matching de inovação aberta.
+
+TESE DE INOVAÇÃO:
+${thesisContext}
+
+BASE DE STARTUPS (ID|Nome|Categoria|Vertical|Tags):
+${compactSummaries}
+
+Analise TODAS as startups acima e selecione os IDs das TOP 80 com MAIOR potencial de fit com a tese, baseando-se nas tags, categorias e verticais.
+Retorne APENAS os IDs, ordenados do maior para o menor potencial.
+
+Responda em JSON: { "startup_ids": ["id1", "id2", ...] }`;
+
+    let preFilteredIds = [];
+    try {
+      const preFilterResult = await base44.integrations.Core.InvokeLLM({
+        prompt: preFilterPrompt,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            startup_ids: { type: "array", items: { type: "string" } }
+          }
+        }
+      });
+      preFilteredIds = (preFilterResult?.startup_ids || []).filter(id => startupMap[id]);
+    } catch (e) {
+      // Fallback: pega as primeiras 80 se o pré-filtro falhar
+      preFilteredIds = allStartups.slice(0, 80).map(s => s.id);
+    }
+
+    // ── ESTÁGIO 2: Análise detalhada apenas nas startups pré-selecionadas ──
+    const candidateStartups = preFilteredIds.slice(0, 80).map(id => startupMap[id]).filter(Boolean);
+
+    const startupSummaries = candidateStartups.map(s =>
+      `ID:${s.id} | Nome:${s.name} | Categoria:${s.category || ""} | Vertical:${s.vertical || ""} | Tags:${(s.tags || []).join(",")} | Desc:${(s.description || "").substring(0, 200)}`
     ).join("\n");
 
     const matchPrompt = `Você é um especialista em inovação aberta e matching tese-startup.
@@ -165,10 +210,10 @@ Macrocategorias: ${(th.macro_categories || []).join(", ")}
 Prioridades: ${(th.top_priorities || []).join(", ")}
 Tags: ${(th.tags || []).join(", ")}
 
-STARTUPS DISPONÍVEIS (ativas):
+STARTUPS PRÉ-SELECIONADAS (candidatos com maior potencial):
 ${startupSummaries}
 
-Selecione as TOP 20-30 startups com maior fit com a tese. Para cada uma, atribua um score de fit (0-100), category_match (qual macrocategoria da tese ela atende) e reasons.
+Analise cada startup em profundidade e selecione as TOP 20-30 com maior fit real com a tese. Para cada uma, atribua um score de fit (0-100), category_match (qual macrocategoria da tese ela atende), razões de fit e pontos de atenção.
 
 Responda em JSON:
 {

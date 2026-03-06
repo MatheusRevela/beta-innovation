@@ -51,6 +51,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminLogin from './pages/AdminLogin';
 import AuditLogs from './pages/AuditLogs';
 import CRMBoard from './pages/CRMBoard';
+import CorporateDetail from './pages/CorporateDetail';
 import CorporateManagement from './pages/CorporateManagement';
 import Dashboard from './pages/Dashboard';
 import Diagnostic from './pages/Diagnostic';
@@ -66,7 +67,6 @@ import Reports from './pages/Reports';
 import StartupManagement from './pages/StartupManagement';
 import StartupRadar from './pages/StartupRadar';
 import TeamManagement from './pages/TeamManagement';
-import CorporateDetail from './pages/CorporateDetail';
 import __Layout from './Layout.jsx';
 
 
@@ -75,6 +75,7 @@ export const PAGES = {
     "AdminLogin": AdminLogin,
     "AuditLogs": AuditLogs,
     "CRMBoard": CRMBoard,
+    "CorporateDetail": CorporateDetail,
     "CorporateManagement": CorporateManagement,
     "Dashboard": Dashboard,
     "Diagnostic": Diagnostic,
@@ -90,7 +91,6 @@ export const PAGES = {
     "StartupManagement": StartupManagement,
     "StartupRadar": StartupRadar,
     "TeamManagement": TeamManagement,
-    "CorporateDetail": CorporateDetail,
 }
 
 export const pagesConfig = {
