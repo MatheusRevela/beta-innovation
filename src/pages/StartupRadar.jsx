@@ -191,12 +191,12 @@ Responda em JSON: { "startup_ids": ["id1", "id2", ...] }`;
       });
       preFilteredIds = (preFilterResult?.startup_ids || []).filter(id => startupMap[id]);
     } catch (e) {
-      // Fallback: pega as primeiras 80 se o pré-filtro falhar
-      preFilteredIds = allStartups.slice(0, 80).map(s => s.id);
+      // Fallback: pega as primeiras 120 se o pré-filtro falhar
+      preFilteredIds = allStartups.slice(0, 120).map(s => s.id);
     }
 
     // ── ESTÁGIO 2: Análise detalhada apenas nas startups pré-selecionadas ──
-    const candidateStartups = preFilteredIds.slice(0, 80).map(id => startupMap[id]).filter(Boolean);
+    const candidateStartups = preFilteredIds.slice(0, 120).map(id => startupMap[id]).filter(Boolean);
 
     const startupSummaries = candidateStartups.map(s =>
       `ID:${s.id} | Nome:${s.name} | Categoria:${s.category || ""} | Vertical:${s.vertical || ""} | Tags:${(s.tags || []).join(",")} | Desc:${(s.description || "").substring(0, 200)}`
