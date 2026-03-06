@@ -213,7 +213,7 @@ Tags: ${(th.tags || []).join(", ")}
 STARTUPS PRÉ-SELECIONADAS (candidatos com maior potencial):
 ${startupSummaries}
 
-Analise cada startup em profundidade e selecione as TOP 20-30 com maior fit real com a tese. Para cada uma, atribua um score de fit (0-100), category_match (qual macrocategoria da tese ela atende), razões de fit e pontos de atenção.
+Analise cada startup em profundidade e selecione as TOP 30-50 com maior fit real com a tese. Para cada uma, atribua um score de fit (0-100), category_match (qual macrocategoria da tese ela atende), razões de fit e pontos de atenção.
 
 Responda em JSON:
 {
