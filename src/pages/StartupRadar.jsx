@@ -173,7 +173,7 @@ ${thesisContext}
 BASE DE STARTUPS (ID|Nome|Categoria|Vertical|Tags):
 ${compactSummaries}
 
-Analise TODAS as startups acima e selecione os IDs das TOP 80 com MAIOR potencial de fit com a tese, baseando-se nas tags, categorias e verticais.
+Analise TODAS as startups acima e selecione os IDs das TOP 120 com MAIOR potencial de fit com a tese, baseando-se nas tags, categorias e verticais.
 Retorne APENAS os IDs, ordenados do maior para o menor potencial.
 
 Responda em JSON: { "startup_ids": ["id1", "id2", ...] }`;
