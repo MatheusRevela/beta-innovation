@@ -108,7 +108,6 @@ Retorne:
       target_customers: data.target_customers,
       ai_enriched: localLab.ai_enriched || !!result,
       ai_enriched_at: localLab.ai_enriched_at,
-      enrichment_status: localLab.ai_enriched || result ? "done" : "pending",
       is_active: false,
       is_deleted: false,
       enrichment_status: "pending"
