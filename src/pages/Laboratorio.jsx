@@ -27,6 +27,8 @@ export default function Laboratorio() {
   const [savingManual, setSavingManual] = useState(false);
   const [enrichingAll, setEnrichingAll] = useState(false);
   const [enrichingProgress, setEnrichingProgress] = useState({ done: 0, total: 0 });
+  const [selected, setSelected] = useState(new Set());
+  const [deletingBulk, setDeletingBulk] = useState(false);
 
   useEffect(() => { loadLabs(); }, []);
 
