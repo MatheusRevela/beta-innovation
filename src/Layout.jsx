@@ -20,6 +20,7 @@ const NAV_ITEMS = {
     { label: "SuperCRM", icon: Briefcase, page: "MyCRM" },
     { label: "Notificações", icon: Bell, page: "Notifications" },
     { section: "Gestão" },
+    { label: "Laboratório", icon: FlaskConical, page: "Laboratorio" },
     { label: "Startups", icon: Database, page: "StartupManagement" },
     { label: "Corporates", icon: Building2, page: "CorporateManagement" },
     { label: "CRM Board", icon: Briefcase, page: "CRMBoard" },
