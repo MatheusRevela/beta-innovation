@@ -61,7 +61,7 @@ Inclua: termos técnicos, verticais de mercado, tecnologias usadas, problemas re
         properties: {
           name: { type: "string" },
           description: { type: "string" },
-          category: { type: "string" },
+          category: { type: "string", enum: ["Agtech","Biotech","Cibersegurança","Comunicação","Construtech","Deeptech","Edtech","Energtech","ESG","Fashiotech","Fintech","Foodtech","Games","Govtech","Greentech","Healthtech","HRtech","IndTech","Insurtech","Legaltech","Logtech","Martech","Midiatech","Mobilidade","Pettech","Proptech","Real Estate","Regtech","Retailtech","Salestech","Security","Sportech","Supply Chain","Traveltech","Web3"] },
           vertical: { type: "string" },
           business_model: { type: "string", enum: ["SaaS", "Hardware", "Marketplace", "Serviço", "Plataforma", "Outro"] },
           stage: { type: "string", enum: ["Ideação", "MVP", "PMF", "Scale", "Growth"] },
