@@ -36,7 +36,7 @@ Dados existentes: ${JSON.stringify({ category: localLab.category, description: l
 
 Retorne:
 - description: resumo executivo claro e direto de 2-3 frases sobre o que a startup faz e qual problema resolve
-- category: categoria principal (ex: HealthTech, FinTech, AgTech, EdTech, CleanTech, LogTech, HRTech, LegalTech, RetailTech, PropTech, etc.)
+- category: categoria principal — escolha EXATAMENTE uma destas opções: Agtech, Biotech, Cibersegurança, Comunicação, Construtech, Deeptech, Edtech, Energtech, ESG, Fashiotech, Fintech, Foodtech, Games, Govtech, Greentech, Healthtech, HRtech, IndTech, Insurtech, Legaltech, Logtech, Martech, Midiatech, Mobilidade, Pettech, Proptech, Real Estate, Regtech, Retailtech, Salestech, Security, Sportech, Supply Chain, Traveltech, Web3
 - vertical: vertical específica dentro da categoria (ex: "Telemedicina", "Open Banking", "Precision Agriculture")
 - business_model: um de ["SaaS", "Hardware", "Marketplace", "Serviço", "Plataforma", "Outro"]
 - stage: um de ["Ideação", "MVP", "PMF", "Scale", "Growth"]
