@@ -109,8 +109,9 @@ Retorne:
       ai_enriched: localLab.ai_enriched || !!result,
       ai_enriched_at: localLab.ai_enriched_at,
       enrichment_status: localLab.ai_enriched || result ? "done" : "pending",
-      is_active: true,
-      is_deleted: false
+      is_active: false,
+      is_deleted: false,
+      enrichment_status: "pending"
     });
 
     await base44.entities.LabStartup.update(localLab.id, {
