@@ -29,10 +29,10 @@ export default function LabStartupCard({ lab, onEnriched, onPromoted, onDeleted,
     setEnriching(true);
     setResult(null);
     const res = await base44.integrations.Core.InvokeLLM({
-      prompt: `Você é um analista de inovação especialista em ecossistema de startups.
+      prompt: `Você é um analista de inovação especialista em ecossistema de startups. 
 Analise a startup "${localLab.name}" e gere um enriquecimento completo dos dados.
 ${localLab.website ? `Site oficial: ${localLab.website}.` : ""}
-${localLab.description ? `Descrição existente: ${localLab.description}.` : ""}
+Dados existentes: ${JSON.stringify({ category: localLab.category, description: localLab.description, tags: localLab.tags, business_model: localLab.business_model, stage: localLab.stage })}.
 
 Retorne:
 - description: resumo executivo claro e direto de 2-3 frases sobre o que a startup faz e qual problema resolve
@@ -40,7 +40,7 @@ Retorne:
 - vertical: vertical específica dentro da categoria (ex: "Telemedicina", "Open Banking", "Precision Agriculture")
 - business_model: um de ["SaaS", "Hardware", "Marketplace", "Serviço", "Plataforma", "Outro"]
 - stage: um de ["Ideação", "MVP", "PMF", "Scale", "Growth"]
-- tags: array de PELO MENOS 15 palavras-chave relevantes para matching com corporações
+- tags: array de PELO MENOS 15 palavras-chave relevantes para matching com corporações. Inclua: termos técnicos, verticais de mercado, tecnologias usadas, problemas resolvidos, setores atendidos, modelos de negócio, tipo de cliente, palavras-chave do produto e tendências relacionadas (em português ou inglês)
 - keywords: array de 3-5 problemas que a startup resolve (frases curtas)
 - target_customers: quem são os clientes ideais (1 frase)
 - value_proposition: proposta de valor central (1 frase objetiva)
@@ -63,6 +63,7 @@ Retorne:
       }
     });
 
+    // Save same fields as Startup entity + lab-specific display fields
     const safeRes = {
       description: res.description,
       category: res.category,
