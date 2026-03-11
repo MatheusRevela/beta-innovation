@@ -167,7 +167,11 @@ Inclua: termos técnicos, verticais de mercado, tecnologias usadas, problemas re
             </div>
             <div>
               <Label>Categoria</Label>
-              <Input value={form.category} onChange={e => update("category", e.target.value)} placeholder="Ex: HealthTech" />
+              <select value={form.category} onChange={e => update("category", e.target.value)}
+                className="w-full border rounded-md px-3 py-2 text-sm" style={{ borderColor: '#A7ADA7' }}>
+                <option value="">Selecionar</option>
+                {FIELDS.category.map(v => <option key={v} value={v}>{v}</option>)}
+              </select>
             </div>
             <div>
               <Label>Vertical</Label>
