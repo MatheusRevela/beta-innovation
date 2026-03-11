@@ -6,6 +6,15 @@ import { Label } from "@/components/ui/label";
 import { X, Loader2, Sparkles, Globe } from "lucide-react";
 
 const FIELDS = {
+  category: [
+    "Agtech", "Biotech", "Cibersegurança", "Comunicação", "Construtech",
+    "Deeptech", "Edtech", "Energtech", "ESG", "Fashiotech", "Fintech",
+    "Foodtech", "Games", "Govtech", "Greentech", "Healthtech", "HRtech",
+    "IndTech", "Insurtech", "Legaltech", "Logtech", "Martech", "Midiatech",
+    "Mobilidade", "Pettech", "Proptech", "Real Estate", "Regtech",
+    "Retailtech", "Salestech", "Security", "Sportech", "Supply Chain",
+    "Traveltech", "Web3"
+  ],
   business_model: ["SaaS", "Hardware", "Marketplace", "Serviço", "Plataforma", "Outro"],
   stage: ["Ideação", "MVP", "PMF", "Scale", "Growth"],
   price_range: ["Gratuito", "Até R$10k/ano", "R$10k–R$50k/ano", "R$50k–R$200k/ano", "Acima de R$200k/ano"],

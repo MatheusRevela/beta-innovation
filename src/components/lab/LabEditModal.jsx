@@ -4,6 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { base44 } from "@/api/base44Client";
 
+const CATEGORY_OPTIONS = [
+  "Agtech", "Biotech", "Cibersegurança", "Comunicação", "Construtech",
+  "Deeptech", "Edtech", "Energtech", "ESG", "Fashiotech", "Fintech",
+  "Foodtech", "Games", "Govtech", "Greentech", "Healthtech", "HRtech",
+  "IndTech", "Insurtech", "Legaltech", "Logtech", "Martech", "Midiatech",
+  "Mobilidade", "Pettech", "Proptech", "Real Estate", "Regtech",
+  "Retailtech", "Salestech", "Security", "Sportech", "Supply Chain",
+  "Traveltech", "Web3"
+];
 const BM_OPTIONS = ["SaaS", "Hardware", "Marketplace", "Serviço", "Plataforma", "Outro"];
 const STAGE_OPTIONS = ["Ideação", "MVP", "PMF", "Scale", "Growth"];
 
