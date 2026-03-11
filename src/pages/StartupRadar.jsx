@@ -359,6 +359,15 @@ Responda em JSON:
     setSavingCrm(false);
   };
 
+  const toggleCompare = (match, startup) => {
+    setCompareList(prev => {
+      const exists = prev.find(i => i.match.id === match.id);
+      if (exists) return prev.filter(i => i.match.id !== match.id);
+      if (prev.length >= 3) return prev;
+      return [...prev, { match, startup }];
+    });
+  };
+
   const handleAIPriority = (ranked) => {
     const map = {};
     ranked.forEach(r => { map[r.match_id] = r; });
