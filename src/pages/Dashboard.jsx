@@ -17,7 +17,13 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    base44.auth.me().then(setUser);
+    base44.auth.me().then(u => {
+      setUser(u);
+      // Admin users should be on the admin console, not the user portal
+      if (u?.role === "admin") {
+        window.location.replace(createPageUrl("AdminDashboard"));
+      }
+    });
   }, []);
 
   useEffect(() => {
