@@ -56,17 +56,30 @@ Retorne:
       }
     });
 
+    const safeRes = {
+      description: res.description,
+      category: res.category,
+      vertical: res.vertical,
+      business_model: res.business_model,
+      stage: res.stage,
+      tags: res.tags,
+      keywords: res.keywords,
+      target_customers: res.target_customers,
+      value_proposition: res.value_proposition,
+      enrichment_confidence: res.enrichment_confidence,
+    };
+
     await base44.entities.LabStartup.update(lab.id, {
-      ...res,
+      ...safeRes,
       ai_enriched: true,
       ai_enriched_at: new Date().toISOString(),
       status: "enriched"
     });
 
-    setResult(res);
+    setResult(safeRes);
     setExpanded(true);
     setEnriching(false);
-    onEnriched?.({ ...lab, ...res, ai_enriched: true, status: "enriched" });
+    onEnriched?.({ ...lab, ...safeRes, ai_enriched: true, status: "enriched" });
   };
 
   const promote = async () => {
