@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   FlaskConical, Upload, Search, Sparkles, Loader2,
-  Plus, CheckCircle2, Clock, Rocket, RefreshCw
+  Plus, CheckCircle2, Clock, Rocket, Trash2, X
 } from "lucide-react";
 import LabImportModal from "@/components/lab/LabImportModal";
 import LabStartupCard from "@/components/lab/LabStartupCard";
