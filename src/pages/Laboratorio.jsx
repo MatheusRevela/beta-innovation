@@ -88,12 +88,25 @@ Retorne: description (2-3 frases), category, vertical, business_model (SaaS/Hard
             }
           }
         });
+        const safeRes = {
+          description: res.description,
+          category: res.category,
+          vertical: res.vertical,
+          business_model: res.business_model,
+          stage: res.stage,
+          tags: res.tags,
+          keywords: res.keywords,
+          target_customers: res.target_customers,
+          value_proposition: res.value_proposition,
+          enrichment_confidence: res.enrichment_confidence,
+        };
         await base44.entities.LabStartup.update(lab.id, {
-          ...res, ai_enriched: true,
+          ...safeRes,
+          ai_enriched: true,
           ai_enriched_at: new Date().toISOString(),
           status: "enriched"
         });
-        setLabs(prev => prev.map(l => l.id === lab.id ? { ...l, ...res, ai_enriched: true, status: "enriched" } : l));
+        setLabs(prev => prev.map(l => l.id === lab.id ? { ...l, ...safeRes, ai_enriched: true, status: "enriched" } : l));
       } catch (_) { /* continue */ }
       setEnrichingProgress({ done: i + 1, total: pending.length });
     }
