@@ -304,16 +304,29 @@ Retorne: description (2-3 frases), category, vertical, business_model (SaaS/Hard
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map(lab => (
-            <LabStartupCard
-              key={lab.id}
-              lab={lab}
-              onEnriched={handleEnriched}
-              onPromoted={handlePromoted}
-            />
-          ))}
-        </div>
+        <>
+          {/* Select all row */}
+          <div className="flex items-center gap-2 mb-3">
+            <input type="checkbox" checked={allFilteredSelected} onChange={toggleSelectAll}
+              className="w-4 h-4 rounded cursor-pointer accent-pink-600" />
+            <span className="text-xs" style={{ color: "#4B4F4B" }}>
+              {allFilteredSelected ? "Desmarcar todas" : "Selecionar todas"} ({filtered.length})
+            </span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filtered.map(lab => (
+              <LabStartupCard
+                key={lab.id}
+                lab={lab}
+                onEnriched={handleEnriched}
+                onPromoted={handlePromoted}
+                onDeleted={handleDeleted}
+                selected={selected.has(lab.id)}
+                onSelect={toggleSelect}
+              />
+            ))}
+          </div>
+        </>
       )}
 
       {/* Add manual modal */}
