@@ -695,6 +695,39 @@ Responda em JSON:
         </div>
       )}
 
+      {/* Compare floating bar */}
+      {compareList.length > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 px-5 py-3 rounded-2xl shadow-2xl"
+          style={{ background: '#1E0B2E', minWidth: 320 }}>
+          <GitCompareArrows className="w-5 h-5 flex-shrink-0" style={{ color: '#E10867' }} />
+          <div className="flex items-center gap-2 flex-1">
+            {compareList.map(item => (
+              <div key={item.match.id} className="flex items-center gap-1.5 px-2 py-1 rounded-lg" style={{ background: 'rgba(255,255,255,0.1)' }}>
+                <span className="text-white text-xs font-medium truncate max-w-24">{item.startup.name}</span>
+                <button onClick={() => toggleCompare(item.match, item.startup)} className="text-white/50 hover:text-white">
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            ))}
+          </div>
+          <button
+            onClick={() => setShowCompare(true)}
+            className="text-xs font-semibold px-3 py-1.5 rounded-lg flex-shrink-0"
+            style={{ background: '#E10867', color: '#fff' }}>
+            Comparar {compareList.length > 1 ? `(${compareList.length})` : ""}
+          </button>
+        </div>
+      )}
+
+      {/* Compare modal */}
+      {showCompare && (
+        <StartupComparePanel
+          items={compareList}
+          onClose={() => setShowCompare(false)}
+          onOpenCrm={(match) => { setShowCompare(false); openCrmModal(match); }}
+        />
+      )}
+
       {/* CRM Modal */}
       {crmModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
