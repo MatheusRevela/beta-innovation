@@ -67,6 +67,7 @@ import Reports from './pages/Reports';
 import StartupManagement from './pages/StartupManagement';
 import StartupRadar from './pages/StartupRadar';
 import TeamManagement from './pages/TeamManagement';
+import Laboratorio from './pages/Laboratorio';
 import __Layout from './Layout.jsx';
 
 
@@ -91,6 +92,7 @@ export const PAGES = {
     "StartupManagement": StartupManagement,
     "StartupRadar": StartupRadar,
     "TeamManagement": TeamManagement,
+    "Laboratorio": Laboratorio,
 }
 
 export const pagesConfig = {
