@@ -152,7 +152,7 @@ export default function Colaboradores() {
     for (const u of all) {
       const pendingRole = pending[u.email?.toLowerCase()];
       if (pendingRole && !u.collaborator_role) {
-        updates.push(base44.entities.User.update(u.id, { collaborator_role: pendingRole }));
+        updates.push(base44.entities.User.update(u.id, { role: "admin", collaborator_role: pendingRole }));
         delete pending[u.email.toLowerCase()];
       }
     }
