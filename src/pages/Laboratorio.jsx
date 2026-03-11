@@ -61,6 +61,39 @@ export default function Laboratorio() {
     setLabs(prev => prev.map(l => l.id === updated.id ? { ...l, ...updated } : l));
   };
 
+  const handleDeleted = (id) => {
+    setLabs(prev => prev.filter(l => l.id !== id));
+    setSelected(prev => { const s = new Set(prev); s.delete(id); return s; });
+  };
+
+  const toggleSelect = (id) => {
+    setSelected(prev => {
+      const s = new Set(prev);
+      s.has(id) ? s.delete(id) : s.add(id);
+      return s;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selected.size === filtered.length) {
+      setSelected(new Set());
+    } else {
+      setSelected(new Set(filtered.map(l => l.id)));
+    }
+  };
+
+  const deleteSelected = async () => {
+    if (!selected.size) return;
+    if (!confirm(`Excluir ${selected.size} startup${selected.size !== 1 ? "s" : ""} do laboratório?`)) return;
+    setDeletingBulk(true);
+    for (const id of selected) {
+      await base44.entities.LabStartup.delete(id);
+    }
+    setLabs(prev => prev.filter(l => !selected.has(l.id)));
+    setSelected(new Set());
+    setDeletingBulk(false);
+  };
+
   const enrichAllPending = async () => {
     const pending = labs.filter(l => l.status === "pending" && !l.ai_enriched);
     if (!pending.length) return;
