@@ -574,6 +574,19 @@ Responda em JSON:
                         }}>👎</button>
                       <div className="flex-1" />
                       <button
+                        onClick={e => { e.stopPropagation(); toggleCompare(match, s); }}
+                        title={compareList.find(i => i.match.id === match.id) ? "Remover do comparativo" : "Adicionar ao comparativo"}
+                        className="text-xs px-2 py-1 rounded-lg border transition-all"
+                        style={{
+                          borderColor: compareList.find(i => i.match.id === match.id) ? '#6B2FA0' : '#A7ADA7',
+                          background: compareList.find(i => i.match.id === match.id) ? '#F3EEF8' : 'transparent',
+                          color: compareList.find(i => i.match.id === match.id) ? '#6B2FA0' : '#4B4F4B',
+                          opacity: compareList.length >= 3 && !compareList.find(i => i.match.id === match.id) ? 0.4 : 1
+                        }}
+                        disabled={compareList.length >= 3 && !compareList.find(i => i.match.id === match.id)}>
+                        ⚖
+                      </button>
+                      <button
                         onClick={e => { e.stopPropagation(); openCrmModal(match); }}
                         disabled={match.added_to_crm}
                         className="text-xs px-2.5 py-1 rounded-lg font-medium transition-all"
