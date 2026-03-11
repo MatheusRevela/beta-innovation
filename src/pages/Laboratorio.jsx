@@ -152,6 +152,8 @@ Retorne: description (2-3 frases), category, vertical, business_model (SaaS/Hard
     .filter(l => tab === "all" || l.status === tab)
     .filter(l => !search || l.name.toLowerCase().includes(search.toLowerCase()) || (l.website || "").toLowerCase().includes(search.toLowerCase()));
 
+  const allFilteredSelected = filtered.length > 0 && filtered.every(l => selected.has(l.id));
+
   const counts = {
     all: labs.length,
     pending: labs.filter(l => l.status === "pending").length,
