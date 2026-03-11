@@ -243,6 +243,27 @@ Retorne: description (2-3 frases), category, vertical, business_model (SaaS/Hard
         </div>
       )}
 
+      {/* Bulk action bar */}
+      {selected.size > 0 && (
+        <div className="flex items-center gap-3 px-5 py-3 rounded-2xl border mb-4"
+          style={{ background: "#fce7ef", borderColor: "#E10867" }}>
+          <span className="text-sm font-semibold flex-1" style={{ color: "#E10867" }}>
+            {selected.size} startup{selected.size !== 1 ? "s" : ""} selecionada{selected.size !== 1 ? "s" : ""}
+          </span>
+          <Button size="sm" variant="outline" onClick={() => setSelected(new Set())} className="gap-1.5 text-xs h-7">
+            <X className="w-3 h-3" /> Desmarcar
+          </Button>
+          <Button size="sm" onClick={deleteSelected} disabled={deletingBulk}
+            className="gap-1.5 text-xs h-7 text-white"
+            style={{ background: "#E10867", border: "none" }}>
+            {deletingBulk
+              ? <><Loader2 className="w-3 h-3 animate-spin" /> Excluindo…</>
+              : <><Trash2 className="w-3 h-3" /> Excluir selecionadas</>
+            }
+          </Button>
+        </div>
+      )}
+
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3 mb-5">
         <div className="relative flex-1">
