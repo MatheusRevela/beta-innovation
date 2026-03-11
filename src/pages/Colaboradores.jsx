@@ -50,12 +50,10 @@ function InviteModal({ onClose, onInvited }) {
   const invite = async () => {
     setLoading(true);
     await base44.users.inviteUser(email, "admin");
-    // Find the newly created user by email and assign collaborator_role
-    const allUsers = await base44.entities.User.list();
-    const newUser = allUsers.find(u => u.email === email);
-    if (newUser) {
-      await base44.entities.User.update(newUser.id, { collaborator_role: selectedRole });
-    }
+    // Store pending role assignment to apply after user accepts invite
+    const pending = JSON.parse(localStorage.getItem("pending_collab_roles") || "{}");
+    pending[email.toLowerCase()] = selectedRole;
+    localStorage.setItem("pending_collab_roles", JSON.stringify(pending));
     setLoading(false);
     onInvited();
     onClose();

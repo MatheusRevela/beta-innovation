@@ -60,7 +60,16 @@ export default function Home() {
 
   useEffect(() => {
     base44.auth.me()
-      .then(u => { setUser(u); setLoading(false); })
+      .then(u => {
+        setUser(u);
+        setLoading(false);
+        // Auto-redirect logged-in users to their portal
+        if (u?.role === "admin") {
+          navigate(createPageUrl("AdminDashboard"));
+        } else if (u?.role === "user") {
+          navigate(createPageUrl("Dashboard"));
+        }
+      })
       .catch(() => setLoading(false));
   }, []);
 
