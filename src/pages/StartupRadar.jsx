@@ -34,6 +34,8 @@ export default function StartupRadar() {
   const [session, setSession] = useState(null);
   const [resolvedCorpId, setResolvedCorpId] = useState(null);
   const [aiPriorityMap, setAiPriorityMap] = useState({}); // match_id -> { priority_score, reason }
+  const [compareList, setCompareList] = useState([]); // up to 3 items { match, startup }
+  const [showCompare, setShowCompare] = useState(false);
 
   useEffect(() => {
     // Aguarda o hook resolver antes de chamar loadData para evitar double-run de matching
