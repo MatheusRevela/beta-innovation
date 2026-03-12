@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useCollabRole } from "@/components/hooks/useCollabRole";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
