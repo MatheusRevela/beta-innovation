@@ -201,7 +201,7 @@ export default function Colaboradores() {
             Gerencie sua equipe de gestão e as credenciais de acesso de cada colaborador.
           </p>
         </div>
-        {canManageColabs && (
+        {(!currentUser?.collaborator_role || currentUser?.collaborator_role === "gestor_master") && (
           <Button
             onClick={() => setShowInvite(true)}
             className="text-white gap-2"
