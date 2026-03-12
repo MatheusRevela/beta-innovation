@@ -99,20 +99,24 @@ export default function StartupDetailDrawer({ startup, onClose, onEdit, onToggle
                 <ExternalLink className="w-4 h-4" /> Visitar site
               </a>
             )}
-            <Button variant="outline" className="w-full" onClick={() => onEdit(current)}
-              style={{ borderColor: '#A7ADA7' }}>
-              <Edit className="w-4 h-4 mr-2" /> Editar startup
-            </Button>
-            <Button variant="outline" className="w-full"
-              onClick={() => onToggleActive(current, current.is_active === false)}
-              style={{
-                borderColor: current.is_active !== false ? '#A7ADA7' : '#2C4425',
-                color: current.is_active !== false ? '#4B4F4B' : '#2C4425'
-              }}>
-              {current.is_active !== false
-                ? <><PowerOff className="w-4 h-4 mr-2" /> Desativar</>
-                : <><Power className="w-4 h-4 mr-2" /> Ativar</>}
-            </Button>
+            {canManageStartups && (
+              <Button variant="outline" className="w-full" onClick={() => onEdit(current)}
+                style={{ borderColor: '#A7ADA7' }}>
+                <Edit className="w-4 h-4 mr-2" /> Editar startup
+              </Button>
+            )}
+            {canManageStartups && (
+              <Button variant="outline" className="w-full"
+                onClick={() => onToggleActive(current, current.is_active === false)}
+                style={{
+                  borderColor: current.is_active !== false ? '#A7ADA7' : '#2C4425',
+                  color: current.is_active !== false ? '#4B4F4B' : '#2C4425'
+                }}>
+                {current.is_active !== false
+                  ? <><PowerOff className="w-4 h-4 mr-2" /> Desativar</>
+                  : <><Power className="w-4 h-4 mr-2" /> Ativar</>}
+              </Button>
+            )}
           </div>
         </div>
       </div>
