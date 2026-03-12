@@ -215,7 +215,7 @@ Retorne: description (2-3 frases), category, vertical, business_model (SaaS/Hard
       </div>
 
       {/* Enrich all banner */}
-      {counts.pending > 0 && (
+      {counts.pending > 0 && canManageLab && (
         <div className="flex items-center gap-3 px-5 py-3 rounded-2xl border mb-6"
           style={{ background: "#F3EEF8", borderColor: "#d8b4fe" }}>
           <Sparkles className="w-5 h-5 flex-shrink-0" style={{ color: "#6B2FA0" }} />
@@ -248,7 +248,7 @@ Retorne: description (2-3 frases), category, vertical, business_model (SaaS/Hard
       )}
 
       {/* Bulk action bar */}
-      {selected.size > 0 && (
+      {selected.size > 0 && canManageLab && (
         <div className="flex items-center gap-3 px-5 py-3 rounded-2xl border mb-4"
           style={{ background: "#fce7ef", borderColor: "#E10867" }}>
           <span className="text-sm font-semibold flex-1" style={{ color: "#E10867" }}>
