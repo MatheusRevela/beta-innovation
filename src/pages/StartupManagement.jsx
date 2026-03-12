@@ -243,7 +243,7 @@ export default function StartupManagement() {
       </div>
 
       {/* Bulk action bar */}
-      {selected.length > 0 && (
+      {selected.length > 0 && canManageStartups && (
         <div className="flex items-center gap-3 mb-4 px-4 py-3 rounded-xl"
           style={{ background: '#fce7ef', border: '1px solid #E10867' }}>
           <span className="text-sm font-semibold" style={{ color: '#E10867' }}>
@@ -269,10 +269,12 @@ export default function StartupManagement() {
           <table className="w-full text-sm">
             <thead>
               <tr style={{ background: '#ECEEEA', borderBottom: `1px solid #A7ADA7` }}>
+                {canManageStartups && (
                 <th className="p-3 w-10">
                   <Checkbox checked={selected.length === startups.length && startups.length > 0}
                     onCheckedChange={toggleAll} />
                 </th>
+                )}
                 {SORT_FIELDS.map(f => (
                   <th key={f.key} className="p-3 text-left">
                     <button className="flex items-center gap-1 font-semibold text-xs uppercase tracking-wide"
@@ -303,10 +305,12 @@ export default function StartupManagement() {
                 <tr key={startup.id}
                   className="border-b hover:bg-gray-50 transition-colors"
                   style={{ borderColor: '#ECEEEA' }}>
+                  {canManageStartups && (
                   <td className="p-3">
                     <Checkbox checked={selected.includes(startup.id)}
                       onCheckedChange={() => toggleSelect(startup.id)} />
                   </td>
+                  )}
                   <td className="p-3">
                     <div className="flex items-center gap-2.5">
                       {startup.logo_url ? (
@@ -355,10 +359,12 @@ export default function StartupManagement() {
                         className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
                         <Eye className="w-3.5 h-3.5" style={{ color: '#A7ADA7' }} />
                       </button>
+                      {canManageStartups && (
                       <button onClick={() => { setEditStartup(startup); setShowForm(true); }}
                         className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
                         <Edit className="w-3.5 h-3.5" style={{ color: '#A7ADA7' }} />
                       </button>
+                      )}
                     </div>
                   </td>
                 </tr>
