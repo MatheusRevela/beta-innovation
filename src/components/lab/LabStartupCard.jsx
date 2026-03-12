@@ -196,6 +196,7 @@ Retorne:
               style={{ background: "#d1fae5", color: "#065f46" }}>✓ Nova análise</span>
           )}
           {/* Edit + Delete */}
+          {!readOnly && (
           <div className="flex gap-1 flex-shrink-0">
             <button onClick={() => setShowEdit(true)} className="p-1.5 rounded-lg hover:bg-gray-100" title="Editar">
               <Pencil className="w-3.5 h-3.5" style={{ color: "#6B2FA0" }} />
@@ -204,6 +205,7 @@ Retorne:
               {deleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" style={{ color: "#E10867" }} /> : <Trash2 className="w-3.5 h-3.5" style={{ color: "#E10867" }} />}
             </button>
           </div>
+          )}
         </div>
 
         {/* Body */}
