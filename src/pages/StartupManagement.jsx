@@ -193,13 +193,17 @@ export default function StartupManagement() {
         badge={`${total} cadastradas`}
         actions={
           <div className="flex gap-2 flex-wrap">
-            <Button variant="outline" onClick={() => setDuplicatesModal(true)} style={{ borderColor: '#A7ADA7' }}>
-              <AlertCircle className="w-4 h-4 mr-1.5" /> Duplicatas
-            </Button>
-            <Button onClick={() => { setEditStartup(null); setShowForm(true); }}
-              className="text-white" style={{ background: '#E10867', border: 'none' }}>
-              <Plus className="w-4 h-4 mr-1.5" /> Nova Startup
-            </Button>
+            {canManageStartups && (
+              <Button variant="outline" onClick={() => setDuplicatesModal(true)} style={{ borderColor: '#A7ADA7' }}>
+                <AlertCircle className="w-4 h-4 mr-1.5" /> Duplicatas
+              </Button>
+            )}
+            {canManageStartups && (
+              <Button onClick={() => { setEditStartup(null); setShowForm(true); }}
+                className="text-white" style={{ background: '#E10867', border: 'none' }}>
+                <Plus className="w-4 h-4 mr-1.5" /> Nova Startup
+              </Button>
+            )}
           </div>
         }
       />
