@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { base44 } from "@/api/base44Client";
+import { useCollabRole } from "@/components/hooks/useCollabRole";
 import PageHeader from "@/components/shared/PageHeader";
 import ConfirmDestructiveModal from "@/components/shared/ConfirmDestructiveModal";
 import { StatusDot } from "@/components/shared/StatusBadge";
