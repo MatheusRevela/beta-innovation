@@ -202,13 +202,15 @@ export default function Colaboradores() {
             Gerencie sua equipe de gestão e as credenciais de acesso de cada colaborador.
           </p>
         </div>
-        <Button
-          onClick={() => setShowInvite(true)}
-          className="text-white gap-2"
-          style={{ background: "#E10867", border: "none" }}
-        >
-          <UserPlus className="w-4 h-4" /> Convidar Colaborador
-        </Button>
+        {canManageColabs && (
+          <Button
+            onClick={() => setShowInvite(true)}
+            className="text-white gap-2"
+            style={{ background: "#E10867", border: "none" }}
+          >
+            <UserPlus className="w-4 h-4" /> Convidar Colaborador
+          </Button>
+        )}
       </div>
 
       {/* Role legend cards */}
