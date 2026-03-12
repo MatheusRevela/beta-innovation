@@ -320,7 +320,7 @@ export default function Colaboradores() {
                       </span>
                     </td>
                     <td className="px-5 py-3.5 text-right">
-                      {!isOwner && !isMe && (
+                      {!isMe && (
                         <button
                           onClick={() => removeAccess(u.id)}
                           disabled={updating === u.id}
