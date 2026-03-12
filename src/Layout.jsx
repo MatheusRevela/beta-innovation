@@ -100,8 +100,18 @@ export default function Layout({ children, currentPageName }) {
   }
 
   const isAdmin = user?.role === 'admin';
-  const navItems = isAdmin ? NAV_ITEMS.admin : NAV_ITEMS.user;
-  const portalLabel = isAdmin ? "Console Admin" : "Portal Corporates";
+  const collabRole = user?.collaborator_role;
+  const allowedPages = collabRole ? COLLAB_NAV_PAGES[collabRole] : null;
+
+  const rawNavItems = isAdmin ? NAV_ITEMS.admin : NAV_ITEMS.user;
+  // Filter nav items by collaborator role (null = no filter = full access)
+  const navItems = (isAdmin && allowedPages)
+    ? rawNavItems.filter(item => item.section || allowedPages.includes(item.page))
+    : rawNavItems;
+
+  const portalLabel = isAdmin
+    ? (collabRole ? COLLAB_ROLE_LABELS[collabRole] || "Console Admin" : "Console Admin")
+    : "Portal Corporates";
   const portalColor = isAdmin ? "#1E0B2E" : "#2C4425";
 
   return (
