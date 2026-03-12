@@ -85,10 +85,12 @@ export default function StartupDetailDrawer({ startup, onClose, onEdit, onToggle
           )}
 
           {/* AI Enrichment Panel */}
-          <AIEnrichmentPanel
-            startup={current}
-            onEnriched={(updated) => setCurrent(updated)}
-          />
+          {canManageStartups && (
+            <AIEnrichmentPanel
+              startup={current}
+              onEnriched={(updated) => setCurrent(updated)}
+            />
+          )}
 
           {/* Actions */}
           <div className="space-y-2">
