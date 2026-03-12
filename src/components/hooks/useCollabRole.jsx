@@ -12,19 +12,23 @@ import { base44 } from "@/api/base44Client";
  *  gestor_master  → tudo, igual ao admin puro
  */
 export function useCollabRole() {
-  const [collabRole, setCollabRole] = useState(undefined);
+  const [user, setUser] = useState(undefined);
 
   useEffect(() => {
-    base44.auth.me().then(u => setCollabRole(u?.collaborator_role ?? null));
+    base44.auth.me().then(u => setUser(u ?? null));
   }, []);
 
-  const loaded = collabRole !== undefined;
-  const isReadOnly      = collabRole === "credenciais";
-  const canManageStartups   = !collabRole || collabRole === "scouting"         || collabRole === "gestor_master";
-  const canManageLab        = !collabRole || collabRole === "scouting"         || collabRole === "gestor_master";
-  const canManageCorporates = !collabRole || collabRole === "gestor_projetos"  || collabRole === "gestor_master";
-  const canManageCRM        = !collabRole || collabRole === "gestor_projetos"  || collabRole === "gestor_master";
-  const canManageColabs     = !collabRole || collabRole === "gestor_master";
+  const loaded = user !== undefined;
+  const collabRole = user?.collaborator_role ?? null;
+  // Admin puro (sem collaborator_role) ou gestor_master têm acesso total
+  const isFullAdmin = !collabRole || collabRole === "gestor_master";
+
+  const isReadOnly          = collabRole === "credenciais";
+  const canManageStartups   = isFullAdmin || collabRole === "scouting";
+  const canManageLab        = isFullAdmin || collabRole === "scouting";
+  const canManageCorporates = isFullAdmin || collabRole === "gestor_projetos";
+  const canManageCRM        = isFullAdmin || collabRole === "gestor_projetos";
+  const canManageColabs     = isFullAdmin;
 
   return {
     collabRole, loaded,
