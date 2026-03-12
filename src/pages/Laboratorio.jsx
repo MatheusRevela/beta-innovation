@@ -179,6 +179,7 @@ Retorne: description (2-3 frases), category, vertical, business_model (SaaS/Hard
             </p>
           </div>
         </div>
+        {canManageLab && (
         <div className="flex gap-2 flex-wrap">
           <Button variant="outline" onClick={() => setShowAddManual(true)} className="gap-1.5 text-sm">
             <Plus className="w-4 h-4" /> Adicionar
@@ -188,6 +189,7 @@ Retorne: description (2-3 frases), category, vertical, business_model (SaaS/Hard
             <Upload className="w-4 h-4" /> Importar CSV
           </Button>
         </div>
+        )}
       </div>
 
       {/* Stats bar */}
