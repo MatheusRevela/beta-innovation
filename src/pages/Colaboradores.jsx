@@ -290,7 +290,7 @@ export default function Colaboradores() {
                       </div>
                     </td>
                     <td className="px-5 py-3.5">
-                      {!isOwner && !isMe ? (
+                      {u.collaborator_role && !isMe ? (
                         <select
                           value={u.collaborator_role || ""}
                           onChange={e => changeRole(u.id, e.target.value)}
