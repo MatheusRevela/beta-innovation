@@ -3,8 +3,10 @@ import { StatusDot } from "@/components/shared/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { X, Edit, ExternalLink, Power, PowerOff } from "lucide-react";
 import AIEnrichmentPanel from "@/components/admin/AIEnrichmentPanel";
+import { useCollabRole } from "@/components/hooks/useCollabRole";
 
 export default function StartupDetailDrawer({ startup, onClose, onEdit, onToggleActive }) {
+  const { canManageStartups } = useCollabRole();
   const [current, setCurrent] = useState(startup);
   useEffect(() => setCurrent(startup), [startup]);
 
