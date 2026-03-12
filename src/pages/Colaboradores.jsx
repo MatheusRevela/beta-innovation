@@ -135,6 +135,7 @@ function InviteModal({ onClose, onInvited }) {
 }
 
 export default function Colaboradores() {
+  const { canManageColabs } = useCollabRole();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showInvite, setShowInvite] = useState(false);
