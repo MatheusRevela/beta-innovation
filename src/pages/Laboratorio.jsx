@@ -18,6 +18,7 @@ const TABS = [
 ];
 
 export default function Laboratorio() {
+  const { isReadOnly, canManageLab } = useCollabRole();
   const [labs, setLabs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
