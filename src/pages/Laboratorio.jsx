@@ -327,6 +327,7 @@ Retorne: description (2-3 frases), category, vertical, business_model (SaaS/Hard
                 onDeleted={handleDeleted}
                 selected={selected.has(lab.id)}
                 onSelect={toggleSelect}
+                readOnly={isReadOnly || !canManageLab}
               />
             ))}
           </div>
