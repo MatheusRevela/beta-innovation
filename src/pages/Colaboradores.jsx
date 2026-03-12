@@ -183,6 +183,8 @@ export default function Colaboradores() {
     setUpdating(null);
   };
 
+  const isMasterOrOwner = (u) => !u.collaborator_role || u.collaborator_role === "gestor_master";
+
   const getRoleConfig = (u) => {
     if (u.collaborator_role) return COLLAB_ROLES.find(r => r.value === u.collaborator_role);
     return { value: "admin", label: "Admin", icon: Shield, color: "#E10867", bg: "#FCE7EF" };

@@ -46,6 +46,29 @@ const ADMIN_PAGES = ["AdminDashboard", "StartupManagement", "CorporateManagement
 const NO_LAYOUT_PAGES = ["Onboarding", "Login", "Register", "Home", "AdminLogin", "JoinCorporate"];
 const PUBLIC_PAGES = ["Home", "Login", "Register", "AdminLogin", "JoinCorporate"];
 
+// Pages each collaborator role can access (null = full access)
+const COLLAB_NAV_PAGES = {
+  credenciais: [
+    "AdminDashboard", "MyDiagnostics", "InnovationTheses", "StartupRadar",
+    "DiagnosticCRM", "MyCRM", "Notifications", "Laboratorio",
+    "StartupManagement", "CorporateManagement", "CRMBoard", "Reports", "AuditLogs"
+  ],
+  scouting: [
+    "AdminDashboard", "Laboratorio", "StartupManagement", "Reports"
+  ],
+  gestor_projetos: [
+    "AdminDashboard", "CorporateManagement", "CRMBoard", "DiagnosticCRM", "MyCRM", "Notifications", "Reports"
+  ],
+  gestor_master: null,
+};
+
+const COLLAB_ROLE_LABELS = {
+  credenciais: "Credenciais",
+  scouting: "Scouting",
+  gestor_projetos: "Gestor de Projetos",
+  gestor_master: "Gestor Master",
+};
+
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
   const [collapsed, setCollapsed] = useState(false);
