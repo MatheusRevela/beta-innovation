@@ -299,6 +299,7 @@ Retorne:
         </div>
 
         {/* Actions */}
+        {!readOnly && (
         <div className="flex items-center gap-2 px-4 py-3 border-t" style={{ borderColor: "#ECEEEA" }}>
           <Button size="sm" variant="outline" onClick={runEnrichment} disabled={enriching || promoting}
             className="flex-1 gap-1.5 text-xs h-8">
@@ -318,6 +319,7 @@ Retorne:
             }
           </Button>
         </div>
+        )}
       </div>
 
       {showEdit && (
