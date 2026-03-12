@@ -13,7 +13,7 @@ const confidenceColor = (c) => {
   return "#E10867";
 };
 
-export default function LabStartupCard({ lab, onEnriched, onPromoted, onDeleted, selected, onSelect }) {
+export default function LabStartupCard({ lab, onEnriched, onPromoted, onDeleted, selected, onSelect, readOnly = false }) {
   const [enriching, setEnriching] = useState(false);
   const [promoting, setPromoting] = useState(false);
   const [deleting, setDeleting] = useState(false);
