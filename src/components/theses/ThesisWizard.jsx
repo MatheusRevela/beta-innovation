@@ -181,6 +181,36 @@ export default function ThesisWizard({ corporate, sessions, onClose, onCreated }
     setGenerating(true);
     const selectedSession = sessions.find(s => s.id === form.session_id) || sessions[0];
 
+    // Build AI Assessment context (Scenario B)
+    const aiScanSection = aiAssessment
+      ? (() => {
+          const DIMENSION_NAMES = {
+            estrategia: "Estratégia e Liderança", governanca: "Governança",
+            valor: "Valor em Produção", operacoes: "Operações",
+            ecossistema: "Ecossistema e Parceiros", dados: "Dados e Infraestrutura",
+            tecnologia: "Tecnologia", habilidades: "Habilidades e Cultura",
+            frugalidade: "Frugalidade e Impacto",
+          };
+          const dimScores = aiAssessment.dimension_scores || {};
+          const sorted = Object.entries(dimScores).sort(([,a],[,b]) => a - b);
+          const gaps = sorted.slice(0, 3).map(([k, v]) => `${DIMENSION_NAMES[k] || k}: ${v}/5`).join(", ");
+          const strengths = sorted.slice(-2).reverse().map(([k, v]) => `${DIMENSION_NAMES[k] || k}: ${v}/5`).join(", ");
+          return `
+═══════════════════════════════
+AI READINESS SCAN (CENÁRIO B — integrar à tese)
+═══════════════════════════════
+Score Global de Prontidão em IA: ${aiAssessment.global_score}/5
+Maiores Gaps de IA: ${gaps}
+Pontos Fortes de IA: ${strengths}
+
+INSTRUÇÃO ESPECIAL: Use os gaps identificados acima para sugerir Macrocategorias e perfis de startups focadas em resolver esses gaps tecnológicos. Inclua um parágrafo no "Contexto Estratégico" da tese que cite a prontidão atual da empresa para adoção de IA e como isso influencia a estratégia de inovação.`;
+        })()
+      : `
+═══════════════════════════════
+AI READINESS SCAN (CENÁRIO A — não realizado)
+═══════════════════════════════
+O usuário não realizou o AI Readiness Scan. Gere a tese baseando-se exclusivamente no Diagnóstico de Maturidade e nas verticais de interesse.`;
+
     const prompt = `Você é especialista sênior em inovação aberta e teses de inovação corporativa da Beta-i Brasil, uma das maiores aceleradoras de inovação aberta da Europa e América Latina.
 
 Crie uma TESE DE INOVAÇÃO DETALHADA, APROFUNDADA E ALTAMENTE PERSONALIZADA para a empresa abaixo.
