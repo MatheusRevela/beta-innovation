@@ -268,6 +268,7 @@ CONTEXTO ESTRATÉGICO ADICIONAL
 Visão e contexto: ${form.strategic_context || "N/A"}
 Iniciativas atuais em andamento: ${form.current_initiatives || "N/A"}
 Áreas fora do escopo (no-go): ${form.no_go_areas || "N/A"}
+${aiScanSection}
 
 ═══════════════════════════════
 INSTRUÇÕES DE GERAÇÃO
