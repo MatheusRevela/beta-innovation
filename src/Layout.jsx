@@ -5,7 +5,7 @@ import { base44 } from "@/api/base44Client";
 import {
   LayoutDashboard, Zap, Map, Briefcase, Settings,
   ChevronLeft, ChevronRight, LogOut, User, Menu, X,
-  Building2, Star, Database, BarChart3, FileText, Bell, FlaskConical
+  Building2, Star, Database, BarChart3, FileText, Bell, FlaskConical, Brain
 } from "lucide-react";
 
 const NAV_ITEMS = {
@@ -14,6 +14,7 @@ const NAV_ITEMS = {
     { label: "Dashboard", icon: LayoutDashboard, page: "AdminDashboard" },
     { section: "Visão do Usuário" },
     { label: "Diagnósticos", icon: Zap, page: "MyDiagnostics" },
+    { label: "AI Readiness Scan", icon: Brain, page: "AIReadinessScan" },
     { label: "Teses de Inovação", icon: Star, page: "InnovationTheses" },
     { label: "Radar de Startups", icon: Map, page: "StartupRadar" },
     { label: "CRM por Tese", icon: FileText, page: "DiagnosticCRM" },
@@ -32,6 +33,7 @@ const NAV_ITEMS = {
   user: [
     { label: "Início", icon: LayoutDashboard, page: "Dashboard" },
     { label: "Diagnósticos", icon: Zap, page: "MyDiagnostics" },
+    { label: "AI Readiness Scan", icon: Brain, page: "AIReadinessScan" },
     { label: "Teses de Inovação", icon: Star, page: "InnovationTheses" },
     { label: "Radar", icon: Map, page: "StartupRadar" },
     { label: "CRM por Tese", icon: FileText, page: "DiagnosticCRM" },
