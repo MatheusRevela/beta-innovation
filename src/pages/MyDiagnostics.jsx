@@ -5,7 +5,7 @@ import { createPageUrl } from "@/utils";
 import { useCorporateAccess } from "@/components/hooks/useCorporateAccess";
 import { getMaturidadeLevel } from "@/components/ui/DesignTokens";
 import { MaturityBadge } from "@/components/shared/StatusBadge";
-import { Zap, Plus, ChevronRight, Loader2, Clock, CheckCircle2, PlayCircle, Hourglass, XCircle, Lock } from "lucide-react";
+import { Zap, Plus, ChevronRight, Loader2, Clock, CheckCircle2, PlayCircle, Hourglass, XCircle, Lock, Brain } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -122,6 +122,27 @@ export default function MyDiagnostics() {
           <div className="space-y-3">
             {completed.map(s => <SessionCard key={s.id} session={s} onResume={() => resume(s)} />)}
           </div>
+        </div>
+      )}
+
+      {/* AI Readiness Scan upsell */}
+      {completed.length > 0 && (
+        <div className="mt-8 rounded-2xl border-2 p-6 flex items-center gap-5"
+          style={{ borderColor: '#6B2FA0', background: 'linear-gradient(135deg, #1E0B2E08, #6B2FA012)' }}>
+          <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
+            style={{ background: '#f3e8ff' }}>
+            <Brain className="w-6 h-6" style={{ color: '#6B2FA0' }} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-bold text-sm mb-0.5" style={{ color: '#1E0B2E' }}>Próximo passo: AI Readiness Scan</p>
+            <p className="text-xs" style={{ color: '#4B4F4B' }}>
+              Avalie a prontidão de IA da sua empresa em 9 dimensões. Enriquece sua Tese de Inovação com insights específicos sobre IA.
+            </p>
+          </div>
+          <Button onClick={() => navigate(createPageUrl('AIReadinessScan'))} size="sm"
+            className="text-white flex-shrink-0" style={{ background: '#6B2FA0', border: 'none' }}>
+            Iniciar <ChevronRight className="w-3.5 h-3.5 ml-1" />
+          </Button>
         </div>
       )}
     </div>
