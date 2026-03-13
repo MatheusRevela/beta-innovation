@@ -51,7 +51,7 @@ const PUBLIC_PAGES = ["Home", "Login", "Register", "AdminLogin", "JoinCorporate"
 // Pages each collaborator role can access (null = full access)
 const COLLAB_NAV_PAGES = {
   credenciais: [
-    "AdminDashboard", "MyDiagnostics", "InnovationTheses", "StartupRadar",
+    "AdminDashboard", "MyDiagnostics", "AIReadinessScan", "InnovationTheses", "StartupRadar",
     "DiagnosticCRM", "MyCRM", "Notifications", "Laboratorio",
     "StartupManagement", "CorporateManagement", "CRMBoard", "Reports", "AuditLogs"
   ],
