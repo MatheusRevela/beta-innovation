@@ -120,6 +120,16 @@ export default function ThesisWizard({ corporate, sessions, onClose, onCreated }
   const [generating, setGenerating] = useState(false);
   const [aiHint, setAiHint] = useState(null);
   const [loadingHint, setLoadingHint] = useState(false);
+  const [aiAssessment, setAiAssessment] = useState(null);
+
+  // Load AI Assessment if exists
+  useState(() => {
+    if (corporate?.id) {
+      base44.entities.AIAssessment.filter({ corporate_id: corporate.id }, "-created_date", 1)
+        .then(res => { if (res.length > 0) setAiAssessment(res[0]); })
+        .catch(() => {});
+    }
+  }, [corporate?.id]);
 
   const [form, setForm] = useState({
     session_id: sessions[0]?.id || "",
