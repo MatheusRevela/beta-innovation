@@ -20,8 +20,9 @@ export function useCollabRole() {
 
   const loaded = user !== undefined;
   const collabRole = user?.collaborator_role ?? null;
-  // Admin puro (sem collaborator_role) ou gestor_master têm acesso total
-  const isFullAdmin = !collabRole || collabRole === "gestor_master";
+  // role=admin da plataforma sempre tem acesso total, independente de collaborator_role
+  const isPlatformAdmin = user?.role === "admin";
+  const isFullAdmin = isPlatformAdmin || !collabRole || collabRole === "gestor_master";
 
   const isReadOnly          = collabRole === "credenciais";
   const canManageStartups   = isFullAdmin || collabRole === "scouting";
