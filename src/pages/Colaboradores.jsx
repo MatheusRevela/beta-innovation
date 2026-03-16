@@ -137,11 +137,18 @@ function InviteModal({ onClose, onInvited }) {
 }
 
 export default function Colaboradores() {
+  const navigate = useNavigate();
+  const { canManageColabs, loaded: collabLoaded } = useCollabRole();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showInvite, setShowInvite] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [updating, setUpdating] = useState(null);
+
+  // Issue #10 — Bloquear acesso se não for admin completo
+  useEffect(() => {
+    if (collabLoaded && !canManageColabs) navigate(createPageUrl('Dashboard'));
+  }, [collabLoaded, canManageColabs]);
 
   const load = async () => {
     setLoading(true);
