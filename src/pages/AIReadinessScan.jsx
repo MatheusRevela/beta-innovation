@@ -291,6 +291,56 @@ export default function AIReadinessScan() {
     );
   }
 
+  if (view === "blocked") {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4 py-12" style={{ background: "#ECEEEA" }}>
+        <div className="w-full max-w-lg bg-white rounded-3xl shadow-xl overflow-hidden">
+          <div className="px-8 pt-10 pb-8" style={{ background: "linear-gradient(135deg, #1E0B2E 0%, #3B145A 100%)" }}>
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5"
+              style={{ background: "rgba(225,8,103,0.2)" }}>
+              <Lock className="w-8 h-8" style={{ color: "#E10867" }} />
+            </div>
+            <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "#E10867" }}>
+              Passo Bloqueado
+            </p>
+            <h1 className="text-2xl font-bold text-white mb-3">
+              Complete o Diagnóstico de Maturidade primeiro
+            </h1>
+            <p style={{ color: "rgba(255,255,255,0.7)" }} className="text-sm leading-relaxed">
+              O AI Readiness Scan é a etapa seguinte ao Diagnóstico de Maturidade em Inovação.
+              Finalize seu diagnóstico para liberar esta análise.
+            </p>
+          </div>
+          <div className="px-8 py-8 space-y-4">
+            <div className="flex items-center gap-3 mb-6">
+              {["Diagnóstico de Maturidade", "AI Readiness Scan", "Tese de Inovação"].map((step, i) => (
+                <div key={step} className="flex items-center gap-2">
+                  {i > 0 && <div className="w-5 h-px" style={{ background: "#A7ADA7" }} />}
+                  <div className="flex items-center gap-1.5">
+                    <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold`}
+                      style={{
+                        background: i === 0 ? "#A7ADA7" : "#ECEEEA",
+                        color: i === 0 ? "#fff" : "#A7ADA7"
+                      }}>
+                      {i === 0 ? "1" : i === 1 ? "🔒" : "3"}
+                    </div>
+                    <span className="text-xs font-medium" style={{ color: i === 0 ? "#111111" : "#A7ADA7" }}>{step}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <Button
+              onClick={() => navigate(createPageUrl("MyDiagnostics"))}
+              className="w-full text-white text-base h-12 rounded-xl"
+              style={{ background: "#E10867", border: "none" }}>
+              Ir para Diagnósticos <ChevronRight className="w-5 h-5 ml-1" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (view === "landing") {
     return <LandingView onStart={() => setView("quiz")} onSkip={skip} />;
   }
