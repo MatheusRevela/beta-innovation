@@ -20,7 +20,7 @@ export default function CorporateManagement() {
 
   const loadData = async () => {
     setLoading(true);
-    const corps = await base44.entities.Corporate.list("-created_date");
+    const corps = await base44.entities.Corporate.list("-created_date", 200);
     setCorporates(corps);
     const allSessions = await base44.entities.DiagnosticSession.filter({ status: "completed" });
     const sessMap = {};

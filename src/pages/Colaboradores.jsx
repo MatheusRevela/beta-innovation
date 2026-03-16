@@ -148,12 +148,12 @@ export default function Colaboradores() {
 
   const load = async () => {
     setLoading(true);
-    // Issue #4 — Removido mecanismo de localStorage para roles pendentes
-    const [all, me] = await Promise.all([
-      base44.entities.User.list(),
+    // Issue #4 — Filtrar por role=admin diretamente, evitando expor toda a base de usuários
+    const [admins, me] = await Promise.all([
+      base44.entities.User.filter({ role: "admin" }),
       base44.auth.me()
     ]);
-    setUsers(all.filter(u => u.role === "admin"));
+    setUsers(admins);
     setCurrentUser(me);
     setLoading(false);
   };

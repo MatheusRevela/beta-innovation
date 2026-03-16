@@ -18,7 +18,7 @@ const TABS = [
 ];
 
 export default function Laboratorio() {
-  const { isReadOnly, canManageLab } = useCollabRole();
+  const { isReadOnly, canManageLab, loaded: collabLoaded } = useCollabRole();
   const [labs, setLabs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -248,7 +248,7 @@ Retorne: description (2-3 frases), category, vertical, business_model (SaaS/Hard
       )}
 
       {/* Bulk action bar */}
-      {selected.size > 0 && canManageLab && (
+      {selected.size > 0 && collabLoaded && canManageLab && (
         <div className="flex items-center gap-3 px-5 py-3 rounded-2xl border mb-4"
           style={{ background: "#fce7ef", borderColor: "#E10867" }}>
           <span className="text-sm font-semibold flex-1" style={{ color: "#E10867" }}>

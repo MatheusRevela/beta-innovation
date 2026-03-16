@@ -24,7 +24,7 @@ export default function AuditLogs() {
   useEffect(() => {
     base44.auth.me().then(me => {
       if (me?.role !== 'admin') { navigate(createPageUrl('Dashboard')); return; }
-      base44.entities.AuditLog.list("-created_date", 200).then(l => {
+      base44.entities.AuditLog.list("-created_date", 500).then(l => {
         setLogs(l);
         setLoading(false);
       });

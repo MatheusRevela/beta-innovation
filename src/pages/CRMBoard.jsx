@@ -26,9 +26,9 @@ export default function CRMBoard() {
   const loadData = async () => {
     setLoading(true);
     const [ps, ss, cs] = await Promise.all([
-      base44.entities.CRMProject.list("-created_date", 500),
-      base44.entities.Startup.filter({ is_deleted: false }),
-      base44.entities.Corporate.list()
+      base44.entities.CRMProject.list("-created_date", 200),
+      base44.entities.Startup.filter({ is_deleted: false }, "-created_date", 200),
+      base44.entities.Corporate.list("-created_date", 200)
     ]);
     setProjects(ps);
     const sm = {}; ss.forEach(s => { sm[s.id] = s; }); setStartups(sm);
