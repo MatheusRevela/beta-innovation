@@ -527,6 +527,44 @@ Responda APENAS em JSON válido com as chaves: thesis_text, macro_categories, to
                   </p>
                 </div>
               )}
+
+              {/* AI Readiness Scan banner */}
+              {aiAssessment ? (
+                <div className="rounded-xl border p-4" style={{ borderColor: "#6B2FA0", background: "#f3e8ff" }}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Brain className="w-4 h-4 flex-shrink-0" style={{ color: "#6B2FA0" }} />
+                    <p className="text-xs font-semibold" style={{ color: "#6B2FA0" }}>
+                      AI Readiness Scan detectado — tese personalizada para IA
+                    </p>
+                  </div>
+                  <p className="text-xs mb-2" style={{ color: "#4B4F4B" }}>
+                    Score global: <strong>{Math.round(aiAssessment.global_score)}/100</strong>.
+                    Os desafios do próximo passo foram pré-selecionados com base nos seus <strong>principais gaps de maturidade em IA</strong>.
+                  </p>
+                  {(() => {
+                    const dimScores = aiAssessment.dimension_scores || {};
+                    const sorted = Object.entries(dimScores).sort(([,a],[,b]) => a - b).slice(0, 3);
+                    return (
+                      <div className="flex flex-wrap gap-1.5">
+                        {sorted.map(([k, v]) => (
+                          <span key={k} className="px-2 py-0.5 rounded-full text-xs font-medium"
+                            style={{ background: "#fff", color: "#6B2FA0", border: "1px solid #6B2FA0" }}>
+                            {DIMENSION_NAMES[k]}: {Math.round(v)}/100
+                          </span>
+                        ))}
+                      </div>
+                    );
+                  })()}
+                </div>
+              ) : (
+                <div className="rounded-xl border p-4 flex items-start gap-3"
+                  style={{ borderColor: "#A7ADA7", background: "#FAFAFA" }}>
+                  <Brain className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: "#A7ADA7" }} />
+                  <p className="text-xs" style={{ color: "#4B4F4B" }}>
+                    <strong>Dica:</strong> Complete o <strong>AI Readiness Scan</strong> antes de criar a tese para receber sugestões personalizadas de desafios e um contexto de IA na tese gerada.
+                  </p>
+                </div>
+              )}
             </div>
           )}
 
