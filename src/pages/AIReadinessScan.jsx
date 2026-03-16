@@ -703,7 +703,7 @@ function ResultsView({ assessment, onGoToTheses, onRedo }) {
                   <span className="text-sm font-semibold" style={{ color: "#E65100" }}>
                     {d.emoji} {d.name}
                   </span>
-                  <span className="text-sm font-bold" style={{ color: "#E65100" }}>{d.score.toFixed(1)}/5</span>
+                  <span className="text-sm font-bold" style={{ color: "#E65100" }}>{Math.round(d.score)}/100</span>
                 </div>
                 <p className="text-xs" style={{ color: "#4B4F4B" }}>
                   {getGapRecommendation(d.id)}
