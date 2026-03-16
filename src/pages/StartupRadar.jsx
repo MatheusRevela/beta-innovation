@@ -299,7 +299,6 @@ Responda em JSON:
   const loadMatches = async (thesisId) => {
     const m = await base44.entities.StartupMatch.filter({ thesis_id: thesisId });
     setMatches(m);
-    const allIds = [...new Set(m.map(x => x.startup_id))];
     const all = await base44.entities.Startup.filter({ is_deleted: false });
     const map = {};
     all.forEach(s => { map[s.id] = s; });
