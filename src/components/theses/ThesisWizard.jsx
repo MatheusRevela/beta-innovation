@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import {
   ChevronLeft, ChevronRight, X, Zap, Loader2, Check, HelpCircle,
-  Target, Lightbulb, AlertTriangle, TrendingUp, Building2, Sparkles
+  Target, Lightbulb, AlertTriangle, TrendingUp, Building2, Sparkles, Brain
 } from "lucide-react";
 
 // ─── STEP DEFINITIONS ────────────────────────────────────────────────────────
