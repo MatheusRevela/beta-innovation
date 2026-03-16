@@ -33,9 +33,17 @@ export default function StartupManagement() {
   const [selected, setSelected] = useState([]);
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
-  const [filters, setFilters] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("sm_filters") || "{}"); } catch { return {}; }
-  });
+  const [filtersKey, setFiltersKey] = useState("sm_filters");
+  const [filters, setFilters] = useState({});
+
+  // Issue #12 — Prefixar chave do localStorage com ID do usuário
+  useEffect(() => {
+    base44.auth.me().then(me => {
+      const key = `sm_filters_${me?.id || 'anon'}`;
+      setFiltersKey(key);
+      try { setFilters(JSON.parse(localStorage.getItem(key) || "{}")); } catch { setFilters({}); }
+    });
+  }, []);
   const [sort, setSort] = useState({ field: "created_date", dir: "desc" });
   const [showForm, setShowForm] = useState(false);
   const [editStartup, setEditStartup] = useState(null);
