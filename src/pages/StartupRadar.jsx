@@ -53,6 +53,20 @@ export default function StartupRadar() {
       return;
     }
 
+    // Issue #1 — Validação de ownership: admin ou membro ativo da corporate
+    const me = await base44.auth.me();
+    if (me?.role !== 'admin') {
+      const membership = await base44.entities.CorporateMember.filter({
+        corporate_id: resolvedCorporateId,
+        email: me.email,
+        status: 'active'
+      });
+      if (membership.length === 0) {
+        setLoading(false);
+        return;
+      }
+    }
+
     const [sessions, theses] = await Promise.all([
       resolvedSessionId
         ? base44.entities.DiagnosticSession.filter({ id: resolvedSessionId })

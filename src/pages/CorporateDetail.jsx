@@ -53,12 +53,25 @@ export default function CorporateDetail() {
   const [savingId, setSavingId] = useState(null);
 
   useEffect(() => {
-    base44.auth.me().then(u => setCurrentUser(u)).catch(() => {});
     if (corporateId) loadAll();
   }, [corporateId]);
 
   const loadAll = async () => {
     setLoading(true);
+    // Issue #1 — Validação de ownership: apenas admin pode ver qualquer corporate
+    const me = await base44.auth.me();
+    setCurrentUser(me);
+    if (me?.role !== 'admin') {
+      const membership = await base44.entities.CorporateMember.filter({
+        corporate_id: corporateId,
+        email: me.email,
+        status: 'active'
+      });
+      if (membership.length === 0) {
+        setLoading(false);
+        return;
+      }
+    }
     const [corp, sesses, thes, projs, ss, mems, ms] = await Promise.all([
       base44.entities.Corporate.filter({ id: corporateId }).then(r => r[0]),
       base44.entities.DiagnosticSession.filter({ corporate_id: corporateId }, "-created_date"),
