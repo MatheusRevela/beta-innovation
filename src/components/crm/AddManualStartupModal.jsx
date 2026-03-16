@@ -58,7 +58,7 @@ export default function AddManualStartupModal({ thesis, corporate, onClose, onAd
     const proj = await base44.entities.CRMProject.create({
       corporate_id: corporate.id,
       startup_id: startupId,
-      session_id: thesis.id,
+      thesis_id: thesis.id,
       project_name: `${type === "Custom" ? customType : type} — ${startupName}`,
       type,
       custom_type_label: type === "Custom" ? customType : undefined,

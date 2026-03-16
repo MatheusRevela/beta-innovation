@@ -56,9 +56,8 @@ export default function DiagnosticCRM() {
     setSelectedThesis(thesis);
     setLoadingProjects(true);
     const effectiveCorpId = corpId || corporate?.id;
-    const [ps, allProjects] = await Promise.all([
+    const [ps] = await Promise.all([
       base44.entities.CRMProject.filter({ corporate_id: effectiveCorpId, thesis_id: thesis.id }),
-      base44.entities.CRMProject.filter({ corporate_id: effectiveCorpId }),
     ]);
     // Fetch all active startups once and filter by needed IDs client-side (avoids N+1)
     const startupIds = new Set(ps.map(p => p.startup_id).filter(Boolean));
