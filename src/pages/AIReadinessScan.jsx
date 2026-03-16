@@ -202,6 +202,10 @@ function calcScores(answers) {
   return { dimension_scores: dimScores, global_score: global };
 }
 
+function scoreToPercent(score) {
+  return Math.min(100, Math.max(0, Math.round(score)));
+}
+
 export function getAIMaturityLabel(score) {
   if (score >= 90) return "Líder em IA";
   if (score >= 70) return "Avançado";
