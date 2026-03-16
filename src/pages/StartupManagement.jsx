@@ -55,7 +55,7 @@ export default function StartupManagement() {
   const searchTimeout = useRef(null);
 
   const persistFilters = (f) => {
-    localStorage.setItem("sm_filters", JSON.stringify(f));
+    localStorage.setItem(filtersKey, JSON.stringify(f));
     setFilters(f);
   };
 
