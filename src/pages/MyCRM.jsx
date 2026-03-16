@@ -4,6 +4,7 @@ import { useCorporateAccess } from "@/components/hooks/useCorporateAccess";
 import { PIPELINE_STAGES, STAGE_COLORS, CRM_TYPES } from "@/components/ui/DesignTokens";
 import { StageBadge } from "@/components/shared/StatusBadge";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import { Loader2, X, ExternalLink, Trash2, Lightbulb, EyeOff } from "lucide-react";
 import TaskDrawer from "@/components/crm/TaskDrawer";
 import { createPageUrl } from "@/utils";
