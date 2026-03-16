@@ -646,7 +646,7 @@ function ResultsView({ assessment, onGoToTheses, onRedo }) {
               dataKey="subject"
               tick={{ fontSize: 11, fill: "#4B4F4B", fontWeight: 500 }}
             />
-            <PolarRadiusAxis angle={90} domain={[0, 5]} tick={{ fontSize: 9, fill: "#A7ADA7" }} tickCount={6} />
+            <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 9, fill: "#A7ADA7" }} tickCount={6} />
             <Radar
               name="Score"
               dataKey="score"
