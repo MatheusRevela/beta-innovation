@@ -142,15 +142,7 @@ export default function ThesisWizard({ corporate, sessions, onClose, onCreated }
   const [aiHint, setAiHint] = useState(null);
   const [loadingHint, setLoadingHint] = useState(false);
   const [aiAssessment, setAiAssessment] = useState(null);
-
-  // Load AI Assessment if exists
-  useState(() => {
-    if (corporate?.id) {
-      base44.entities.AIAssessment.filter({ corporate_id: corporate.id }, "-created_date", 1)
-        .then(res => { if (res.length > 0) setAiAssessment(res[0]); })
-        .catch(() => {});
-    }
-  }, [corporate?.id]);
+  const [loadingAssessment, setLoadingAssessment] = useState(true);
 
   const [form, setForm] = useState({
     session_id: sessions[0]?.id || "",
@@ -165,6 +157,28 @@ export default function ThesisWizard({ corporate, sessions, onClose, onCreated }
     current_initiatives: "",
     no_go_areas: "",
   });
+
+  // Load AI Assessment and pre-fill challenges from gaps
+  useEffect(() => {
+    if (!corporate?.id) { setLoadingAssessment(false); return; }
+    base44.entities.AIAssessment.filter({ corporate_id: corporate.id }, "-created_date", 1)
+      .then(res => {
+        if (res.length > 0) {
+          const assessment = res[0];
+          setAiAssessment(assessment);
+          // Pre-fill challenges from top 3 gaps (lowest scoring dimensions)
+          const dimScores = assessment.dimension_scores || {};
+          const sorted = Object.entries(dimScores).sort(([,a],[,b]) => a - b);
+          const topGapDims = sorted.slice(0, 3).map(([k]) => k);
+          const suggestedChallenges = topGapDims
+            .map(dim => AI_GAP_TO_CHALLENGE[dim])
+            .filter(Boolean);
+          setForm(f => ({ ...f, challenges: suggestedChallenges }));
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoadingAssessment(false));
+  }, [corporate?.id]);
 
   const toggle = (field, value) => {
     setForm(f => {
