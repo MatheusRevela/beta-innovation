@@ -114,16 +114,17 @@ export default function StartupManagement() {
   const toggleAll = () => setSelected(selected.length === startups.length ? [] : startups.map(s => s.id));
 
   const bulkToggleActive = async (activate) => {
-    for (const id of selected) {
+    const user = await base44.auth.me();
+    await Promise.all(selected.map(async (id) => {
       await base44.entities.Startup.update(id, { is_active: activate });
       await base44.entities.AuditLog.create({
         action: activate ? "activate" : "deactivate",
         entity_type: "Startup",
         entity_id: id,
         entity_name: startups.find(s => s.id === id)?.name,
-        user_email: (await base44.auth.me())?.email
+        user_email: user?.email
       });
-    }
+    }));
     setSelected([]);
     fetchStartups(page, search, filters, sort);
   };
