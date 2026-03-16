@@ -52,17 +52,13 @@ function InviteModal({ onClose, onInvited }) {
 
   const invite = async () => {
     setLoading(true);
+    // Issue #4 — Convite direto: inviteUser + atualiza role imediatamente se usuário já existe
     await base44.users.inviteUser(email, "admin");
-    // Immediately find the user and set role=admin + collaborator_role
-    const allUsers = await base44.entities.User.list();
-    const newUser = allUsers.find(u => u.email?.toLowerCase() === email.toLowerCase());
-    if (newUser) {
-      await base44.entities.User.update(newUser.id, { role: "admin", collaborator_role: selectedRole });
+    // Tenta encontrar o usuário filtrando por email (sem expor todos os usuários)
+    const matchedUsers = await base44.entities.User.filter({ email: email.toLowerCase() });
+    if (matchedUsers.length > 0) {
+      await base44.entities.User.update(matchedUsers[0].id, { role: "admin", collaborator_role: selectedRole });
     }
-    // Always store as pending in case the user hasn't accepted yet
-    const pending = JSON.parse(localStorage.getItem("pending_collab_roles") || "{}");
-    pending[email.toLowerCase()] = selectedRole;
-    localStorage.setItem("pending_collab_roles", JSON.stringify(pending));
     setLoading(false);
     onInvited();
     onClose();
