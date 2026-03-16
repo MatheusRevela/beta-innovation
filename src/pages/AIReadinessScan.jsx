@@ -631,7 +631,7 @@ function ResultsView({ assessment, onGoToTheses, onRedo }) {
               style={{ width: `${scoreToPercent(global_score)}%`, background: maturityColors.color }} />
           </div>
           <p className="text-xs mt-1" style={{ color: "#4B4F4B" }}>
-            {scoreToPercent(global_score)}% do nível máximo de maturidade
+            {Math.round(global_score)}% do nível máximo de maturidade
           </p>
         </div>
       </div>
