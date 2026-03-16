@@ -47,21 +47,8 @@ export default function StartupRadar() {
     setLoading(true);
 
     // Prioridade: URL param > hook (CorporateMember)
-    let resolvedCorporateId = urlCorporateId || hookCorporateId || null;
-    let resolvedSessionId = sessionId;
-
-    // Fallback legado apenas se hook ainda não resolveu
-    if (!resolvedCorporateId) {
-      const me = await base44.auth.me();
-      const [corpsByEmail, corpsByCreator] = await Promise.all([
-        base44.entities.Corporate.filter({ contact_email: me.email }),
-        base44.entities.Corporate.filter({ created_by: me.email }),
-      ]);
-      const allCorps = [...corpsByEmail, ...corpsByCreator];
-      const seen = new Set();
-      const uniqueCorps = allCorps.filter(c => seen.has(c.id) ? false : seen.add(c.id));
-      resolvedCorporateId = uniqueCorps[0]?.id;
-    }
+    const resolvedCorporateId = urlCorporateId || hookCorporateId || null;
+    const resolvedSessionId = sessionId;
 
     if (!resolvedCorporateId) {
       setLoading(false);
