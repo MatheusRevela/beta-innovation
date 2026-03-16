@@ -25,7 +25,7 @@ const SORT_FIELDS = [
 ];
 
 export default function StartupManagement() {
-  const { isReadOnly, canManageStartups } = useCollabRole();
+  const { isReadOnly, canManageStartups, loaded } = useCollabRole();
   const [startups, setStartups] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);

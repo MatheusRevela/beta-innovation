@@ -65,6 +65,14 @@ export default function Diagnostic() {
     setResponses(r => ({ ...r, [`${pillar.id}__${qId}`]: val }));
     // Create session on first answer if none exists yet
     if (!session && !sessionCreated && corporateId) {
+      // Issue #6 — Validar ownership antes de criar sessão
+      const me = await base44.auth.me();
+      if (me?.role !== 'admin') {
+        const membership = await base44.entities.CorporateMember.filter({
+          corporate_id: corporateId, email: me.email, status: 'active'
+        });
+        if (membership.length === 0) return;
+      }
       setSessionCreated(true);
       const sess = await base44.entities.DiagnosticSession.create({
         corporate_id: corporateId,
