@@ -227,15 +227,28 @@ export default function AIReadinessScan() {
   const [assessment, setAssessment] = useState(null);
   const [saving, setSaving] = useState(false);
 
+  const [hasCompletedDiagnostic, setHasCompletedDiagnostic] = useState(false);
+
   useEffect(() => {
     if (!accessLoading && corporate) checkExisting();
     else if (!accessLoading) setView("landing");
   }, [accessLoading, corporate]);
 
   const checkExisting = async () => {
-    const existing = await base44.entities.AIAssessment.filter(
-      { corporate_id: corporate.id }, "-created_date", 1
-    );
+    // Check if there's a completed DiagnosticSession first
+    const [existing, completedSessions] = await Promise.all([
+      base44.entities.AIAssessment.filter({ corporate_id: corporate.id }, "-created_date", 1),
+      base44.entities.DiagnosticSession.filter({ corporate_id: corporate.id, status: "completed" }, "-created_date", 1),
+    ]);
+
+    const diagDone = completedSessions.length > 0;
+    setHasCompletedDiagnostic(diagDone);
+
+    if (!diagDone) {
+      setView("blocked");
+      return;
+    }
+
     if (existing.length > 0) {
       setAssessment(existing[0]);
       setView("results");
