@@ -584,7 +584,7 @@ function ResultsView({ assessment, onGoToTheses, onRedo }) {
   const radarData = DIMENSIONS.map(d => ({
     subject: d.short,
     score: dimension_scores[d.id] || 0,
-    fullMark: 5,
+    fullMark: 100,
   }));
 
   // Top 2 gaps (lowest scoring dimensions)
