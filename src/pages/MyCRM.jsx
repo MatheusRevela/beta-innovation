@@ -10,6 +10,7 @@ import TaskDrawer from "@/components/crm/TaskDrawer";
 import { createPageUrl } from "@/utils";
 
 export default function MyCRM() {
+  const navigate = useNavigate();
   const { loading: accessLoading, corporate, hasSuperCRMAccess, corporateId } = useCorporateAccess();
   const [projects, setProjects] = useState([]);
   const [startups, setStartups] = useState({});
