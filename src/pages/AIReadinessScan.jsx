@@ -678,7 +678,7 @@ function ResultsView({ assessment, onGoToTheses, onRedo }) {
                       <div className="h-full rounded-full" style={{ width: `${scoreToPercent(score)}%`, background: colors.color }} />
                     </div>
                     <span className="text-xs font-bold flex-shrink-0" style={{ color: colors.color }}>
-                      {score.toFixed(1)}
+                      {Math.round(score)}
                     </span>
                   </div>
                 </div>
