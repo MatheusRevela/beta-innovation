@@ -594,8 +594,6 @@ function ResultsView({ assessment, onGoToTheses, onRedo }) {
   const topGaps = sortedDims.slice(0, 2);
   const topStrengths = sortedDims.slice(-2).reverse();
 
-  const scoreToPercent = (s) => Math.round(s);
-
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
       {/* Header */}
