@@ -190,13 +190,14 @@ function calcScores(answers) {
   for (const dim of DIMENSIONS) {
     const qs = QUESTIONS.filter(q => q.dimension === dim.id);
     const scores = qs.map(q => answers[q.id]).filter(s => s != null);
+    // Convert 1-5 scale to 0-100: (score - 1) / 4 * 100
     dimScores[dim.id] = scores.length
-      ? Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 10) / 10
+      ? Math.round(scores.reduce((a, b) => a + ((b - 1) / 4 * 100), 0) / scores.length)
       : 0;
   }
   const values = Object.values(dimScores).filter(v => v > 0);
   const global = values.length
-    ? Math.round((values.reduce((a, b) => a + b, 0) / values.length) * 10) / 10
+    ? Math.round(values.reduce((a, b) => a + b, 0) / values.length)
     : 0;
   return { dimension_scores: dimScores, global_score: global };
 }
