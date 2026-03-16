@@ -360,6 +360,22 @@ Responda APENAS em JSON válido com as chaves: thesis_text, macro_categories, to
     onCreated(newThesis);
   };
 
+  // ── LOADING AI ASSESSMENT ───────────────────────────────────────────────────
+  if (loadingAssessment) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
+        <div className="bg-white rounded-2xl shadow-2xl p-10 max-w-sm w-full text-center">
+          <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: "#fce7ef" }}>
+            <Brain className="w-7 h-7 animate-pulse" style={{ color: "#E10867" }} />
+          </div>
+          <p className="font-semibold mb-1" style={{ color: "#111111" }}>Preparando contexto de IA…</p>
+          <p className="text-sm" style={{ color: "#4B4F4B" }}>Buscando seus dados de AI Readiness Scan</p>
+          <Loader2 className="w-5 h-5 animate-spin mx-auto mt-4" style={{ color: "#E10867" }} />
+        </div>
+      </div>
+    );
+  }
+
   // ── LOADING SCREEN ──────────────────────────────────────────────────────────
   if (generating) {
     return (
