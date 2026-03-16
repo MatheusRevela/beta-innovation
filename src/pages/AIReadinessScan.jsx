@@ -203,18 +203,18 @@ function calcScores(answers) {
 }
 
 export function getAIMaturityLabel(score) {
-  if (score >= 4.5) return "Líder em IA";
-  if (score >= 3.5) return "Avançado";
-  if (score >= 2.5) return "Consolidado";
-  if (score >= 1.5) return "Em Desenvolvimento";
+  if (score >= 90) return "Líder em IA";
+  if (score >= 70) return "Avançado";
+  if (score >= 50) return "Consolidado";
+  if (score >= 30) return "Em Desenvolvimento";
   return "Inicial";
 }
 
 export function getAIMaturityColor(score) {
-  if (score >= 4.5) return { bg: "#e8f5e9", color: "#2C4425" };
-  if (score >= 3.5) return { bg: "#f3e8ff", color: "#6B2FA0" };
-  if (score >= 2.5) return { bg: "#fce7ef", color: "#E10867" };
-  if (score >= 1.5) return { bg: "#FFF3E0", color: "#E65100" };
+  if (score >= 90) return { bg: "#e8f5e9", color: "#2C4425" };
+  if (score >= 70) return { bg: "#f3e8ff", color: "#6B2FA0" };
+  if (score >= 50) return { bg: "#fce7ef", color: "#E10867" };
+  if (score >= 30) return { bg: "#FFF3E0", color: "#E65100" };
   return { bg: "#FFEBEE", color: "#C62828" };
 }
 
