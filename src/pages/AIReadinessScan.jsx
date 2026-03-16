@@ -617,9 +617,9 @@ function ResultsView({ assessment, onGoToTheses, onRedo }) {
         <div className="w-20 h-20 rounded-2xl flex flex-col items-center justify-center flex-shrink-0"
           style={{ background: maturityColors.bg }}>
           <span className="text-2xl font-black" style={{ color: maturityColors.color }}>
-            {global_score.toFixed(1)}
+            {Math.round(global_score)}
           </span>
-          <span className="text-xs font-medium" style={{ color: maturityColors.color }}>/ 5.0</span>
+          <span className="text-xs font-medium" style={{ color: maturityColors.color }}>/100</span>
         </div>
         <div className="flex-1">
           <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "#A7ADA7" }}>
