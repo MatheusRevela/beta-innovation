@@ -1,16 +1,20 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PageHeader from "@/components/shared/PageHeader";
 import { Database, Building2, Briefcase, Zap, TrendingUp, Loader2 } from "lucide-react";
 
 export default function AdminDashboard() {
+  const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadStats();
+    base44.auth.me().then(me => {
+      if (me?.role !== 'admin') navigate(createPageUrl('Dashboard'));
+      else loadStats();
+    });
   }, []);
 
   const loadStats = async () => {
