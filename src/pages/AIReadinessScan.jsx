@@ -656,7 +656,7 @@ function ResultsView({ assessment, onGoToTheses, onRedo }) {
               strokeWidth={2}
             />
             <Tooltip
-              formatter={(v) => [`${v.toFixed(1)} / 5.0`, "Score"]}
+              formatter={(v) => [`${Math.round(v)} / 100`, "Score"]}
               contentStyle={{ borderRadius: 8, border: "1px solid #ECEEEA", fontSize: 12 }}
             />
           </RadarChart>
