@@ -148,26 +148,12 @@ export default function Colaboradores() {
 
   const load = async () => {
     setLoading(true);
+    // Issue #4 — Removido mecanismo de localStorage para roles pendentes
     const [all, me] = await Promise.all([
       base44.entities.User.list(),
       base44.auth.me()
     ]);
-    // Apply any pending collaborator roles for users who accepted their invite
-    const pending = JSON.parse(localStorage.getItem("pending_collab_roles") || "{}");
-    const updates = [];
-    for (const u of all) {
-      const pendingRole = pending[u.email?.toLowerCase()];
-      if (pendingRole && !u.collaborator_role) {
-        updates.push(base44.entities.User.update(u.id, { role: "admin", collaborator_role: pendingRole }));
-        delete pending[u.email.toLowerCase()];
-      }
-    }
-    if (updates.length > 0) {
-      await Promise.all(updates);
-      localStorage.setItem("pending_collab_roles", JSON.stringify(pending));
-    }
-    const refreshed = updates.length > 0 ? await base44.entities.User.list() : all;
-    setUsers(refreshed.filter(u => u.role === "admin"));
+    setUsers(all.filter(u => u.role === "admin"));
     setCurrentUser(me);
     setLoading(false);
   };
