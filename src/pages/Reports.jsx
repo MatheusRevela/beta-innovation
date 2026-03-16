@@ -8,13 +8,17 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { DIAGNOSTIC_PILLARS } from "@/components/diagnostic/DiagnosticQuestions";
 
 export default function Reports() {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [sessions, setSessions] = useState([]);
   const [startups, setStartups] = useState([]);
   const [projects, setProjects] = useState([]);
 
   useEffect(() => {
-    loadData();
+    base44.auth.me().then(me => {
+      if (me?.role !== 'admin') navigate(createPageUrl('Dashboard'));
+      else loadData();
+    });
   }, []);
 
   const loadData = async () => {

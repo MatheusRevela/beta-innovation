@@ -9,6 +9,7 @@ import { Loader2, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 export default function CRMBoard() {
+  const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [startups, setStartups] = useState({});
   const [corporates, setCorporates] = useState({});
@@ -16,7 +17,10 @@ export default function CRMBoard() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    loadData();
+    base44.auth.me().then(me => {
+      if (me?.role !== 'admin') { navigate(createPageUrl('Dashboard')); return; }
+      loadData();
+    });
   }, []);
 
   const loadData = async () => {

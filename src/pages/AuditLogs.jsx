@@ -16,14 +16,18 @@ const ACTION_COLORS = {
 };
 
 export default function AuditLogs() {
+  const navigate = useNavigate();
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    base44.entities.AuditLog.list("-created_date", 200).then(l => {
-      setLogs(l);
-      setLoading(false);
+    base44.auth.me().then(me => {
+      if (me?.role !== 'admin') { navigate(createPageUrl('Dashboard')); return; }
+      base44.entities.AuditLog.list("-created_date", 200).then(l => {
+        setLogs(l);
+        setLoading(false);
+      });
     });
   }, []);
 
