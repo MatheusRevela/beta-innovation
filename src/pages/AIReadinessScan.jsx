@@ -10,7 +10,7 @@ import {
 } from "recharts";
 import {
   Brain, ChevronRight, ChevronLeft, Loader2, SkipForward,
-  CheckCircle2, AlertTriangle, TrendingUp, RotateCcw, Zap, Clock, Target
+  CheckCircle2, AlertTriangle, TrendingUp, RotateCcw, Zap, Clock, Target, Lock
 } from "lucide-react";
 
 // ─── DIMENSIONS ───────────────────────────────────────────────────────────────
