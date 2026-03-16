@@ -31,40 +31,8 @@ export function useCorporateAccess() {
       return;
     }
 
-    // 2. Fallback: gestor que criou a corporate via onboarding antigo (contact_email ou created_by)
-    const [corpsByEmail, corpsByCreator] = await Promise.all([
-      base44.entities.Corporate.filter({ contact_email: me.email }),
-      base44.entities.Corporate.filter({ created_by: me.email }),
-    ]);
-    const allCorps = [...corpsByEmail, ...corpsByCreator];
-    const seen = new Set();
-    const unique = allCorps.filter(c => seen.has(c.id) ? false : seen.add(c.id));
-
-    if (unique.length > 0) {
-      const corp = unique[0];
-      // Criar membership de gestor automaticamente para migração (safe: verifica antes de criar)
-      const existingMem = await base44.entities.CorporateMember.filter({ corporate_id: corp.id, email: me.email });
-      let mem = existingMem[0] || null;
-      if (!mem) {
-        // Pequeno delay para evitar race condition em duplo-tab/mount
-        await new Promise(r => setTimeout(r, 50));
-        const recheck = await base44.entities.CorporateMember.filter({ corporate_id: corp.id, email: me.email });
-        if (recheck.length === 0) {
-          mem = await base44.entities.CorporateMember.create({
-            corporate_id: corp.id,
-            email: me.email,
-            role: "gestor",
-            super_crm_access: true,
-            status: "active"
-          });
-        } else {
-          mem = recheck[0];
-        }
-      }
-      setCorporate(corp);
-      setMember(mem);
-    }
-
+    // Issue #5 — Fallback removido: criação automática de membership foi movida para Onboarding.
+    // Usuários sem membership ativa simplesmente não têm acesso a uma corporate.
     setLoading(false);
   };
 
