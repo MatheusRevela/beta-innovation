@@ -60,11 +60,12 @@ export default function DiagnosticCRM() {
       base44.entities.CRMProject.filter({ corporate_id: effectiveCorpId, session_id: thesis.id }),
       base44.entities.CRMProject.filter({ corporate_id: effectiveCorpId }),
     ]);
-    // Collect only the startup IDs we actually need instead of fetching all
-    const startupIds = [...new Set(ps.map(p => p.startup_id).filter(Boolean))];
-    const ss = startupIds.length > 0
-      ? await Promise.all(startupIds.map(id => base44.entities.Startup.filter({ id }))).then(r => r.flat())
+    // Fetch all active startups once and filter by needed IDs client-side (avoids N+1)
+    const startupIds = new Set(ps.map(p => p.startup_id).filter(Boolean));
+    const allStartups = startupIds.size > 0
+      ? await base44.entities.Startup.filter({ is_deleted: false })
       : [];
+    const ss = allStartups.filter(s => startupIds.has(s.id));
     setProjects(ps);
     const map = {};
     ss.forEach(s => { map[s.id] = s; });
