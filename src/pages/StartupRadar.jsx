@@ -13,7 +13,6 @@ import AIPrioritizationPanel from "@/components/radar/AIPrioritizationPanel";
 import StartupComparePanel from "@/components/radar/StartupComparePanel";
 
 export default function StartupRadar() {
-  const navigate = useNavigate();
   const params = new URLSearchParams(window.location.search);
   const sessionId = params.get("session_id");
   const urlCorporateId = params.get("corporate_id");
