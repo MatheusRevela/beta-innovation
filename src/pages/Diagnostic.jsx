@@ -194,9 +194,12 @@ Responda em JSON:
       });
     }
 
-    for (const r of allResponses) {
-      await base44.entities.DiagnosticResponse.create({ ...r, session_id: sess?.id, corporate_id: corporateId });
-    }
+    // Bulk-create responses in parallel instead of sequential loop
+    await Promise.all(
+      allResponses.map(r =>
+        base44.entities.DiagnosticResponse.create({ ...r, session_id: sess?.id, corporate_id: corporateId })
+      )
+    );
 
     setResults({
       pillarScores,
