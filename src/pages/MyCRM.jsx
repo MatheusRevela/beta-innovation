@@ -112,7 +112,7 @@ export default function MyCRM() {
           variant="outline"
           className="text-sm gap-2"
           style={{ borderColor: '#E10867', color: '#E10867' }}
-          onClick={() => window.location.href = createPageUrl("DiagnosticCRM")}
+          onClick={() => navigate(createPageUrl("DiagnosticCRM"))}
         >
           ← CRM por Diagnóstico
         </Button>
