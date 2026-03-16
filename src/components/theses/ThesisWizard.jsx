@@ -93,6 +93,27 @@ const ENGAGEMENT_TYPES = [
   { label: "Licenciamento de Tecnologia", sub: "Usar a solução da startup sem exclusividade" },
 ];
 
+// ─── AI GAP → CHALLENGE MAPPING ──────────────────────────────────────────────
+const AI_GAP_TO_CHALLENGE = {
+  estrategia: "Falta de agilidade nos processos internos",
+  governanca: "Pressão regulatória e compliance",
+  valor: "Custos operacionais elevados",
+  operacoes: "Integração entre sistemas legados e novos",
+  ecossistema: "Concorrência de novos entrantes digitais",
+  dados: "Lacunas de dados e analytics",
+  tecnologia: "Segurança da informação e cibersegurança",
+  habilidades: "Dificuldade em atrair e reter talentos",
+  frugalidade: "Sustentabilidade e metas ESG",
+};
+
+const DIMENSION_NAMES = {
+  estrategia: "Estratégia e Liderança", governanca: "Governança",
+  valor: "Valor em Produção", operacoes: "Operações",
+  ecossistema: "Ecossistema e Parceiros", dados: "Dados e Infraestrutura",
+  tecnologia: "Tecnologia", habilidades: "Habilidades e Cultura",
+  frugalidade: "Frugalidade e Impacto",
+};
+
 // ─── CHIP BUTTON ─────────────────────────────────────────────────────────────
 
 function Chip({ label, emoji, selected, onClick, color = "#E10867", bgColor = "#fce7ef" }) {
