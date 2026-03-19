@@ -152,7 +152,18 @@ Retorne: description (2-3 frases), category, vertical, business_model (SaaS/Hard
 
   const filtered = labs
     .filter(l => tab === "all" || l.status === tab)
-    .filter(l => !search || l.name.toLowerCase().includes(search.toLowerCase()) || (l.website || "").toLowerCase().includes(search.toLowerCase()));
+    .filter(l => {
+      if (!search) return true;
+      const q = search.toLowerCase();
+      return (
+        l.name?.toLowerCase().includes(q) ||
+        (l.website || "").toLowerCase().includes(q) ||
+        (l.category || "").toLowerCase().includes(q) ||
+        (l.state || "").toLowerCase().includes(q) ||
+        (l.description || "").toLowerCase().includes(q) ||
+        (l.tags || []).some(t => t.toLowerCase().includes(q))
+      );
+    });
 
   const allFilteredSelected = filtered.length > 0 && filtered.every(l => selected.has(l.id));
 
