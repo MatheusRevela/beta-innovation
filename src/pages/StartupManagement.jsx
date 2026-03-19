@@ -54,6 +54,8 @@ export default function StartupManagement() {
   const [deletingBulk, setDeletingBulk] = useState(false);
   const [duplicatesModal, setDuplicatesModal] = useState(false);
   const [enrichingId, setEnrichingId] = useState(null);
+  const [verifyingAll, setVerifyingAll] = useState(false);
+  const [verificationDrawer, setVerificationDrawer] = useState(null);
   const searchTimeout = useRef(null);
 
   const persistFilters = (f) => {
