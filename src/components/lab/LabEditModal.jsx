@@ -46,6 +46,7 @@ export default function LabEditModal({ lab, onClose, onSaved }) {
       vertical: form.vertical,
       business_model: form.business_model,
       stage: form.stage,
+      state: form.state,
       value_proposition: form.value_proposition,
       target_customers: form.target_customers,
       tags: form.tags ? form.tags.split(",").map(t => t.trim()).filter(Boolean) : [],
