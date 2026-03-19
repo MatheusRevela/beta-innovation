@@ -18,6 +18,10 @@ const FIELDS = {
   business_model: ["SaaS", "Hardware", "Marketplace", "Serviço", "Plataforma", "Outro"],
   stage: ["Ideação", "MVP", "PMF", "Scale", "Growth"],
   price_range: ["Gratuito", "Até R$10k/ano", "R$10k–R$50k/ano", "R$50k–R$200k/ano", "Acima de R$200k/ano"],
+  state: [
+    "Internacional",
+    "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"
+  ],
 };
 
 const EMPTY = {
