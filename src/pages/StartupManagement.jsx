@@ -460,6 +460,14 @@ export default function StartupManagement() {
       {duplicatesModal && (
         <DuplicatesModal onClose={() => { setDuplicatesModal(false); fetchStartups(page, search, filters, sort); }} />
       )}
+
+      {verificationDrawer && (
+        <VerificationDrawer
+          startup={verificationDrawer}
+          onClose={() => setVerificationDrawer(null)}
+          onUpdated={() => fetchStartups(page, search, filters, sort)}
+        />
+      )}
     </div>
   );
 }
