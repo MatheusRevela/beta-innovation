@@ -216,12 +216,16 @@ Inclua: termos técnicos, verticais de mercado, tecnologias usadas, problemas re
               <Input type="email" value={form.contact_email} onChange={e => update("contact_email", e.target.value)} />
             </div>
             <div>
-              <Label>WhatsApp</Label>
-              <Input value={form.contact_whatsapp} onChange={e => update("contact_whatsapp", e.target.value)} placeholder="+55 11 99999-9999" />
+              <Label>CNPJ</Label>
+              <Input value={form.cnpj || ""} onChange={e => update("cnpj", e.target.value)} placeholder="00.000.000/0001-00" />
             </div>
             <div>
               <Label>Estado</Label>
-              <Input value={form.state} onChange={e => update("state", e.target.value)} placeholder="SP" />
+              <select value={form.state || ""} onChange={e => update("state", e.target.value)}
+                className="w-full border rounded-md px-3 py-2 text-sm" style={{ borderColor: '#A7ADA7' }}>
+                <option value="">Selecionar</option>
+                {FIELDS.state.map(v => <option key={v} value={v}>{v}</option>)}
+              </select>
             </div>
             <div>
               <Label>Faixa de preço</Label>
