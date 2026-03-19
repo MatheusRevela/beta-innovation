@@ -9,11 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Plus, Search, Trash2, Loader2, ChevronUp, ChevronDown,
-  Edit, Eye, Power, PowerOff, AlertCircle, X
+  Edit, Eye, Power, PowerOff, AlertCircle, X, ShieldCheck
 } from "lucide-react";
 import StartupFormModal from "@/components/admin/StartupFormModal";
 import StartupDetailDrawer from "@/components/admin/StartupDetailDrawer";
 import DuplicatesModal from "@/components/admin/DuplicatesModal";
+import StartupVerificationBadge from "@/components/admin/StartupVerificationBadge";
+import VerificationDrawer from "@/components/admin/VerificationDrawer";
 
 const PAGE_SIZE = 50;
 
