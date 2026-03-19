@@ -221,6 +221,15 @@ export default function StartupManagement() {
               </Button>
             )}
             {loaded && canManageStartups && (
+              <Button variant="outline" onClick={verifyAll} disabled={verifyingAll} style={{ borderColor: '#A7ADA7' }}>
+                {verifyingAll
+                  ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
+                  : <ShieldCheck className="w-4 h-4 mr-1.5" />
+                }
+                {verifyingAll ? "Verificando…" : "Verificar Todas"}
+              </Button>
+            )}
+            {loaded && canManageStartups && (
               <Button onClick={() => { setEditStartup(null); setShowForm(true); }}
                 className="text-white" style={{ background: '#E10867', border: 'none' }}>
                 <Plus className="w-4 h-4 mr-1.5" /> Nova Startup
