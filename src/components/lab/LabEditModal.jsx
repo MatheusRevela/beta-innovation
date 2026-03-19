@@ -29,6 +29,7 @@ export default function LabEditModal({ lab, onClose, onSaved }) {
     vertical: lab.vertical || "",
     business_model: lab.business_model || "",
     stage: lab.stage || "",
+    state: lab.state || "",
     value_proposition: lab.value_proposition || "",
     target_customers: lab.target_customers || "",
     tags: (lab.tags || []).join(", "),
