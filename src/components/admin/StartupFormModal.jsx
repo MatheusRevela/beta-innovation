@@ -26,7 +26,7 @@ const FIELDS = {
 
 const EMPTY = {
   name: "", category: "", vertical: "", business_model: "", description: "",
-  website: "", contact_email: "", contact_whatsapp: "", state: "", country: "Brasil",
+  website: "", contact_email: "", cnpj: "", state: "", country: "Brasil",
   stage: "", price_range: "", tags: "", logo_url: "", notes: "", is_active: true
 };
 
