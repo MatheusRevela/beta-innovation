@@ -76,6 +76,8 @@ Retorne TODOS os campos abaixo com base em pesquisa real:
       vertical: res.vertical,
       business_model: res.business_model,
       stage: res.stage,
+      state: res.state,
+      contact_email: res.contact_email,
       tags: res.tags,
       keywords: res.keywords,
       target_customers: res.target_customers,
