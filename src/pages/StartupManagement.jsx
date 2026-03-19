@@ -315,6 +315,7 @@ export default function StartupManagement() {
                   </th>
                 ))}
                 <th className="p-3 text-left text-xs uppercase tracking-wide font-semibold" style={{ color: '#4B4F4B' }}>Status</th>
+                <th className="p-3 text-left text-xs uppercase tracking-wide font-semibold" style={{ color: '#4B4F4B' }}>Verificação</th>
                 <th className="p-3 text-left text-xs uppercase tracking-wide font-semibold" style={{ color: '#4B4F4B' }}>Enriquecimento</th>
                 <th className="p-3 w-24" />
               </tr>
