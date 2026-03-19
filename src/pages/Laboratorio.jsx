@@ -106,8 +106,24 @@ export default function Laboratorio() {
       const lab = pending[i];
       try {
         const res = await base44.integrations.Core.InvokeLLM({
-          prompt: `Analise a startup "${lab.name}"${lab.website ? ` (site: ${lab.website})` : ""}${lab.description ? `. Descrição: ${lab.description}` : ""}.
-Retorne: description (2-3 frases), category, vertical, business_model (SaaS/Hardware/Marketplace/Serviço/Plataforma/Outro), stage (Ideação/MVP/PMF/Scale/Growth), tags (array de 15+ palavras-chave), keywords (3-5 problemas), target_customers (1 frase), value_proposition (1 frase), enrichment_confidence (0-100).`,
+          prompt: `Você é um analista sênior de inovação especialista no ecossistema de startups brasileiro e global.
+Analise a startup "${lab.name}"${lab.website ? ` — site oficial: ${lab.website}` : ""}${lab.description ? `\nDescrição fornecida: "${lab.description}"` : ""}.
+
+${lab.website ? "Acesse o site e extraia informações reais: produto/serviço, tecnologia usada, mercado atendido, modelo de negócio, clientes, diferenciais, localização e estágio." : ""}
+
+Retorne TODOS os campos abaixo com base em pesquisa real:
+- description: resumo executivo de 2-3 frases sobre o que a startup faz, qual problema resolve e para quem
+- category: EXATAMENTE uma de: Agtech, Biotech, Cibersegurança, Comunicação, Construtech, Deeptech, Edtech, Energtech, ESG, Fashiotech, Fintech, Foodtech, Games, Govtech, Greentech, Healthtech, HRtech, IndTech, Insurtech, Legaltech, Logtech, Martech, Midiatech, Mobilidade, Pettech, Proptech, Real Estate, Regtech, Retailtech, Salestech, Security, Sportech, Supply Chain, Traveltech, Web3
+- vertical: vertical específica dentro da categoria (ex: "Telemedicina", "Open Banking", "Precision Agriculture")
+- business_model: EXATAMENTE um de: SaaS, Hardware, Marketplace, Serviço, Plataforma, Outro
+- stage: EXATAMENTE um de: Ideação, MVP, PMF, Scale, Growth
+- state: estado brasileiro onde a startup opera (sigla, ex: SP, RJ, MG) ou "Internacional" se fora do Brasil
+- contact_email: e-mail de contato encontrado no site (se disponível)
+- tags: array de PELO MENOS 15 palavras-chave para matching com corporações — inclua: termos técnicos, tecnologias usadas (ex: "machine learning", "IoT"), verticais de mercado, problemas resolvidos, setores atendidos (ex: "agronegócio", "saúde"), tipo de cliente (B2B, B2C, B2B2C), tendências relacionadas (ex: "ESG", "automação") e funcionalidades do produto
+- keywords: array de 3-5 frases curtas descrevendo os principais problemas que a startup resolve
+- target_customers: quem são os clientes ideais (1 frase objetiva com perfil e setor)
+- value_proposition: proposta de valor central em 1 frase direta e impactante
+- enrichment_confidence: número 0-100 indicando confiança geral do enriquecimento`,
           add_context_from_internet: !!lab.website,
           response_json_schema: {
             type: "object",
