@@ -15,6 +15,10 @@ const CATEGORY_OPTIONS = [
 ];
 const BM_OPTIONS = ["SaaS", "Hardware", "Marketplace", "Serviço", "Plataforma", "Outro"];
 const STAGE_OPTIONS = ["Ideação", "MVP", "PMF", "Scale", "Growth"];
+const STATE_OPTIONS = [
+  "Internacional",
+  "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"
+];
 
 export default function LabEditModal({ lab, onClose, onSaved }) {
   const [form, setForm] = useState({
