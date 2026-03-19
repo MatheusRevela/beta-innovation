@@ -29,22 +29,26 @@ export default function LabStartupCard({ lab, onEnriched, onPromoted, onDeleted,
     setEnriching(true);
     setResult(null);
     const res = await base44.integrations.Core.InvokeLLM({
-      prompt: `Você é um analista de inovação especialista em ecossistema de startups. 
-Analise a startup "${localLab.name}" e gere um enriquecimento completo dos dados.
-${localLab.website ? `Site oficial: ${localLab.website}.` : ""}
-Dados existentes: ${JSON.stringify({ category: localLab.category, description: localLab.description, tags: localLab.tags, business_model: localLab.business_model, stage: localLab.stage })}.
+      prompt: `Você é um analista sênior de inovação especialista no ecossistema de startups brasileiro e global.
+Analise a startup "${localLab.name}"${localLab.website ? ` — site oficial: ${localLab.website}` : ""}.
+${localLab.description ? `Descrição fornecida: "${localLab.description}"` : ""}
+${localLab.category || localLab.business_model ? `Dados já cadastrados: ${JSON.stringify({ category: localLab.category, business_model: localLab.business_model, stage: localLab.stage })}` : ""}
 
-Retorne:
-- description: resumo executivo claro e direto de 2-3 frases sobre o que a startup faz e qual problema resolve
-- category: categoria principal — escolha EXATAMENTE uma destas opções: Agtech, Biotech, Cibersegurança, Comunicação, Construtech, Deeptech, Edtech, Energtech, ESG, Fashiotech, Fintech, Foodtech, Games, Govtech, Greentech, Healthtech, HRtech, IndTech, Insurtech, Legaltech, Logtech, Martech, Midiatech, Mobilidade, Pettech, Proptech, Real Estate, Regtech, Retailtech, Salestech, Security, Sportech, Supply Chain, Traveltech, Web3
-- vertical: vertical específica dentro da categoria (ex: "Telemedicina", "Open Banking", "Precision Agriculture")
-- business_model: um de ["SaaS", "Hardware", "Marketplace", "Serviço", "Plataforma", "Outro"]
-- stage: um de ["Ideação", "MVP", "PMF", "Scale", "Growth"]
-- tags: array de PELO MENOS 15 palavras-chave relevantes para matching com corporações. Inclua: termos técnicos, verticais de mercado, tecnologias usadas, problemas resolvidos, setores atendidos, modelos de negócio, tipo de cliente, palavras-chave do produto e tendências relacionadas (em português ou inglês)
-- keywords: array de 3-5 problemas que a startup resolve (frases curtas)
-- target_customers: quem são os clientes ideais (1 frase)
-- value_proposition: proposta de valor central (1 frase objetiva)
-- enrichment_confidence: número 0-100 indicando confiança do enriquecimento`,
+${localLab.website ? "Acesse o site e extraia informações reais: produto/serviço, tecnologia usada, mercado atendido, modelo de negócio, clientes, diferenciais, localização e estágio." : ""}
+
+Retorne TODOS os campos abaixo com base em pesquisa real:
+- description: resumo executivo de 2-3 frases sobre o que a startup faz, qual problema resolve e para quem
+- category: EXATAMENTE uma de: Agtech, Biotech, Cibersegurança, Comunicação, Construtech, Deeptech, Edtech, Energtech, ESG, Fashiotech, Fintech, Foodtech, Games, Govtech, Greentech, Healthtech, HRtech, IndTech, Insurtech, Legaltech, Logtech, Martech, Midiatech, Mobilidade, Pettech, Proptech, Real Estate, Regtech, Retailtech, Salestech, Security, Sportech, Supply Chain, Traveltech, Web3
+- vertical: vertical específica (ex: "Telemedicina", "Open Banking", "Precision Agriculture")
+- business_model: EXATAMENTE um de: SaaS, Hardware, Marketplace, Serviço, Plataforma, Outro
+- stage: EXATAMENTE um de: Ideação, MVP, PMF, Scale, Growth
+- state: estado brasileiro onde a startup opera (sigla, ex: SP, RJ, MG) ou "Internacional" se fora do Brasil
+- contact_email: e-mail de contato encontrado no site (se disponível)
+- tags: array de PELO MENOS 15 palavras-chave para matching com corporações — inclua: termos técnicos, tecnologias usadas (ex: "machine learning", "IoT"), verticais de mercado, problemas resolvidos, setores atendidos (ex: "agronegócio", "saúde"), tipo de cliente (B2B, B2C, B2B2C), tendências relacionadas (ex: "ESG", "automação") e funcionalidades do produto
+- keywords: array de 3-5 frases curtas descrevendo os principais problemas que a startup resolve
+- target_customers: quem são os clientes ideais (1 frase objetiva com perfil e setor)
+- value_proposition: proposta de valor central em 1 frase direta e impactante
+- enrichment_confidence: número 0-100 indicando confiança geral do enriquecimento`,
       add_context_from_internet: !!localLab.website,
       response_json_schema: {
         type: "object",
@@ -54,6 +58,8 @@ Retorne:
           vertical: { type: "string" },
           business_model: { type: "string" },
           stage: { type: "string" },
+          state: { type: "string" },
+          contact_email: { type: "string" },
           tags: { type: "array", items: { type: "string" } },
           keywords: { type: "array", items: { type: "string" } },
           target_customers: { type: "string" },
