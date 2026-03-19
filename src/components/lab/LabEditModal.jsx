@@ -115,6 +115,15 @@ export default function LabEditModal({ lab, onClose, onSaved }) {
                 {STAGE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
               </select>
             </div>
+            <div>
+              <label className="text-xs font-semibold block mb-1" style={{ color: "#4B4F4B" }}>Estado</label>
+              <select value={form.state} onChange={e => setForm(f => ({ ...f, state: e.target.value }))}
+                className="w-full rounded-lg border px-3 py-2 text-sm outline-none bg-white"
+                style={{ borderColor: "#A7ADA7" }}>
+                <option value="">Selecionar…</option>
+                {STATE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+              </select>
+            </div>
             <div className="col-span-2">
               <label className="text-xs font-semibold block mb-1" style={{ color: "#4B4F4B" }}>Proposta de Valor</label>
               <Input value={form.value_proposition} onChange={e => setForm(f => ({ ...f, value_proposition: e.target.value }))} placeholder="1 frase objetiva" />
