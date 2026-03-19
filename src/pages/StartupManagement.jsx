@@ -160,6 +160,15 @@ export default function StartupManagement() {
     fetchStartups(page, search, filters, sort);
   };
 
+  const verifyAll = async () => {
+    setVerifyingAll(true);
+    const res = await base44.functions.invoke('verifyStartup', { verify_all: true });
+    setVerifyingAll(false);
+    const { alerts, total } = res.data || {};
+    alert(`Verificação concluída: ${total} startups verificadas, ${alerts} com alertas.`);
+    fetchStartups(page, search, filters, sort);
+  };
+
   const enrichStartup = async (startup) => {
     if (!startup.website) return;
     setEnrichingId(startup.id);
