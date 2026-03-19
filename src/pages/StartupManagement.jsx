@@ -375,6 +375,12 @@ export default function StartupManagement() {
                   </td>
                   <td className="p-3"><StatusDot active={startup.is_active !== false} /></td>
                   <td className="p-3">
+                    <StartupVerificationBadge
+                      startup={startup}
+                      onClick={() => setVerificationDrawer(startup)}
+                    />
+                  </td>
+                  <td className="p-3">
                     {startup.ai_enriched
                       ? <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: '#ECEEEA', color: '#2C4425' }}>✓ Enriquecida</span>
                       : startup.website
