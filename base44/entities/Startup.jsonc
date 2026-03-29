@@ -1,0 +1,241 @@
+{
+  "name": "Startup",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "URL do logotipo"
+    },
+    "cnpj": {
+      "type": "string",
+      "description": "CNPJ da startup"
+    },
+    "founding_year": {
+      "type": "number",
+      "description": "Ano de funda\u00e7\u00e3o da startup"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "Agtech",
+        "Biotech",
+        "Ciberseguran\u00e7a",
+        "Comunica\u00e7\u00e3o",
+        "Construtech",
+        "Deeptech",
+        "Edtech",
+        "Energtech",
+        "ESG",
+        "Fashiotech",
+        "Fintech",
+        "Foodtech",
+        "Games",
+        "Govtech",
+        "Greentech",
+        "Healthtech",
+        "HRtech",
+        "IndTech",
+        "Insurtech",
+        "Legaltech",
+        "Logtech",
+        "Martech",
+        "Midiatech",
+        "Mobilidade",
+        "Pettech",
+        "Proptech",
+        "Real Estate",
+        "Regtech",
+        "Retailtech",
+        "Salestech",
+        "Security",
+        "Sportech",
+        "Supply Chain",
+        "Traveltech",
+        "Web3"
+      ],
+      "description": "Vertical/categoria principal da startup"
+    },
+    "vertical": {
+      "type": "string",
+      "description": "Vertical de mercado espec\u00edfica"
+    },
+    "business_model": {
+      "type": "string",
+      "enum": [
+        "SaaS",
+        "Hardware",
+        "Marketplace",
+        "Servi\u00e7o",
+        "Plataforma",
+        "Outro"
+      ]
+    },
+    "description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o da solu\u00e7\u00e3o (2-3 frases)"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags t\u00e9cnicas e de neg\u00f3cio para matching"
+    },
+    "website": {
+      "type": "string"
+    },
+    "contact_email": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "Internacional",
+        "AC",
+        "AL",
+        "AP",
+        "AM",
+        "BA",
+        "CE",
+        "DF",
+        "ES",
+        "GO",
+        "MA",
+        "MT",
+        "MS",
+        "MG",
+        "PA",
+        "PB",
+        "PR",
+        "PE",
+        "PI",
+        "RJ",
+        "RN",
+        "RS",
+        "RO",
+        "RR",
+        "SC",
+        "SP",
+        "SE",
+        "TO"
+      ],
+      "description": "Estado da startup (ou Internacional)"
+    },
+    "country": {
+      "type": "string",
+      "default": "Brasil"
+    },
+    "price_range": {
+      "type": "string",
+      "enum": [
+        "Gratuito",
+        "At\u00e9 R$10k/ano",
+        "R$10k\u2013R$50k/ano",
+        "R$50k\u2013R$200k/ano",
+        "Acima de R$200k/ano"
+      ]
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "Idea\u00e7\u00e3o",
+        "MVP",
+        "PMF",
+        "Scale",
+        "Growth"
+      ]
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se ativa, pode aparecer em radares de matching"
+    },
+    "quality_score": {
+      "type": "number",
+      "description": "Score de qualidade geral (0\u2013100)"
+    },
+    "completeness_score": {
+      "type": "number",
+      "description": "Score de completude dos campos (0\u2013100)"
+    },
+    "is_deleted": {
+      "type": "boolean",
+      "default": false
+    },
+    "deleted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "deleted_by": {
+      "type": "string"
+    },
+    "is_duplicate": {
+      "type": "boolean",
+      "default": false
+    },
+    "duplicate_of": {
+      "type": "string"
+    },
+    "ai_enriched": {
+      "type": "boolean",
+      "default": false
+    },
+    "ai_enriched_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "enrichment_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "processing",
+        "done",
+        "failed"
+      ],
+      "default": "pending"
+    },
+    "keywords": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "value_proposition": {
+      "type": "string"
+    },
+    "target_customers": {
+      "type": "string"
+    },
+    "enrichment_confidence": {
+      "type": "number"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Notas internas da Beta-i"
+    },
+    "last_verified_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp da \u00faltima verifica\u00e7\u00e3o autom\u00e1tica"
+    },
+    "verification_status": {
+      "type": "object",
+      "description": "Resultado da \u00faltima verifica\u00e7\u00e3o autom\u00e1tica: {site_online, response_time_ms, ssl_valid, has_contact, observations}"
+    },
+    "manual_review": {
+      "type": "object",
+      "description": "Revis\u00e3o manual: {reviewed_at, reviewed_by, approved, notes}"
+    },
+    "verification_alert": {
+      "type": "boolean",
+      "default": false,
+      "description": "True se a verifica\u00e7\u00e3o autom\u00e1tica detectou um problema pendente de revis\u00e3o"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

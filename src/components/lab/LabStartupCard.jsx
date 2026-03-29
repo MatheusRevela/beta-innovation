@@ -48,6 +48,7 @@ Retorne TODOS os campos abaixo com base em pesquisa real:
 - keywords: array de 3-5 frases curtas descrevendo os principais problemas que a startup resolve
 - target_customers: quem são os clientes ideais (1 frase objetiva com perfil e setor)
 - value_proposition: proposta de valor central em 1 frase direta e impactante
+- founding_year: ano de fundação da startup (número inteiro, ex: 2018) se encontrado no site
 - enrichment_confidence: número 0-100 indicando confiança geral do enriquecimento`,
       add_context_from_internet: !!localLab.website,
       response_json_schema: {
@@ -64,7 +65,8 @@ Retorne TODOS os campos abaixo com base em pesquisa real:
           keywords: { type: "array", items: { type: "string" } },
           target_customers: { type: "string" },
           value_proposition: { type: "string" },
-          enrichment_confidence: { type: "number" }
+          enrichment_confidence: { type: "number" },
+          founding_year: { type: "number" }
         }
       }
     });
@@ -83,6 +85,7 @@ Retorne TODOS os campos abaixo com base em pesquisa real:
       target_customers: res.target_customers,
       value_proposition: res.value_proposition,
       enrichment_confidence: res.enrichment_confidence,
+      founding_year: res.founding_year,
     };
 
     await base44.entities.LabStartup.update(localLab.id, {
@@ -111,6 +114,9 @@ Retorne TODOS os campos abaixo com base em pesquisa real:
       vertical: data.vertical || localLab.vertical,
       business_model: data.business_model || localLab.business_model,
       stage: data.stage || localLab.stage,
+      state: data.state || localLab.state,
+      contact_email: data.contact_email || localLab.contact_email,
+      founding_year: data.founding_year || localLab.founding_year,
       tags: data.tags || localLab.tags || [],
       keywords: data.keywords,
       value_proposition: data.value_proposition,
@@ -238,6 +244,10 @@ Retorne TODOS os campos abaixo com base em pesquisa real:
                 {displayData.stage && (
                   <span className="px-2 py-0.5 rounded-full text-xs"
                     style={{ background: "#ECEEEA", color: "#4B4F4B" }}>{displayData.stage}</span>
+                )}
+                {displayData.founding_year && (
+                  <span className="px-2 py-0.5 rounded-full text-xs"
+                    style={{ background: "#ECEEEA", color: "#4B4F4B" }}>🗓 {displayData.founding_year}</span>
                 )}
               </div>
 

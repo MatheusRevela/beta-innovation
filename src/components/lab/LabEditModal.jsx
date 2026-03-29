@@ -30,6 +30,7 @@ export default function LabEditModal({ lab, onClose, onSaved }) {
     business_model: lab.business_model || "",
     stage: lab.stage || "",
     state: lab.state || "",
+    founding_year: lab.founding_year || "",
     value_proposition: lab.value_proposition || "",
     target_customers: lab.target_customers || "",
     tags: (lab.tags || []).join(", "),
@@ -47,6 +48,7 @@ export default function LabEditModal({ lab, onClose, onSaved }) {
       business_model: form.business_model,
       stage: form.stage,
       state: form.state,
+      founding_year: form.founding_year ? parseInt(form.founding_year) : undefined,
       value_proposition: form.value_proposition,
       target_customers: form.target_customers,
       tags: form.tags ? form.tags.split(",").map(t => t.trim()).filter(Boolean) : [],
@@ -123,6 +125,10 @@ export default function LabEditModal({ lab, onClose, onSaved }) {
                 <option value="">Selecionar…</option>
                 {STATE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
               </select>
+            </div>
+            <div>
+              <label className="text-xs font-semibold block mb-1" style={{ color: "#4B4F4B" }}>Ano de Fundação</label>
+              <Input type="number" value={form.founding_year} onChange={e => setForm(f => ({ ...f, founding_year: e.target.value }))} placeholder="Ex: 2018" min="1990" max={new Date().getFullYear()} />
             </div>
             <div className="col-span-2">
               <label className="text-xs font-semibold block mb-1" style={{ color: "#4B4F4B" }}>Proposta de Valor</label>

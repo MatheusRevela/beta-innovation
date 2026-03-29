@@ -50,10 +50,11 @@ export default function StartupDetailDrawer({ startup, onClose, onEdit, onToggle
             {[
               ["Modelo", current.business_model],
               ["Estágio", current.stage],
+              ["Ano de Fundação", current.founding_year],
               ["Faixa de preço", current.price_range],
               ["Localização", [current.state, current.country].filter(Boolean).join(", ")],
+              ["CNPJ", current.cnpj],
               ["E-mail", current.contact_email],
-              ["WhatsApp", current.contact_whatsapp],
               ["Enriquecimento IA", current.ai_enriched ? "✓ Enriquecida" : "Pendente"],
             ].filter(([, v]) => v).map(([label, value]) => (
               <div key={label} className="flex items-center justify-between text-sm py-1.5 border-b"

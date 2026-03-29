@@ -27,7 +27,8 @@ const FIELDS = {
 const EMPTY = {
   name: "", category: "", vertical: "", business_model: "", description: "",
   website: "", contact_email: "", cnpj: "", state: "", country: "Brasil",
-  stage: "", price_range: "", tags: "", logo_url: "", notes: "", is_active: true
+  stage: "", price_range: "", tags: "", logo_url: "", notes: "", is_active: true,
+  founding_year: ""
 };
 
 export default function StartupFormModal({ startup, onClose, onSaved }) {
@@ -65,6 +66,7 @@ Inclua: termos técnicos, verticais de mercado, tecnologias usadas, problemas re
         properties: {
           name: { type: "string" },
           description: { type: "string" },
+          founding_year: { type: "number" },
           category: { type: "string", enum: ["Agtech","Biotech","Cibersegurança","Comunicação","Construtech","Deeptech","Edtech","Energtech","ESG","Fashiotech","Fintech","Foodtech","Games","Govtech","Greentech","Healthtech","HRtech","IndTech","Insurtech","Legaltech","Logtech","Martech","Midiatech","Mobilidade","Pettech","Proptech","Real Estate","Regtech","Retailtech","Salestech","Security","Sportech","Supply Chain","Traveltech","Web3"] },
           vertical: { type: "string" },
           business_model: { type: "string", enum: ["SaaS", "Hardware", "Marketplace", "Serviço", "Plataforma", "Outro"] },
@@ -93,7 +95,8 @@ Inclua: termos técnicos, verticais de mercado, tecnologias usadas, problemas re
         contact_email: res.contact_email || f.contact_email,
         state: res.state || f.state,
         country: res.country || f.country,
-      };
+        founding_year: res.founding_year || f.founding_year,
+        };
     });
     setAnalyzing(false);
   };
@@ -218,6 +221,10 @@ Inclua: termos técnicos, verticais de mercado, tecnologias usadas, problemas re
             <div>
               <Label>CNPJ</Label>
               <Input value={form.cnpj || ""} onChange={e => update("cnpj", e.target.value)} placeholder="00.000.000/0001-00" />
+            </div>
+            <div>
+              <Label>Ano de Fundação</Label>
+              <Input type="number" value={form.founding_year || ""} onChange={e => update("founding_year", e.target.value ? parseInt(e.target.value) : "")} placeholder="Ex: 2018" min="1990" max={new Date().getFullYear()} />
             </div>
             <div>
               <Label>Estado</Label>
