@@ -22,8 +22,14 @@ const PAGE_SIZE = 50;
 const SORT_FIELDS = [
   { key: "name", label: "Nome" },
   { key: "category", label: "Categoria" },
-  { key: "quality_score", label: "Qualidade" },
-  { key: "created_date", label: "Data cadastro" },
+  { key: "last_verified_at", label: "Última verificação" },
+];
+
+const CATEGORY_OPTIONS = [
+  "Agtech","Biotech","Cibersegurança","Comunicação","Construtech","Deeptech","Edtech","Energtech","ESG",
+  "Fashiotech","Fintech","Foodtech","Games","Govtech","Greentech","Healthtech","HRtech","IndTech",
+  "Insurtech","Legaltech","Logtech","Martech","Midiatech","Mobilidade","Pettech","Proptech",
+  "Real Estate","Regtech","Retailtech","Salestech","Security","Sportech","Supply Chain","Traveltech","Web3"
 ];
 
 export default function StartupManagement() {
@@ -258,10 +264,10 @@ export default function StartupManagement() {
             <option value="">Estágio</option>
             {["Ideação", "MVP", "PMF", "Scale", "Growth"].map(s => <option key={s} value={s}>{s}</option>)}
           </select>
-          <select value={filters.business_model ?? ""} onChange={e => handleFilter("business_model", e.target.value)}
+          <select value={filters.category ?? ""} onChange={e => handleFilter("category", e.target.value)}
             className="border rounded-lg px-3 py-1.5 text-sm" style={{ borderColor: '#A7ADA7' }}>
-            <option value="">Modelo</option>
-            {["SaaS", "Hardware", "Marketplace", "Serviço", "Plataforma", "Outro"].map(m => <option key={m} value={m}>{m}</option>)}
+            <option value="">Categoria</option>
+            {CATEGORY_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
           {activeFiltersCount > 0 && (
             <button onClick={clearFilters}
@@ -357,21 +363,10 @@ export default function StartupManagement() {
                     </div>
                   </td>
                   <td className="p-3 text-xs" style={{ color: '#4B4F4B' }}>{startup.category || "—"}</td>
-                  <td className="p-3">
-                    {startup.quality_score !== undefined ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-16 h-1.5 rounded-full" style={{ background: '#ECEEEA' }}>
-                          <div className="h-full rounded-full" style={{
-                            width: `${startup.quality_score}%`,
-                            background: startup.quality_score >= 70 ? '#2C4425' : startup.quality_score >= 40 ? '#6B2FA0' : '#E10867'
-                          }} />
-                        </div>
-                        <span className="text-xs font-medium" style={{ color: '#4B4F4B' }}>{startup.quality_score}%</span>
-                      </div>
-                    ) : <span className="text-xs" style={{ color: '#A7ADA7' }}>N/A</span>}
-                  </td>
                   <td className="p-3 text-xs" style={{ color: '#4B4F4B' }}>
-                    {new Date(startup.created_date).toLocaleDateString("pt-BR")}
+                    {startup.last_verified_at
+                      ? new Date(startup.last_verified_at).toLocaleDateString("pt-BR")
+                      : <span style={{ color: '#A7ADA7' }}>Nunca</span>}
                   </td>
                   <td className="p-3"><StatusDot active={startup.is_active !== false} /></td>
                   <td className="p-3">
