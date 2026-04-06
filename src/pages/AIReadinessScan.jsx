@@ -52,13 +52,13 @@ const QUESTIONS = [
   },
   {
     id: "q3", dimension: "governanca",
-    text: "Como a organização avalia o risco de danos em seus sistemas de IA?",
+    text: "Como a organização avalia e documenta o risco de seus sistemas de IA?",
     options: [
-      { score: 1, label: "A", text: "Sem processo formal. O risco é gerido por desenvolvedores com base em julgamento pessoal." },
-      { score: 2, label: "B", text: "Uma equipe central de Risco/TI revisa projetos antes do lançamento, frequentemente detectando problemas tarde demais." },
-      { score: 3, label: "C", text: "Modelo de risco estruturado avaliado periodicamente por equipes de compliance, mas desconectado do trabalho diário." },
-      { score: 4, label: "D", text: "Risco incorporado ao ciclo de vida, gerido pelas equipes de produto; riscos registrados no backlog ao lado de funcionalidades." },
-      { score: 5, label: "E", text: "Ferramental completo com Registros de Risco, Model Cards e Datasheets da ideação ao lançamento." },
+      { score: 1, label: "A", text: "Não há processo de avaliação de risco formal. O risco é gerido por desenvolvedores com base em julgamento pessoal." },
+      { score: 2, label: "B", text: "A área de TI/Risco revisa os projetos internamente antes do lançamento, frequentemente detectando problemas tarde demais." },
+      { score: 3, label: "C", text: "A área de TI/Risco revisa os projetos internamente antes do lançamento com modelo estruturado de compliance." },
+      { score: 4, label: "D", text: "Risco incorporado ao ciclo de vida com Registros de Risco e Model Cards; equipes de produto são responsáveis." },
+      { score: 5, label: "E", text: "Realizamos sistematicamente o Relatório de Impacto à Proteção de Dados Pessoais (RIPD) e a Avaliação de Impacto Algorítmico (AIA) para sistemas de alto risco, conforme as diretrizes do PL 2338/2023." },
     ]
   },
   {
@@ -85,24 +85,24 @@ const QUESTIONS = [
   },
   {
     id: "q6", dimension: "operacoes",
-    text: "Como a organização impede que os colaboradores exponham Propriedade Intelectual (PI) interna ou infrinjam direitos durante o desenvolvimento de IA?",
+    text: "Como a organização lida com o risco da \"Shadow AI\" e a exposição de Propriedade Intelectual (PI)?",
     options: [
-      { score: 1, label: "A", text: "Sem controles. Colaboradores usam ferramentas de IA públicas com dados proprietários; sem política." },
-      { score: 2, label: "B", text: "Alertas verbais/ad-hoc. A liderança ocasionalmente avisa sobre riscos de PI, mas não é formalizado." },
-      { score: 3, label: "C", text: "Política formal: uma \"Política de Uso Aceitável\" define quais dados podem ser usados e proíbe Shadow AI." },
-      { score: 4, label: "D", text: "Treinamento e certificação obrigatórios sobre riscos de PI e \"Prompting Seguro\" antes de acessar ferramentas de IA." },
-      { score: 5, label: "E", text: "Defesa técnica: acesso à IA pública bloqueado; ambientes internos seguros; protocolos rígidos isolam código gerado por IA." },
+      { score: 1, label: "A", text: "Funcionários usam IAs públicas livremente com dados da empresa; alto risco de vazamento de PI e dados sensíveis." },
+      { score: 2, label: "B", text: "Alertas verbais/ad-hoc. A liderança ocasionalmente avisa sobre riscos, mas não há política formalizada." },
+      { score: 3, label: "C", text: "Existe uma política escrita proibindo o uso de dados da empresa em IAs não homologadas, mas sem bloqueio técnico." },
+      { score: 4, label: "D", text: "Treinamento e certificação obrigatórios sobre riscos de PI e 'Prompting Seguro' antes de acessar ferramentas de IA." },
+      { score: 5, label: "E", text: "A empresa fornece 'Sandboxes Corporativas' homologadas e aplica prevenção de perda de dados (DLP) para bloquear tecnicamente o envio de dados a IAs não autorizadas." },
     ]
   },
   {
     id: "q7", dimension: "ecossistema",
-    text: "Como você avalia modelos e ferramentas de IA de fornecedores terceiros?",
+    text: "Como você gerencia a responsabilidade jurídica ao contratar IAs ou APIs de terceiros?",
     options: [
-      { score: 1, label: "A", text: "Compra padrão baseada em preço/funcionalidades; sem avaliação específica para riscos de IA ou PI." },
-      { score: 2, label: "B", text: "Conformidade básica: confiamos nos Termos de Serviço do fornecedor e adicionamos perguntas básicas ao questionário de segurança." },
-      { score: 3, label: "C", text: "Due Diligence de IA Responsável: fornecedores passam por avaliação cobrindo fontes de dados, direitos autorais e testes de viés." },
-      { score: 4, label: "D", text: "Indenização contratual: contratos incluem cláusulas específicas de proteção de IA." },
-      { score: 5, label: "E", text: "Auditoria contínua: monitoramos ativamente fornecedores e modelos como extensões da nossa própria infraestrutura." },
+      { score: 1, label: "A", text: "Usamos Termos de Serviço padrão dos fornecedores, aceitando o risco de nossos dados serem usados para treinar modelos abertos." },
+      { score: 2, label: "B", text: "Enviamos questionários de segurança a fornecedores, mas sem cláusulas contratuais específicas sobre uso de dados." },
+      { score: 3, label: "C", text: "Due Diligence estruturada: fornecedores passam por avaliação cobrindo fontes de dados, LGPD, direitos autorais e testes de viés." },
+      { score: 4, label: "D", text: "Contratos incluem cláusulas de indenização e proteção de PI específicas para IA, com auditorias periódicas." },
+      { score: 5, label: "E", text: "Firmamos contratos B2B rigorosos definindo nossa empresa como Controladora e o fornecedor como Operador (termos LGPD), vedando expressamente o uso de nossos dados para treinar modelos fundacionais de terceiros." },
     ]
   },
   {
@@ -118,13 +118,13 @@ const QUESTIONS = [
   },
   {
     id: "q9", dimension: "dados",
-    text: "Até que ponto a origem e a composição dos dados usados para treinar ou embasar seus sistemas de IA são documentadas e bem compreendidas?",
+    text: "Como a empresa garante a conformidade com a LGPD ao usar dados para treinar ou embasar IAs (LLMs)?",
     options: [
-      { score: 1, label: "A", text: "Fonte desconhecida. Não sabemos de onde os dados vieram ou como foram coletados." },
-      { score: 2, label: "B", text: "Fonte conhecida, conteúdo desconhecido. Sabemos a fonte, mas não analisamos a composição específica." },
-      { score: 3, label: "C", text: "Vieses e lacunas mapeados. Entendemos as limitações, identificando vieses de representação e dados ausentes." },
-      { score: 4, label: "D", text: "PII e sensibilidade gerenciados: todos os dados pessoais/sensíveis identificados com protocolos específicos." },
-      { score: 5, label: "E", text: "O \"Santo Graal\" (Data Sheet): documentação completa de Propósito, Fonte, Conteúdo, Vieses e PII é obrigatória antes do uso." },
+      { score: 1, label: "A", text: "Não mapeamos a origem dos dados ou se possuem dados pessoais. O risco de infração à LGPD não é considerado." },
+      { score: 2, label: "B", text: "Sabemos a origem dos dados, mas a anonimização é manual e não há processo sistemático de verificação de PII." },
+      { score: 3, label: "C", text: "PII e dados sensíveis identificados com protocolos específicos; vieses e lacunas mapeados conforme LGPD." },
+      { score: 4, label: "D", text: "Documentação completa de Propósito, Fonte, Vieses e PII é obrigatória (Data Sheet) antes do uso em qualquer sistema de IA." },
+      { score: 5, label: "E", text: "Aplicamos 'Privacy by Design', isolando Dados Pessoais Sensíveis e utilizando técnicas como dados sintéticos ou privacidade diferencial antes da inferência da IA, em plena conformidade com a LGPD." },
     ]
   },
   {
@@ -142,11 +142,11 @@ const QUESTIONS = [
     id: "q11", dimension: "tecnologia",
     text: "Quão significativa é a intervenção humana no ciclo de decisão da IA (Human-in-the-loop)?",
     options: [
-      { score: 1, label: "A", text: "Decisões totalmente automatizadas; humanos veem apenas o resultado final." },
-      { score: 2, label: "B", text: "Humanos revisam apenas quando um usuário reclama." },
-      { score: 3, label: "C", text: "Protocolos de \"Human-in-the-loop\" são definidos para fluxos de trabalho críticos." },
-      { score: 4, label: "D", text: "Interfaces projetadas para capacitar revisores humanos (explicabilidade); botão \"REJEITAR PROPOSTA DA IA\" ou \"OVERRIDE MANUAL\"." },
-      { score: 5, label: "E", text: "Revisores treinados sobre \"viés de automação\"; eficácia da supervisão é medida continuamente." },
+      { score: 1, label: "A", text: "Decisões 100% automatizadas sem supervisão; humanos veem apenas o resultado final sem possibilidade de contestação." },
+      { score: 2, label: "B", text: "Humanos revisam apenas quando um usuário reclama; não há mecanismo sistemático de override." },
+      { score: 3, label: "C", text: "Protocolos de 'Human-in-the-loop' são definidos para fluxos de trabalho críticos, com botão de override manual." },
+      { score: 4, label: "D", text: "Interfaces projetadas para explicabilidade; revisores treinados sobre viés de automação; eficácia da supervisão é medida." },
+      { score: 5, label: "E", text: "Supervisão humana contínua em sistemas de alto risco, mantendo registros de eventos (logs) completos para prestação de contas (accountability) e conformidade com o PL 2338/2023." },
     ]
   },
   {
@@ -173,13 +173,13 @@ const QUESTIONS = [
   },
   {
     id: "q14", dimension: "frugalidade",
-    text: "Como você avalia o impacto social dos seus casos de uso de IA?",
+    text: "Como você avalia o impacto social e mitiga vieses nos seus casos de uso de IA?",
     options: [
-      { score: 1, label: "A", text: "Nenhuma avaliação é realizada; focamos apenas no desempenho técnico e de negócios." },
-      { score: 2, label: "B", text: "Discussões ad-hoc sobre \"ética\" ocorrem quando algum membro da equipe levanta uma preocupação." },
-      { score: 3, label: "C", text: "Uma \"Avaliação de Impacto nos Direitos Fundamentais\" (FRIA) estruturada é conduzida para projetos de alto risco." },
-      { score: 4, label: "D", text: "Planos de mitigação para danos identificados são rastreados no backlog do produto." },
-      { score: 5, label: "E", text: "Auditores externos ou grupos impactados revisam os resultados da avaliação." },
+      { score: 1, label: "A", text: "Focamos apenas na performance técnica e de negócios; vieses algorítmicos não são considerados." },
+      { score: 2, label: "B", text: "Discutimos possíveis preconceitos de forma pontual/ad-hoc quando algum membro da equipe levanta uma preocupação." },
+      { score: 3, label: "C", text: "Realizamos avaliações de impacto estruturadas para projetos de alto risco, com planos de mitigação no backlog." },
+      { score: 4, label: "D", text: "Auditores externos ou grupos impactados revisam periodicamente os resultados; métricas de equidade são acompanhadas." },
+      { score: 5, label: "E", text: "Realizamos auditorias algorítmicas alinhadas à LGPD para garantir a explicabilidade das decisões e eliminar vieses discriminatórios nas entregas ao cliente final, em conformidade com o Código de Defesa do Consumidor." },
     ]
   },
 ];
@@ -759,15 +759,15 @@ function ResultsView({ assessment, onGoToTheses, onRedo }) {
 
 function getGapRecommendation(dimId) {
   const recs = {
-    estrategia: "Priorize formalizar sua estratégia de IA com KPIs e revisões periódicas com a liderança.",
-    governanca: "Defina uma política de IA Responsável aprovada pela liderança e integre gestão de risco ao ciclo de vida.",
-    valor: "Estabeleça baselines financeiras claros e acompanhe o impacto da IA no P&L da empresa.",
-    operacoes: "Profissionalize as operações de IA com runbooks, monitoramento e políticas de uso aceitável.",
-    ecossistema: "Implemente Due Diligence específica para fornecedores de IA, cobrindo dados, viés e PI.",
-    dados: "Evolua a governança de dados com catálogo, linhagem e documentação completa das fontes.",
-    tecnologia: "Fortaleça a stack tecnológica com monitoramento, releases planejados e Human-in-the-loop.",
-    habilidades: "Invista em treinamento formal sobre ética e capacidade de IA para todos os colaboradores.",
-    frugalidade: "Defina limites de custo/energia e avalie o impacto social dos seus casos de uso de IA.",
+    estrategia: "Formalize a estratégia de IA com KPIs, orçamento dedicado e revisões periódicas pela diretoria. Alinhe ao roadmap de inovação da empresa.",
+    governanca: "Implemente o RIPD (Relatório de Impacto à Proteção de Dados Pessoais) e a Avaliação de Impacto Algorítmico (AIA) conforme as diretrizes do PL 2338/2023 para sistemas de alto risco.",
+    valor: "Estabeleça baselines financeiras claros e acompanhe o impacto da IA no P&L, com controle de Capex vs. Opex e cálculo de payback.",
+    operacoes: "Implemente 'Sandboxes Corporativas' homologadas e DLP (Prevenção de Perda de Dados) para combater Shadow AI e proteger a propriedade intelectual.",
+    ecossistema: "Formalize contratos B2B definindo sua empresa como Controladora e fornecedores como Operadores (termos LGPD), vedando uso dos seus dados para treinar modelos de terceiros.",
+    dados: "Adote 'Privacy by Design' com isolamento de Dados Pessoais Sensíveis e técnicas como dados sintéticos ou privacidade diferencial para conformidade com a LGPD.",
+    tecnologia: "Fortaleça o Human-in-the-loop com logs completos de auditoria e mecanismos de override manual, especialmente em sistemas de decisão de alto risco.",
+    habilidades: "Implemente treinamento obrigatório sobre ética em IA, LGPD e uso responsável para todos os colaboradores, com certificação periódica.",
+    frugalidade: "Conduza auditorias algorítmicas alinhadas à LGPD para garantir explicabilidade e eliminar vieses discriminatórios nas entregas ao cliente final.",
   };
-  return recs[dimId] || "Investimento nesta dimensão trará ganhos significativos de maturidade.";
+  return recs[dimId] || "Investimento nesta dimensão trará ganhos significativos de maturidade e conformidade regulatória.";
 }
