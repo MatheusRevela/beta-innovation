@@ -5,7 +5,8 @@ import { base44 } from "@/api/base44Client";
 import {
   LayoutDashboard, Zap, Map, Briefcase,
   ChevronLeft, ChevronRight, LogOut, User, Menu, X,
-  Building2, Star, Database, BarChart3, FileText, Bell, FlaskConical, Brain, AlertTriangle
+  Building2, Star, Database, BarChart3, FileText, Bell, FlaskConical, Brain, AlertTriangle,
+  Rocket, UserPlus
 } from "lucide-react";
 
 const NAV_ITEMS = {
@@ -13,7 +14,7 @@ const NAV_ITEMS = {
     { section: "Dashboard" },
     { label: "Dashboard", icon: LayoutDashboard, page: "AdminDashboard" },
     { label: "Early Warnings", icon: AlertTriangle, page: "EarlyWarnings" },
-    { section: "Visão do Usuário" },
+    { section: "Gestão Corporate" },
     { label: "Diagnósticos", icon: Zap, page: "MyDiagnostics" },
     { label: "AI Readiness Scan", icon: Brain, page: "AIReadinessScan" },
     { label: "Teses de Inovação", icon: Star, page: "InnovationTheses" },
@@ -21,16 +22,21 @@ const NAV_ITEMS = {
     { label: "CRM por Tese", icon: FileText, page: "DiagnosticCRM" },
     { label: "SuperCRM", icon: Briefcase, page: "MyCRM" },
     { label: "Notificações", icon: Bell, page: "Notifications" },
-    { section: "Gestão" },
+    { label: "Board View", icon: BarChart3, page: "BoardView" },
+    { label: "Corporates", icon: Building2, page: "CorporateManagement" },
+    { section: "Visão Startup" },
+    { label: "Portal da Startup", icon: Rocket, page: "StartupPortal" },
     { label: "Laboratório", icon: FlaskConical, page: "Laboratorio" },
     { label: "Startups", icon: Database, page: "StartupManagement" },
-    { label: "Corporates", icon: Building2, page: "CorporateManagement" },
+    { label: "Cadastro Público", icon: UserPlus, page: "PublicStartupRegister" },
+    { section: "Gestão" },
     { label: "CRM Board", icon: Briefcase, page: "CRMBoard" },
     { label: "Relatórios", icon: BarChart3, page: "Reports" },
     { label: "Colaboradores", icon: User, page: "Colaboradores" },
     { label: "Audit Log", icon: FileText, page: "AuditLogs" },
   ],
   user: [
+    { section: "Gestão Corporate" },
     { label: "Início", icon: LayoutDashboard, page: "Dashboard" },
     { label: "Diagnósticos", icon: Zap, page: "MyDiagnostics" },
     { label: "AI Readiness Scan", icon: Brain, page: "AIReadinessScan" },
@@ -43,7 +49,8 @@ const NAV_ITEMS = {
     { label: "Gestão de Equipe", icon: Building2, page: "TeamManagement" },
   ],
   startup: [
-    { label: "Portal", icon: LayoutDashboard, page: "StartupPortal" },
+    { section: "Visão Startup" },
+    { label: "Meu Portal", icon: LayoutDashboard, page: "StartupPortal" },
   ],
 };
 
