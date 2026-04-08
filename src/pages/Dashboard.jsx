@@ -22,6 +22,8 @@ export default function Dashboard() {
       // Admin users should be on the admin console, not the user portal
       if (u?.role === "admin") {
         window.location.replace(createPageUrl("AdminDashboard"));
+      } else if (u?.role === "startup_user") {
+        window.location.replace(createPageUrl("StartupPortal"));
       }
     });
   }, []);

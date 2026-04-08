@@ -104,7 +104,7 @@ export default function Onboarding() {
           </div>
           <h1 className="text-2xl font-bold mb-1" style={{ color: '#111111' }}>Bem-vindo(a) ao Expand</h1>
           <p className="text-sm" style={{ color: '#4B4F4B' }}>
-            Diagnóstico de Maturidade em Inovação — em 4 passos simples
+            Diagnóstico de Maturidade em Inovação — em 5 passos
           </p>
         </div>
 
@@ -150,7 +150,7 @@ export default function Onboarding() {
         <div className="bg-white rounded-2xl shadow-sm border p-6 animate-fade-in-up" style={{ borderColor: '#A7ADA7' }}>
           {step === 1 && (
             <div className="space-y-4">
-              <h2 className="font-bold text-lg" style={{ color: '#111111' }}>1/4 — Dados da Empresa</h2>
+              <h2 className="font-bold text-lg" style={{ color: '#111111' }}>1/5 — Dados da Empresa</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div className="col-span-2">
                   <Label>Razão Social *</Label>
@@ -190,7 +190,7 @@ export default function Onboarding() {
 
           {step === 2 && (
             <div className="space-y-4">
-              <h2 className="font-bold text-lg" style={{ color: '#111111' }}>2/4 — Responsável pelo Diagnóstico</h2>
+              <h2 className="font-bold text-lg" style={{ color: '#111111' }}>2/5 — Responsável pelo Diagnóstico</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div className="col-span-2">
                   <Label>Nome *</Label>
@@ -214,7 +214,7 @@ export default function Onboarding() {
 
           {step === 3 && (
             <div className="space-y-4">
-              <h2 className="font-bold text-lg" style={{ color: '#111111' }}>3/4 — Objetivos de Inovação</h2>
+              <h2 className="font-bold text-lg" style={{ color: '#111111' }}>3/5 — Objetivos de Inovação</h2>
               <p className="text-sm" style={{ color: '#4B4F4B' }}>Selecione os objetivos que mais se alinham à sua empresa:</p>
               <div className="grid grid-cols-2 gap-2">
                 {OBJECTIVES.map(obj => {

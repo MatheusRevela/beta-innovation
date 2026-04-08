@@ -66,6 +66,8 @@ export default function Home() {
         // Auto-redirect logged-in users to their portal
         if (u?.role === "admin") {
           navigate(createPageUrl("AdminDashboard"));
+        } else if (u?.role === "startup_user") {
+          navigate(createPageUrl("StartupPortal"));
         } else if (u?.role === "user") {
           navigate(createPageUrl("Dashboard"));
         }

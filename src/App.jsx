@@ -1,5 +1,5 @@
 import { Toaster } from "@/components/ui/toaster"
-import AIReadinessScan from './pages/AIReadinessScan'
+
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import NavigationTracker from '@/lib/NavigationTracker'
@@ -59,11 +59,7 @@ const AuthenticatedApp = () => {
           }
         />
       ))}
-      <Route path="/AIReadinessScan" element={
-        <LayoutWrapper currentPageName="AIReadinessScan">
-          <AIReadinessScan />
-        </LayoutWrapper>
-      } />
+
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
