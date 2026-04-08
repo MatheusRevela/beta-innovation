@@ -158,13 +158,35 @@ export default function StartupPortal() {
               <p className="font-semibold text-sm" style={{ color: '#111111' }}>Completude do perfil</p>
               <span className="text-sm font-bold" style={{ color: pct >= 80 ? '#2C4425' : '#E10867' }}>{pct}%</span>
             </div>
-            <div className="h-2 rounded-full" style={{ background: '#ECEEEA' }}>
+            <div className="h-2 rounded-full mb-2" style={{ background: '#ECEEEA' }}>
               <div className="h-full rounded-full transition-all"
                 style={{ width: `${pct}%`, background: pct >= 80 ? '#2C4425' : '#E10867' }} />
             </div>
-            <p className="text-xs mt-2" style={{ color: '#4B4F4B' }}>
-              {pct >= 80 ? "Perfil completo! Sua visibilidade é máxima." : "Quanto mais completo, maior sua visibilidade para as corporates."}
-            </p>
+
+            {/* Níveis de gamificação */}
+            <div className="grid grid-cols-4 gap-2 mt-3 mb-3">
+              {[
+                { label: 'Básico', min: 0, max: 40, emoji: '⚪', desc: 'Invisível no radar' },
+                { label: 'Bronze', min: 40, max: 60, emoji: '🥉', desc: 'Visibilidade limitada' },
+                { label: 'Prata', min: 60, max: 80, emoji: '🥈', desc: 'Aparece em matchings' },
+                { label: 'Ouro', min: 80, max: 101, emoji: '🥇', desc: 'Prioridade máxima' },
+              ].map(tier => {
+                const active = pct >= tier.min && pct < tier.max;
+                const done = pct >= tier.max;
+                return (
+                  <div key={tier.label} className="text-center p-2 rounded-xl border-2 transition-all"
+                    style={{ borderColor: active ? '#E10867' : done ? '#2C4425' : '#ECEEEA', background: active ? '#fce7ef' : done ? '#e8f0e6' : '#ECEEEA' }}>
+                    <p className="text-lg">{tier.emoji}</p>
+                    <p className="text-xs font-bold" style={{ color: active ? '#E10867' : done ? '#2C4425' : '#4B4F4B' }}>{tier.label}</p>
+                    <p className="text-[10px]" style={{ color: '#4B4F4B' }}>{tier.desc}</p>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="p-3 rounded-xl text-xs" style={{ background: '#ECEEEA', color: '#4B4F4B' }}>
+              💡 <strong>Como funciona?</strong> Quanto mais completo seu perfil, mais visível você fica para corporates em nosso radar de inovação. Perfis <strong>Ouro</strong> recebem badge de destaque e aparecem primeiro nos matchings.
+            </div>
           </div>
 
           {/* Diagnóstico */}
@@ -179,18 +201,27 @@ export default function StartupPortal() {
                   <p className="text-xs" style={{ color: '#4B4F4B' }}>9 pilares · 35 perguntas · relatório com IA</p>
                 </div>
               </div>
-              {diagnosticLocked ? (
-                <div className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg" style={{ background: '#ECEEEA', color: '#4B4F4B' }}>
-                  <Lock className="w-3.5 h-3.5" />
-                  Disponível em {nextDiagnosticDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
-                </div>
-              ) : (
-                <Link to={createPageUrl("StartupDiagnostic")}>
-                  <Button className="text-white gap-1 flex-shrink-0" style={{ background: '#E10867', border: 'none' }}>
-                    {diagnosticSession ? "Ver resultado" : "Fazer diagnóstico"} <ChevronRight className="w-4 h-4" />
-                  </Button>
-                </Link>
-              )}
+              <div className="flex items-center gap-2">
+                {diagnosticSession && (
+                  <Link to={createPageUrl("StartupDiagnostic")}>
+                    <Button variant="outline" size="sm" className="gap-1 flex-shrink-0" style={{ borderColor: '#A7ADA7' }}>
+                      Ver resultado <ChevronRight className="w-3.5 h-3.5" />
+                    </Button>
+                  </Link>
+                )}
+                {diagnosticLocked ? (
+                  <div className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg" style={{ background: '#ECEEEA', color: '#4B4F4B' }}>
+                    <Lock className="w-3.5 h-3.5" />
+                    Refazer em {nextDiagnosticDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+                  </div>
+                ) : (
+                  <Link to={createPageUrl("StartupDiagnostic")}>
+                    <Button className="text-white gap-1 flex-shrink-0" style={{ background: '#E10867', border: 'none' }}>
+                      {diagnosticSession ? 'Refazer diagnóstico' : 'Fazer diagnóstico'} <ChevronRight className="w-4 h-4" />
+                    </Button>
+                  </Link>
+                )}
+              </div>
             </div>
 
             {/* Nota do diagnóstico */}
