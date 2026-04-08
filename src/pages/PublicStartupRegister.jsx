@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
 import { useNavigate } from "react-router-dom";
-import { Star, ChevronRight, Loader2, Check, ArrowLeft, Building2 } from "lucide-react";
+import { ChevronRight, Loader2, Check, ArrowLeft, Building2, Upload, Image } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,22 +16,30 @@ const STAGES = ["Ideação","MVP","PMF","Scale","Growth"];
 const MODELS = ["SaaS","Hardware","Marketplace","Serviço","Plataforma","Outro"];
 const STATES = ["SP","RJ","MG","RS","PR","SC","BA","CE","GO","PE","DF","AM","PA","ES","MT","MS","RN","PB","AL","SE","PI","RO","AC","AP","RR","TO","MA","Internacional"];
 
+function calcCompleteness(form) {
+  const fields = ["name","category","business_model","stage","state","description","website","contact_email","logo_url","cnpj","founding_year"];
+  const tags = Array.isArray(form.tags) ? form.tags : (form.tags ? form.tags.split(",").map(t => t.trim()).filter(Boolean) : []);
+  const tagScore = tags.length > 0 ? 1 : 0;
+  const filled = fields.filter(f => form[f] && String(form[f]).trim() !== "").length;
+  return Math.round(((filled + tagScore) / (fields.length + 1)) * 100);
+}
+
 export default function PublicStartupRegister() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const [saved, setSaved] = useState(false);
   const [form, setForm] = useState({
     name: "", cnpj: "", category: "", vertical: "", business_model: "",
     stage: "", description: "", website: "", contact_email: "",
-    state: "", founding_year: "", tags: "",
+    state: "", founding_year: "", tags: "", logo_url: "",
   });
 
   useEffect(() => {
     base44.auth.me().then(me => {
       setUser(me);
       setForm(f => ({ ...f, contact_email: me.email || "" }));
-      // Se vier um startup_id como param, carrega os dados existentes
       const params = new URLSearchParams(window.location.search);
       const sid = params.get("startup_id");
       if (sid) {
@@ -51,6 +59,7 @@ export default function PublicStartupRegister() {
               state: s.state || "",
               founding_year: s.founding_year || "",
               tags: (s.tags || []).join(", "),
+              logo_url: s.logo_url || "",
               _id: s.id,
             });
           }
@@ -61,8 +70,18 @@ export default function PublicStartupRegister() {
 
   const update = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
+  const handleLogoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingLogo(true);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    update("logo_url", file_url);
+    setUploadingLogo(false);
+  };
+
   const handleSubmit = async () => {
     setLoading(true);
+    const tagsArr = form.tags ? form.tags.split(",").map(t => t.trim()).filter(Boolean) : [];
     const payload = {
       name: form.name,
       cnpj: form.cnpj,
@@ -75,8 +94,10 @@ export default function PublicStartupRegister() {
       contact_email: form.contact_email,
       state: form.state,
       founding_year: form.founding_year ? Number(form.founding_year) : undefined,
-      tags: form.tags ? form.tags.split(",").map(t => t.trim()).filter(Boolean) : [],
+      tags: tagsArr,
+      logo_url: form.logo_url || undefined,
       is_active: true,
+      completeness_score: calcCompleteness({ ...form, tags: tagsArr }),
     };
 
     let startupId = form._id;
@@ -85,7 +106,6 @@ export default function PublicStartupRegister() {
     } else {
       const created = await base44.entities.Startup.create(payload);
       startupId = created.id;
-      // Vincula o usuário como admin da startup
       await base44.entities.StartupUser.create({
         startup_id: startupId,
         user_email: user.email,
@@ -117,7 +137,6 @@ export default function PublicStartupRegister() {
   return (
     <div className="min-h-screen" style={{ background: '#ECEEEA' }}>
       <div className="max-w-2xl mx-auto px-4 py-8">
-        {/* Header */}
         <div className="flex items-center gap-3 mb-6">
           <button
             onClick={() => navigate(createPageUrl("StartupPortal"))}
@@ -143,7 +162,32 @@ export default function PublicStartupRegister() {
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border p-6 space-y-5" style={{ borderColor: '#A7ADA7' }}>
-          {/* Seção: Identidade */}
+
+          {/* Logotipo */}
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#E10867' }}>Logotipo</p>
+            <div className="flex items-center gap-4">
+              <div className="w-20 h-20 rounded-xl border-2 border-dashed flex items-center justify-center overflow-hidden flex-shrink-0"
+                style={{ borderColor: form.logo_url ? '#E10867' : '#A7ADA7', background: '#ECEEEA' }}>
+                {form.logo_url
+                  ? <img src={form.logo_url} alt="Logo" className="w-full h-full object-contain" />
+                  : <Image className="w-8 h-8" style={{ color: '#A7ADA7' }} />}
+              </div>
+              <div>
+                <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-medium hover:bg-gray-50 transition-colors"
+                  style={{ borderColor: '#A7ADA7', color: '#111111' }}>
+                  {uploadingLogo ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                  {uploadingLogo ? "Enviando..." : "Carregar logo"}
+                  <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} disabled={uploadingLogo} />
+                </label>
+                <p className="text-xs mt-1.5" style={{ color: '#4B4F4B' }}>PNG, JPG ou SVG. Máximo 2MB.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t" style={{ borderColor: '#ECEEEA' }} />
+
+          {/* Identidade */}
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#E10867' }}>Identidade</p>
             <div className="grid grid-cols-2 gap-3">
@@ -164,14 +208,14 @@ export default function PublicStartupRegister() {
 
           <div className="border-t" style={{ borderColor: '#ECEEEA' }} />
 
-          {/* Seção: Classificação */}
+          {/* Classificação */}
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#E10867' }}>Classificação</p>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label className="text-xs font-medium" style={{ color: '#4B4F4B' }}>Categoria / Vertical</Label>
                 <select value={form.category} onChange={e => update("category", e.target.value)}
-                  className="mt-1 w-full border rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2" style={{ borderColor: '#A7ADA7' }}>
+                  className="mt-1 w-full border rounded-lg px-3 py-2 text-sm bg-white focus:outline-none" style={{ borderColor: '#A7ADA7' }}>
                   <option value="">Selecionar</option>
                   {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
@@ -205,14 +249,14 @@ export default function PublicStartupRegister() {
 
           <div className="border-t" style={{ borderColor: '#ECEEEA' }} />
 
-          {/* Seção: Sobre */}
+          {/* Sobre */}
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#E10867' }}>Sobre</p>
             <div className="space-y-3">
               <div>
                 <Label className="text-xs font-medium" style={{ color: '#4B4F4B' }}>Descrição da Solução</Label>
                 <textarea value={form.description} onChange={e => update("description", e.target.value)}
-                  rows={3} placeholder="O que sua startup faz? Qual problema resolve?"
+                  rows={4} placeholder="O que sua startup faz? Qual problema resolve? Qual é seu diferencial?"
                   className="mt-1 w-full border rounded-lg px-3 py-2 text-sm resize-none focus:outline-none"
                   style={{ borderColor: '#A7ADA7' }} />
               </div>
@@ -229,6 +273,7 @@ export default function PublicStartupRegister() {
               <div>
                 <Label className="text-xs font-medium" style={{ color: '#4B4F4B' }}>Tags (separadas por vírgula)</Label>
                 <Input className="mt-1" value={form.tags} onChange={e => update("tags", e.target.value)} placeholder="IA, automação, B2B, saúde" />
+                <p className="text-xs mt-1" style={{ color: '#4B4F4B' }}>Tags ajudam as corporates a encontrar sua startup no radar de matching.</p>
               </div>
             </div>
           </div>
@@ -244,7 +289,7 @@ export default function PublicStartupRegister() {
             </button>
             <Button
               onClick={handleSubmit}
-              disabled={loading || !form.name}
+              disabled={loading || !form.name || uploadingLogo}
               className="gap-2 text-white px-8"
               style={{ background: '#E10867', border: 'none' }}
             >

@@ -2,25 +2,39 @@ import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
 import { Link, useNavigate } from "react-router-dom";
-import { Rocket, FileText, Star, Loader2, ExternalLink, UserPlus, Zap, ChevronRight } from "lucide-react";
+import { Rocket, FileText, Star, Loader2, ExternalLink, UserPlus, Zap, ChevronRight, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+function calcCompleteness(s) {
+  const fields = ["name","category","business_model","stage","state","description","website","contact_email","logo_url","cnpj","founding_year"];
+  const tagScore = s.tags?.length > 0 ? 1 : 0;
+  const filled = fields.filter(f => s[f] && String(s[f]).trim() !== "").length;
+  return Math.round(((filled + tagScore) / (fields.length + 1)) * 100);
+}
 
 export default function StartupPortal() {
   const [user, setUser] = useState(null);
-  const [startupUser, setStartupUser] = useState(null);
   const [startup, setStartup] = useState(null);
+  const [diagnosticSession, setDiagnosticSession] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
       const me = await base44.auth.me();
       setUser(me);
-      // Busca vínculo da startup com o usuário
       const links = await base44.entities.StartupUser.filter({ user_email: me.email, status: "ativo" });
       if (links.length > 0) {
-        setStartupUser(links[0]);
         const startups = await base44.entities.Startup.filter({ id: links[0].startup_id });
-        if (startups.length > 0) setStartup(startups[0]);
+        if (startups.length > 0) {
+          const s = startups[0];
+          setStartup(s);
+          const sessions = await base44.entities.StartupDiagnosticSession.filter({
+            startup_id: s.id,
+            diagnostic_type: "maturidade_startup"
+          });
+          const completed = sessions.find(sess => sess.status === "completed");
+          if (completed) setDiagnosticSession(completed);
+        }
       }
       setLoading(false);
     };
@@ -32,6 +46,15 @@ export default function StartupPortal() {
       <Loader2 className="w-6 h-6 animate-spin" style={{ color: '#E10867' }} />
     </div>
   );
+
+  const pct = startup ? calcCompleteness(startup) : 0;
+
+  const threeMonthsMs = 3 * 30 * 24 * 60 * 60 * 1000;
+  const diagnosticLocked = diagnosticSession?.completed_at &&
+    (Date.now() - new Date(diagnosticSession.completed_at).getTime()) < threeMonthsMs;
+  const nextDiagnosticDate = diagnosticLocked
+    ? new Date(new Date(diagnosticSession.completed_at).getTime() + threeMonthsMs)
+    : null;
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
@@ -50,7 +73,6 @@ export default function StartupPortal() {
       </div>
 
       {!startup ? (
-        /* Startup não vinculada ainda */
         <div className="bg-white rounded-2xl border p-10 text-center" style={{ borderColor: '#A7ADA7' }}>
           <div className="text-5xl mb-4">🚀</div>
           <h2 className="font-bold text-lg mb-2" style={{ color: '#111111' }}>
@@ -66,7 +88,6 @@ export default function StartupPortal() {
           </Link>
         </div>
       ) : (
-        /* Startup vinculada */
         <div className="space-y-4">
           {/* Card da startup */}
           <div className="bg-white rounded-2xl border p-6" style={{ borderColor: '#A7ADA7' }}>
@@ -131,34 +152,59 @@ export default function StartupPortal() {
             </div>
           </div>
 
-          {/* Status de completude */}
+          {/* Completude calculada ao vivo */}
           <div className="bg-white rounded-2xl border p-5" style={{ borderColor: '#A7ADA7' }}>
-            <p className="font-semibold text-sm mb-3" style={{ color: '#111111' }}>Completude do perfil</p>
+            <div className="flex items-center justify-between mb-2">
+              <p className="font-semibold text-sm" style={{ color: '#111111' }}>Completude do perfil</p>
+              <span className="text-sm font-bold" style={{ color: pct >= 80 ? '#2C4425' : '#E10867' }}>{pct}%</span>
+            </div>
             <div className="h-2 rounded-full" style={{ background: '#ECEEEA' }}>
               <div className="h-full rounded-full transition-all"
-                style={{ width: `${startup.completeness_score || 40}%`, background: '#E10867' }} />
+                style={{ width: `${pct}%`, background: pct >= 80 ? '#2C4425' : '#E10867' }} />
             </div>
             <p className="text-xs mt-2" style={{ color: '#4B4F4B' }}>
-              {startup.completeness_score || 40}% completo — quanto mais completo, maior sua visibilidade para as corporates.
+              {pct >= 80 ? "Perfil completo! Sua visibilidade é máxima." : "Quanto mais completo, maior sua visibilidade para as corporates."}
             </p>
           </div>
 
-          {/* CTA Diagnóstico */}
-          <div className="bg-white rounded-2xl border p-5 flex items-center justify-between gap-4" style={{ borderColor: '#A7ADA7' }}>
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: '#fce7ef' }}>
-                <Zap className="w-5 h-5" style={{ color: '#E10867' }} />
+          {/* Diagnóstico */}
+          <div className="bg-white rounded-2xl border p-5" style={{ borderColor: '#A7ADA7' }}>
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: '#fce7ef' }}>
+                  <Zap className="w-5 h-5" style={{ color: '#E10867' }} />
+                </div>
+                <div>
+                  <p className="font-semibold text-sm" style={{ color: '#111111' }}>Diagnóstico de Maturidade</p>
+                  <p className="text-xs" style={{ color: '#4B4F4B' }}>9 pilares · 35 perguntas · relatório com IA</p>
+                </div>
               </div>
-              <div>
-                <p className="font-semibold text-sm" style={{ color: '#111111' }}>Diagnóstico de Maturidade</p>
-                <p className="text-xs" style={{ color: '#4B4F4B' }}>9 pilares · 35 perguntas · relatório com IA</p>
-              </div>
+              {diagnosticLocked ? (
+                <div className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg" style={{ background: '#ECEEEA', color: '#4B4F4B' }}>
+                  <Lock className="w-3.5 h-3.5" />
+                  Disponível em {nextDiagnosticDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+                </div>
+              ) : (
+                <Link to={createPageUrl("StartupDiagnostic")}>
+                  <Button className="text-white gap-1 flex-shrink-0" style={{ background: '#E10867', border: 'none' }}>
+                    {diagnosticSession ? "Ver resultado" : "Fazer diagnóstico"} <ChevronRight className="w-4 h-4" />
+                  </Button>
+                </Link>
+              )}
             </div>
-            <Link to={createPageUrl("StartupDiagnostic")}>
-              <Button className="text-white gap-1 flex-shrink-0" style={{ background: '#E10867', border: 'none' }}>
-                Fazer diagnóstico <ChevronRight className="w-4 h-4" />
-              </Button>
-            </Link>
+
+            {/* Nota do diagnóstico */}
+            {diagnosticSession && (
+              <div className="mt-3 pt-3 border-t flex items-center gap-3" style={{ borderColor: '#ECEEEA' }}>
+                <div className="text-2xl font-black" style={{ color: '#E10867' }}>{diagnosticSession.overall_score}</div>
+                <div>
+                  <p className="text-xs font-semibold" style={{ color: '#111111' }}>{diagnosticSession.maturity_level}</p>
+                  <p className="text-xs" style={{ color: '#4B4F4B' }}>
+                    Score geral · {new Date(diagnosticSession.completed_at).toLocaleDateString('pt-BR')}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
