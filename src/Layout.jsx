@@ -10,11 +10,12 @@ import {
 } from "lucide-react";
 
 const NAV_ITEMS = {
+  // Beta-i: gestão completa da plataforma
   admin: [
     { section: "Dashboard" },
     { label: "Dashboard", icon: LayoutDashboard, page: "AdminDashboard" },
     { label: "Early Warnings", icon: AlertTriangle, page: "EarlyWarnings" },
-    { section: "Gestão Corporate" },
+    { section: "Visão Corporate" },
     { label: "Diagnósticos", icon: Zap, page: "MyDiagnostics" },
     { label: "AI Readiness Scan", icon: Brain, page: "AIReadinessScan" },
     { label: "Teses de Inovação", icon: Star, page: "InnovationTheses" },
@@ -23,34 +24,34 @@ const NAV_ITEMS = {
     { label: "SuperCRM", icon: Briefcase, page: "MyCRM" },
     { label: "Notificações", icon: Bell, page: "Notifications" },
     { label: "Board View", icon: BarChart3, page: "BoardView" },
+    { section: "Gestão Beta-i" },
     { label: "Corporates", icon: Building2, page: "CorporateManagement" },
-    { section: "Visão Startup" },
-    { label: "Portal da Startup", icon: Rocket, page: "StartupPortal" },
     { label: "Laboratório", icon: FlaskConical, page: "Laboratorio" },
     { label: "Startups", icon: Database, page: "StartupManagement" },
-    { label: "Cadastro Público", icon: UserPlus, page: "PublicStartupRegister" },
-    { section: "Gestão" },
     { label: "CRM Board", icon: Briefcase, page: "CRMBoard" },
     { label: "Relatórios", icon: BarChart3, page: "Reports" },
     { label: "Colaboradores", icon: User, page: "Colaboradores" },
     { label: "Audit Log", icon: FileText, page: "AuditLogs" },
   ],
+  // Corporate: apenas ferramentas da sua empresa
   user: [
     { section: "Gestão Corporate" },
     { label: "Início", icon: LayoutDashboard, page: "Dashboard" },
     { label: "Diagnósticos", icon: Zap, page: "MyDiagnostics" },
     { label: "AI Readiness Scan", icon: Brain, page: "AIReadinessScan" },
     { label: "Teses de Inovação", icon: Star, page: "InnovationTheses" },
-    { label: "Radar", icon: Map, page: "StartupRadar" },
+    { label: "Radar de Startups", icon: Map, page: "StartupRadar" },
     { label: "CRM por Tese", icon: FileText, page: "DiagnosticCRM" },
     { label: "SuperCRM", icon: Briefcase, page: "MyCRM" },
-    { label: "Notificações", icon: Bell, page: "Notifications" },
     { label: "Board View", icon: BarChart3, page: "BoardView" },
-    { label: "Gestão de Equipe", icon: Building2, page: "TeamManagement" },
+    { label: "Notificações", icon: Bell, page: "Notifications" },
+    { label: "Colaboradores", icon: User, page: "TeamManagement" },
   ],
+  // Startup: apenas seu portal e cadastro
   startup: [
-    { section: "Visão Startup" },
-    { label: "Meu Portal", icon: LayoutDashboard, page: "StartupPortal" },
+    { section: "Minha Startup" },
+    { label: "Portal da Startup", icon: Rocket, page: "StartupPortal" },
+    { label: "Meu Cadastro", icon: UserPlus, page: "PublicStartupRegister" },
   ],
 };
 
