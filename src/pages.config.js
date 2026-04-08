@@ -48,6 +48,7 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import AdminDashboard from './pages/AdminDashboard';
+import ChooseProfile from './pages/ChooseProfile';
 import AIReadinessScan from './pages/AIReadinessScan';
 import BoardView from './pages/BoardView';
 import EarlyWarnings from './pages/EarlyWarnings';
@@ -80,6 +81,7 @@ import __Layout from './Layout.jsx';
 
 export const PAGES = {
     "AdminDashboard": AdminDashboard,
+    "ChooseProfile": ChooseProfile,
     "AIReadinessScan": AIReadinessScan,
     "BoardView": BoardView,
     "EarlyWarnings": EarlyWarnings,

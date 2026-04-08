@@ -69,7 +69,11 @@ export default function Home() {
         } else if (u?.role === "startup_user") {
           navigate(createPageUrl("StartupPortal"));
         } else if (u?.role === "user") {
-          navigate(createPageUrl("Dashboard"));
+          base44.entities.CorporateMember.filter({ email: u.email, status: "active" }).then(members => {
+            if (members.length > 0) navigate(createPageUrl("Dashboard"));
+            else navigate(createPageUrl("ChooseProfile"));
+          });
+          return;
         }
       })
       .catch(() => setLoading(false));
