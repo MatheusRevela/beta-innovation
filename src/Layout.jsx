@@ -3,15 +3,16 @@ import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import {
-  LayoutDashboard, Zap, Map, Briefcase, Settings,
+  LayoutDashboard, Zap, Map, Briefcase,
   ChevronLeft, ChevronRight, LogOut, User, Menu, X,
-  Building2, Star, Database, BarChart3, FileText, Bell, FlaskConical, Brain
+  Building2, Star, Database, BarChart3, FileText, Bell, FlaskConical, Brain, AlertTriangle
 } from "lucide-react";
 
 const NAV_ITEMS = {
   admin: [
     { section: "Dashboard" },
     { label: "Dashboard", icon: LayoutDashboard, page: "AdminDashboard" },
+    { label: "Early Warnings", icon: AlertTriangle, page: "EarlyWarnings" },
     { section: "Visão do Usuário" },
     { label: "Diagnósticos", icon: Zap, page: "MyDiagnostics" },
     { label: "AI Readiness Scan", icon: Brain, page: "AIReadinessScan" },
@@ -26,7 +27,6 @@ const NAV_ITEMS = {
     { label: "Corporates", icon: Building2, page: "CorporateManagement" },
     { label: "CRM Board", icon: Briefcase, page: "CRMBoard" },
     { label: "Relatórios", icon: BarChart3, page: "Reports" },
-
     { label: "Colaboradores", icon: User, page: "Colaboradores" },
     { label: "Audit Log", icon: FileText, page: "AuditLogs" },
   ],
@@ -39,13 +39,17 @@ const NAV_ITEMS = {
     { label: "CRM por Tese", icon: FileText, page: "DiagnosticCRM" },
     { label: "SuperCRM", icon: Briefcase, page: "MyCRM" },
     { label: "Notificações", icon: Bell, page: "Notifications" },
+    { label: "Board View", icon: BarChart3, page: "BoardView" },
     { label: "Gestão de Equipe", icon: Building2, page: "TeamManagement" },
+  ],
+  startup: [
+    { label: "Portal", icon: LayoutDashboard, page: "StartupPortal" },
   ],
 };
 
 const PORTAL_PAGES = ["Dashboard", "Diagnostic", "StartupRadar", "MyCRM", "Onboarding"];
 const ADMIN_PAGES = ["AdminDashboard", "StartupManagement", "CorporateManagement", "CRMBoard", "Reports", "AuditLogs", "AdminSettings"];
-const NO_LAYOUT_PAGES = ["Onboarding", "Login", "Register", "Home", "AdminLogin", "JoinCorporate"];
+const NO_LAYOUT_PAGES = ["Onboarding", "Login", "Register", "Home", "AdminLogin", "JoinCorporate", "PublicStartupRegister"];
 const PUBLIC_PAGES = ["Home", "Login", "Register", "AdminLogin", "JoinCorporate"];
 
 // Pages each collaborator role can access (null = full access)
@@ -101,20 +105,21 @@ export default function Layout({ children, currentPageName }) {
     return <div className="min-h-screen" style={{ background: '#ECEEEA' }}>{children}</div>;
   }
 
+  const isStartupUser = user?.role === 'startup_user';
   const isAdmin = user?.role === 'admin';
   const collabRole = user?.collaborator_role;
   const allowedPages = collabRole ? COLLAB_NAV_PAGES[collabRole] : null;
 
-  const rawNavItems = isAdmin ? NAV_ITEMS.admin : NAV_ITEMS.user;
-  // Filter nav items by collaborator role (null = no filter = full access)
+  const rawNavItems = isAdmin ? NAV_ITEMS.admin : isStartupUser ? NAV_ITEMS.startup : NAV_ITEMS.user;
   const navItems = (isAdmin && allowedPages)
     ? rawNavItems.filter(item => item.section || allowedPages.includes(item.page))
     : rawNavItems;
 
   const portalLabel = isAdmin
-    ? (collabRole ? COLLAB_ROLE_LABELS[collabRole] || "Console Admin" : "Console Admin")
-    : "Portal Corporates";
-  const portalColor = isAdmin ? "#1E0B2E" : "#2C4425";
+    ? (collabRole ? COLLAB_ROLE_LABELS[collabRole] || 'Console Admin' : 'Console Admin')
+    : isStartupUser ? 'Portal Startup'
+    : 'Portal Corporates';
+  const portalColor = isAdmin ? '#1E0B2E' : '#2C4425';
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: '#ECEEEA' }}>

@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
 import { Link, useNavigate } from "react-router-dom";
 import PageHeader from "@/components/shared/PageHeader";
-import { Database, Building2, Briefcase, Zap, TrendingUp, Loader2 } from "lucide-react";
+import { Database, Building2, Briefcase, Zap, TrendingUp, Loader2, AlertTriangle } from "lucide-react";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -82,6 +82,7 @@ export default function AdminDashboard() {
           { label: "CRM Board", desc: "Pipeline consolidado de projetos", page: "CRMBoard", icon: "📋" },
           { label: "Relatórios", desc: "Métricas e exportações", page: "Reports", icon: "📊" },
           { label: "Audit Log", desc: "Histórico de ações na plataforma", page: "AuditLogs", icon: "📝" },
+          { label: "Early Warnings", desc: "Projetos parados — alertas por threshold", page: "EarlyWarnings", icon: "⚠️" },
         ].map(item => (
           <Link key={item.page} to={createPageUrl(item.page)}>
             <div className="bg-white rounded-2xl border p-4 hover:shadow-md transition-shadow cursor-pointer"
