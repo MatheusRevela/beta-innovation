@@ -32,6 +32,7 @@ export default function StartupDiagnostic() {
       });
       const completed = existing.find(s => s.status === "completed");
       if (completed) { setResult(completed); setPhase("result"); return; }
+      // 3-month lock handled in portal; here we just show results
 
       const inProgress = existing.find(s => s.status === "in_progress");
       if (inProgress) {
@@ -367,11 +368,14 @@ Responda em português brasileiro, de forma direta e acionável.`,
             <h2 className="font-semibold text-sm mb-3 flex items-center gap-2" style={{ color: '#111111' }}>
               <Zap className="w-4 h-4" style={{ color: '#E10867' }} /> Quick Wins (até 30 dias)
             </h2>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {result.quick_wins.map((qw, i) => (
-                <div key={i} className="flex items-start gap-2 text-sm p-3 rounded-xl" style={{ background: '#fce7ef' }}>
-                  <span className="font-bold flex-shrink-0" style={{ color: '#E10867' }}>{i + 1}.</span>
-                  <span style={{ color: '#111111' }}>{qw}</span>
+                <div key={i} className="p-4 rounded-xl border-l-4" style={{ background: '#fce7ef', borderLeftColor: '#E10867' }}>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="w-5 h-5 rounded-full text-xs font-black flex items-center justify-center text-white flex-shrink-0" style={{ background: '#E10867' }}>{i + 1}</span>
+                    <span className="text-xs font-semibold uppercase tracking-wide" style={{ color: '#E10867' }}>Quick Win</span>
+                  </div>
+                  <p className="text-sm leading-relaxed" style={{ color: '#111111' }}>{qw}</p>
                 </div>
               ))}
             </div>
@@ -382,11 +386,14 @@ Responda em português brasileiro, de forma direta e acionável.`,
         {result.strategic_initiatives?.length > 0 && (
           <div className="bg-white rounded-2xl border p-5 mb-5" style={{ borderColor: '#A7ADA7' }}>
             <h2 className="font-semibold text-sm mb-3" style={{ color: '#111111' }}>🎯 Iniciativas Estratégicas (3–12 meses)</h2>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {result.strategic_initiatives.map((si, i) => (
-                <div key={i} className="flex items-start gap-2 text-sm p-3 rounded-xl" style={{ background: '#ECEEEA' }}>
-                  <span className="font-bold flex-shrink-0" style={{ color: '#111111' }}>{i + 1}.</span>
-                  <span style={{ color: '#111111' }}>{si}</span>
+                <div key={i} className="p-4 rounded-xl border-l-4" style={{ background: '#ECEEEA', borderLeftColor: '#2C4425' }}>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="w-5 h-5 rounded-full text-xs font-black flex items-center justify-center text-white flex-shrink-0" style={{ background: '#2C4425' }}>{i + 1}</span>
+                    <span className="text-xs font-semibold uppercase tracking-wide" style={{ color: '#2C4425' }}>Iniciativa</span>
+                  </div>
+                  <p className="text-sm leading-relaxed" style={{ color: '#111111' }}>{si}</p>
                 </div>
               ))}
             </div>
@@ -399,17 +406,23 @@ Responda em português brasileiro, de forma direta e acionável.`,
             <h2 className="font-semibold text-sm mb-4" style={{ color: '#111111' }}>📋 Recomendações por Pilar</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {PILLARS.map(p => {
-                const recs = result.ai_recommendations[p.id];
-                if (!recs?.length) return null;
+                const recs = result.ai_recommendations?.[p.id]
+                  || result.ai_recommendations?.[p.title]
+                  || result.ai_recommendations?.[p.label]
+                  || [];
+                const score = result.pillar_scores?.[p.id] || 0;
+                if (!recs.length) return null;
                 return (
-                  <div key={p.id} className="p-4 rounded-xl" style={{ background: '#ECEEEA' }}>
-                    <p className="font-semibold text-xs mb-2" style={{ color: '#111111' }}>
-                      {p.emoji} {p.title}
-                    </p>
-                    <ul className="space-y-1">
+                  <div key={p.id} className="p-4 rounded-xl border" style={{ background: '#ECEEEA', borderColor: '#A7ADA7' }}>
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="font-semibold text-xs" style={{ color: '#111111' }}>{p.emoji} {p.title}</p>
+                      <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ background: score < 50 ? '#fce7ef' : '#e8f0e6', color: score < 50 ? '#E10867' : '#2C4425' }}>{score}</span>
+                    </div>
+                    <ul className="space-y-2">
                       {recs.map((r, ri) => (
-                        <li key={ri} className="text-xs flex items-start gap-1.5" style={{ color: '#4B4F4B' }}>
-                          <span className="mt-0.5 flex-shrink-0" style={{ color: '#E10867' }}>•</span> {r}
+                        <li key={ri} className="text-xs flex items-start gap-2 bg-white rounded-lg p-2" style={{ color: '#4B4F4B' }}>
+                          <span className="mt-0.5 flex-shrink-0 w-4 h-4 rounded-full text-white flex items-center justify-center text-[10px] font-bold" style={{ background: '#E10867' }}>{ri+1}</span>
+                          <span>{r}</span>
                         </li>
                       ))}
                     </ul>
