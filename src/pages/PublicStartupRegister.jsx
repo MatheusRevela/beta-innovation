@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
 import { useNavigate } from "react-router-dom";
-import { Star, ChevronRight, Loader2, Check } from "lucide-react";
+import { Star, ChevronRight, Loader2, Check, ArrowLeft, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -115,92 +115,133 @@ export default function PublicStartupRegister() {
   );
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4" style={{ background: '#ECEEEA' }}>
-      <div className="w-full max-w-xl">
+    <div className="min-h-screen" style={{ background: '#ECEEEA' }}>
+      <div className="max-w-2xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 mb-4">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: '#E10867' }}>
-              <Star className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-bold text-xl" style={{ color: '#111111' }}>Beta-i Innovation OS</span>
-          </div>
-          <h1 className="text-2xl font-bold mb-1" style={{ color: '#111111' }}>
-            {form._id ? "Atualizar cadastro" : "Cadastro de Startup"}
-          </h1>
-          <p className="text-sm" style={{ color: '#4B4F4B' }}>
-            Preencha as informações da sua startup para aparecer no radar das corporates.
-          </p>
+        <div className="flex items-center gap-3 mb-6">
+          <button
+            onClick={() => navigate(createPageUrl("StartupPortal"))}
+            className="flex items-center gap-1.5 text-sm font-medium hover:opacity-70 transition-opacity"
+            style={{ color: '#4B4F4B' }}
+          >
+            <ArrowLeft className="w-4 h-4" /> Voltar ao Portal
+          </button>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border p-6 space-y-4" style={{ borderColor: '#A7ADA7' }}>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="col-span-2">
-              <Label>Nome da Startup *</Label>
-              <Input value={form.name} onChange={e => update("name", e.target.value)} placeholder="Ex: MinhaStartup" />
-            </div>
-            <div>
-              <Label>CNPJ</Label>
-              <Input value={form.cnpj} onChange={e => update("cnpj", e.target.value)} placeholder="00.000.000/0001-00" />
-            </div>
-            <div>
-              <Label>Ano de Fundação</Label>
-              <Input type="number" value={form.founding_year} onChange={e => update("founding_year", e.target.value)} placeholder="2020" />
-            </div>
-            <div>
-              <Label>Categoria / Vertical</Label>
-              <select value={form.category} onChange={e => update("category", e.target.value)}
-                className="w-full border rounded-md px-3 py-2 text-sm" style={{ borderColor: '#A7ADA7' }}>
-                <option value="">Selecionar</option>
-                {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
-            <div>
-              <Label>Modelo de Negócio</Label>
-              <select value={form.business_model} onChange={e => update("business_model", e.target.value)}
-                className="w-full border rounded-md px-3 py-2 text-sm" style={{ borderColor: '#A7ADA7' }}>
-                <option value="">Selecionar</option>
-                {MODELS.map(m => <option key={m} value={m}>{m}</option>)}
-              </select>
-            </div>
-            <div>
-              <Label>Estágio</Label>
-              <select value={form.stage} onChange={e => update("stage", e.target.value)}
-                className="w-full border rounded-md px-3 py-2 text-sm" style={{ borderColor: '#A7ADA7' }}>
-                <option value="">Selecionar</option>
-                {STAGES.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
-            <div>
-              <Label>Estado</Label>
-              <select value={form.state} onChange={e => update("state", e.target.value)}
-                className="w-full border rounded-md px-3 py-2 text-sm" style={{ borderColor: '#A7ADA7' }}>
-                <option value="">Selecionar</option>
-                {STATES.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
-            <div className="col-span-2">
-              <Label>Descrição da Solução</Label>
-              <textarea value={form.description} onChange={e => update("description", e.target.value)}
-                rows={3} placeholder="O que sua startup faz? Qual problema resolve?"
-                className="w-full border rounded-md px-3 py-2 text-sm resize-none"
-                style={{ borderColor: '#A7ADA7' }} />
-            </div>
-            <div>
-              <Label>Website</Label>
-              <Input value={form.website} onChange={e => update("website", e.target.value)} placeholder="https://" />
-            </div>
-            <div>
-              <Label>E-mail de Contato</Label>
-              <Input type="email" value={form.contact_email} onChange={e => update("contact_email", e.target.value)} />
-            </div>
-            <div className="col-span-2">
-              <Label>Tags (separadas por vírgula)</Label>
-              <Input value={form.tags} onChange={e => update("tags", e.target.value)} placeholder="IA, automação, B2B, saúde" />
+        <div className="flex items-center gap-4 mb-6">
+          <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ background: '#fce7ef' }}>
+            <Building2 className="w-6 h-6" style={{ color: '#E10867' }} />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold" style={{ color: '#111111' }}>
+              {form._id ? "Atualizar cadastro" : "Cadastro de Startup"}
+            </h1>
+            <p className="text-sm" style={{ color: '#4B4F4B' }}>
+              Preencha as informações para aparecer no radar das corporates.
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-sm border p-6 space-y-5" style={{ borderColor: '#A7ADA7' }}>
+          {/* Seção: Identidade */}
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#E10867' }}>Identidade</p>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="col-span-2">
+                <Label className="text-xs font-medium" style={{ color: '#4B4F4B' }}>Nome da Startup *</Label>
+                <Input className="mt-1" value={form.name} onChange={e => update("name", e.target.value)} placeholder="Ex: MinhaStartup" />
+              </div>
+              <div>
+                <Label className="text-xs font-medium" style={{ color: '#4B4F4B' }}>CNPJ</Label>
+                <Input className="mt-1" value={form.cnpj} onChange={e => update("cnpj", e.target.value)} placeholder="00.000.000/0001-00" />
+              </div>
+              <div>
+                <Label className="text-xs font-medium" style={{ color: '#4B4F4B' }}>Ano de Fundação</Label>
+                <Input className="mt-1" type="number" value={form.founding_year} onChange={e => update("founding_year", e.target.value)} placeholder="2020" />
+              </div>
             </div>
           </div>
 
-          <div className="flex justify-end pt-2">
+          <div className="border-t" style={{ borderColor: '#ECEEEA' }} />
+
+          {/* Seção: Classificação */}
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#E10867' }}>Classificação</p>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs font-medium" style={{ color: '#4B4F4B' }}>Categoria / Vertical</Label>
+                <select value={form.category} onChange={e => update("category", e.target.value)}
+                  className="mt-1 w-full border rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2" style={{ borderColor: '#A7ADA7' }}>
+                  <option value="">Selecionar</option>
+                  {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              <div>
+                <Label className="text-xs font-medium" style={{ color: '#4B4F4B' }}>Modelo de Negócio</Label>
+                <select value={form.business_model} onChange={e => update("business_model", e.target.value)}
+                  className="mt-1 w-full border rounded-lg px-3 py-2 text-sm bg-white focus:outline-none" style={{ borderColor: '#A7ADA7' }}>
+                  <option value="">Selecionar</option>
+                  {MODELS.map(m => <option key={m} value={m}>{m}</option>)}
+                </select>
+              </div>
+              <div>
+                <Label className="text-xs font-medium" style={{ color: '#4B4F4B' }}>Estágio</Label>
+                <select value={form.stage} onChange={e => update("stage", e.target.value)}
+                  className="mt-1 w-full border rounded-lg px-3 py-2 text-sm bg-white focus:outline-none" style={{ borderColor: '#A7ADA7' }}>
+                  <option value="">Selecionar</option>
+                  {STAGES.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+              <div>
+                <Label className="text-xs font-medium" style={{ color: '#4B4F4B' }}>Estado</Label>
+                <select value={form.state} onChange={e => update("state", e.target.value)}
+                  className="mt-1 w-full border rounded-lg px-3 py-2 text-sm bg-white focus:outline-none" style={{ borderColor: '#A7ADA7' }}>
+                  <option value="">Selecionar</option>
+                  {STATES.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t" style={{ borderColor: '#ECEEEA' }} />
+
+          {/* Seção: Sobre */}
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#E10867' }}>Sobre</p>
+            <div className="space-y-3">
+              <div>
+                <Label className="text-xs font-medium" style={{ color: '#4B4F4B' }}>Descrição da Solução</Label>
+                <textarea value={form.description} onChange={e => update("description", e.target.value)}
+                  rows={3} placeholder="O que sua startup faz? Qual problema resolve?"
+                  className="mt-1 w-full border rounded-lg px-3 py-2 text-sm resize-none focus:outline-none"
+                  style={{ borderColor: '#A7ADA7' }} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-xs font-medium" style={{ color: '#4B4F4B' }}>Website</Label>
+                  <Input className="mt-1" value={form.website} onChange={e => update("website", e.target.value)} placeholder="https://" />
+                </div>
+                <div>
+                  <Label className="text-xs font-medium" style={{ color: '#4B4F4B' }}>E-mail de Contato</Label>
+                  <Input className="mt-1" type="email" value={form.contact_email} onChange={e => update("contact_email", e.target.value)} />
+                </div>
+              </div>
+              <div>
+                <Label className="text-xs font-medium" style={{ color: '#4B4F4B' }}>Tags (separadas por vírgula)</Label>
+                <Input className="mt-1" value={form.tags} onChange={e => update("tags", e.target.value)} placeholder="IA, automação, B2B, saúde" />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-between items-center pt-2 border-t" style={{ borderColor: '#ECEEEA' }}>
+            <button
+              type="button"
+              onClick={() => navigate(createPageUrl("StartupPortal"))}
+              className="text-sm font-medium hover:opacity-70 transition-opacity flex items-center gap-1"
+              style={{ color: '#4B4F4B' }}
+            >
+              <ArrowLeft className="w-4 h-4" /> Cancelar
+            </button>
             <Button
               onClick={handleSubmit}
               disabled={loading || !form.name}

@@ -62,7 +62,7 @@ const NAV_ITEMS = {
 
 const PORTAL_PAGES = ["Dashboard", "Diagnostic", "StartupRadar", "MyCRM", "Onboarding"];
 const ADMIN_PAGES = ["AdminDashboard", "StartupManagement", "CorporateManagement", "CRMBoard", "Reports", "AuditLogs", "AdminSettings"];
-const NO_LAYOUT_PAGES = ["Onboarding", "Login", "Register", "Home", "AdminLogin", "JoinCorporate", "PublicStartupRegister"];
+const NO_LAYOUT_PAGES = ["Onboarding", "Login", "Register", "Home", "AdminLogin", "JoinCorporate"];
 const PUBLIC_PAGES = ["Home", "Login", "Register", "AdminLogin", "JoinCorporate"];
 
 // Pages each collaborator role can access (null = full access)
