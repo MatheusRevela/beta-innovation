@@ -53,6 +53,7 @@ import BoardView from './pages/BoardView';
 import EarlyWarnings from './pages/EarlyWarnings';
 import PublicStartupRegister from './pages/PublicStartupRegister';
 import StartupPortal from './pages/StartupPortal';
+import StartupDiagnostic from './pages/StartupDiagnostic';
 import AdminLogin from './pages/AdminLogin';
 import AuditLogs from './pages/AuditLogs';
 import CRMBoard from './pages/CRMBoard';
@@ -84,6 +85,7 @@ export const PAGES = {
     "EarlyWarnings": EarlyWarnings,
     "PublicStartupRegister": PublicStartupRegister,
     "StartupPortal": StartupPortal,
+    "StartupDiagnostic": StartupDiagnostic,
     "AdminLogin": AdminLogin,
     "AuditLogs": AuditLogs,
     "CRMBoard": CRMBoard,

@@ -54,6 +54,7 @@ const NAV_ITEMS = {
   startup: [
     { section: "Minha Startup" },
     { label: "Portal da Startup", icon: Rocket, page: "StartupPortal" },
+    { label: "Diagnóstico de Maturidade", icon: Zap, page: "StartupDiagnostic" },
     { label: "Meu Cadastro", icon: UserPlus, page: "PublicStartupRegister" },
   ],
 };

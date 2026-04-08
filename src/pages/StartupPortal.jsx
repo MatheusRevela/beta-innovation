@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
-import { Link } from "react-router-dom";
-import { Rocket, FileText, Star, Loader2, ExternalLink, UserPlus } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Rocket, FileText, Star, Loader2, ExternalLink, UserPlus, Zap, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function StartupPortal() {
@@ -141,6 +141,24 @@ export default function StartupPortal() {
             <p className="text-xs mt-2" style={{ color: '#4B4F4B' }}>
               {startup.completeness_score || 40}% completo — quanto mais completo, maior sua visibilidade para as corporates.
             </p>
+          </div>
+
+          {/* CTA Diagnóstico */}
+          <div className="bg-white rounded-2xl border p-5 flex items-center justify-between gap-4" style={{ borderColor: '#A7ADA7' }}>
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: '#fce7ef' }}>
+                <Zap className="w-5 h-5" style={{ color: '#E10867' }} />
+              </div>
+              <div>
+                <p className="font-semibold text-sm" style={{ color: '#111111' }}>Diagnóstico de Maturidade</p>
+                <p className="text-xs" style={{ color: '#4B4F4B' }}>9 pilares · 35 perguntas · relatório com IA</p>
+              </div>
+            </div>
+            <Link to={createPageUrl("StartupDiagnostic")}>
+              <Button className="text-white gap-1 flex-shrink-0" style={{ background: '#E10867', border: 'none' }}>
+                Fazer diagnóstico <ChevronRight className="w-4 h-4" />
+              </Button>
+            </Link>
           </div>
         </div>
       )}

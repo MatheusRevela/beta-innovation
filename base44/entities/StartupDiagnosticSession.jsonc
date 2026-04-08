@@ -1,0 +1,73 @@
+{
+  "name": "StartupDiagnosticSession",
+  "type": "object",
+  "properties": {
+    "startup_id": {
+      "type": "string",
+      "description": "ID da Startup vinculada"
+    },
+    "diagnostic_type": {
+      "type": "string",
+      "default": "maturidade_startup"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "in_progress",
+        "processing",
+        "completed"
+      ],
+      "default": "in_progress"
+    },
+    "current_pillar_index": {
+      "type": "number",
+      "default": 0
+    },
+    "answers": {
+      "type": "object",
+      "description": "{ pillarId_qIndex: score }"
+    },
+    "pillar_scores": {
+      "type": "object",
+      "description": "{ financas: 72, produto: 58, ... }"
+    },
+    "overall_score": {
+      "type": "number"
+    },
+    "maturity_level": {
+      "type": "string",
+      "enum": [
+        "Embrion\u00e1ria",
+        "Em forma\u00e7\u00e3o",
+        "Em crescimento",
+        "Madura",
+        "Refer\u00eancia"
+      ]
+    },
+    "ai_synthesis": {
+      "type": "string"
+    },
+    "ai_recommendations": {
+      "type": "object"
+    },
+    "quick_wins": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "strategic_initiatives": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "startup_id"
+  ]
+}
