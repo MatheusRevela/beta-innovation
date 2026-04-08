@@ -26,6 +26,7 @@ const NAV_ITEMS = {
     { label: "Board View", icon: BarChart3, page: "BoardView" },
     { section: "Visão Startup" },
     { label: "Portal da Startup", icon: Rocket, page: "StartupPortal" },
+    { label: "Diagnóstico de Maturidade", icon: Zap, page: "StartupDiagnostic" },
     { label: "Cadastro Público", icon: UserPlus, page: "PublicStartupRegister" },
     { section: "Gestão Beta-i" },
     { label: "Corporates", icon: Building2, page: "CorporateManagement" },
