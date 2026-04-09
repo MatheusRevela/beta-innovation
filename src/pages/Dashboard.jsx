@@ -137,7 +137,7 @@ export default function Dashboard() {
 
           {/* AI Readiness Scan card */}
           <div className="bg-white rounded-2xl border p-5" style={{ borderColor: '#A7ADA7' }}>
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: '#F3EEF8' }}>
                   <Brain className="w-5 h-5" style={{ color: '#6B2FA0' }} />
@@ -148,25 +148,48 @@ export default function Dashboard() {
                 </div>
               </div>
               <Link to={createPageUrl("AIReadinessScan")}>
-                <Button variant="outline" style={{ borderColor: '#A7ADA7' }}>Ver resultado</Button>
+                <Button variant="ghost" size="sm" className="text-xs gap-1" style={{ color: '#6B2FA0' }}>
+                  <ClipboardList className="w-3.5 h-3.5" /> Ver resultado
+                </Button>
               </Link>
             </div>
             {aiAssessment ? (
-              <div className="flex items-center gap-4">
-                <div className="flex-shrink-0">
-                  <div className="w-16 h-16 rounded-xl flex items-center justify-center" style={{ background: '#F3EEF8' }}>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: '#F3EEF8' }}>
                     <div className="text-center">
-                      <div className="text-2xl font-black" style={{ color: '#6B2FA0' }}>{Math.round(aiAssessment.global_score)}</div>
-                      <p className="text-xs" style={{ color: '#6B2FA0' }}>/5</p>
+                      <div className="text-lg font-black" style={{ color: '#6B2FA0' }}>{Math.round(aiAssessment.global_score)}</div>
+                      <p className="text-xs" style={{ color: '#6B2FA0' }}>/100</p>
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold" style={{ color: '#111111' }}>
+                      {aiAssessment.global_score >= 70 ? "Avançado" : aiAssessment.global_score >= 50 ? "Intermediário" : "Inicial"}
+                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="flex-1 h-1.5 rounded-full" style={{ background: '#ECEEEA' }}>
+                        <div className="h-full rounded-full" style={{ width: `${aiAssessment.global_score}%`, background: '#6B2FA0' }} />
+                      </div>
+                      <span className="text-xs font-medium" style={{ color: '#6B2FA0' }}>{Math.round(aiAssessment.global_score)}%</span>
                     </div>
                   </div>
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold" style={{ color: '#111111' }}>
-                    {aiAssessment.global_score >= 4 ? "Avançado" : aiAssessment.global_score >= 3 ? "Intermediário" : aiAssessment.global_score >= 2 ? "Inicial" : "Iniciante"}
-                  </p>
-                  <p className="text-xs" style={{ color: '#4B4F4B' }}>em {Object.keys(aiAssessment.dimension_scores || {}).length} dimensões</p>
-                </div>
+                {/* Top 2 gaps */}
+                {Object.entries(aiAssessment.dimension_scores || {}).length > 0 && (
+                  <div className="pt-2 border-t" style={{ borderColor: '#ECEEEA' }}>
+                    <p className="text-xs font-semibold mb-1.5" style={{ color: '#E65100' }}>Principais falhas:</p>
+                    <div className="flex gap-1.5 flex-wrap">
+                      {Object.entries(aiAssessment.dimension_scores || {})
+                        .sort((a, b) => a[1] - b[1])
+                        .slice(0, 2)
+                        .map(([dim, score]) => (
+                          <span key={dim} className="text-xs px-2 py-0.5 rounded-full" style={{ background: '#FFF3E0', color: '#E65100' }}>
+                            {dim}: {Math.round(score)}/100
+                          </span>
+                        ))}
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <Link to={createPageUrl("AIReadinessScan")}>
