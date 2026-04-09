@@ -71,10 +71,10 @@ export default function StartupRadar() {
       resolvedSessionId
         ? base44.entities.DiagnosticSession.filter({ id: resolvedSessionId })
         : base44.entities.DiagnosticSession.filter({ corporate_id: resolvedCorporateId, status: "completed" }, "-completed_at", 1),
-      thesisId
+      thesisId && String(thesisId).trim()
         ? base44.entities.InnovationThesis.filter({ id: thesisId })
         : base44.entities.InnovationThesis.filter({ corporate_id: resolvedCorporateId }),
-      thesisId
+      thesisId && String(thesisId).trim()
         ? base44.entities.StartupMatch.filter({ thesis_id: thesisId })
         : []
     ]);
