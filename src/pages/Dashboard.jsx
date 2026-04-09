@@ -6,7 +6,7 @@ import { useCorporateAccess } from "@/components/hooks/useCorporateAccess";
 import { useAuth } from "@/lib/AuthContext";
 
 import { MaturityBadge } from "@/components/shared/StatusBadge";
-import { Zap, Map, Briefcase, ChevronRight, Loader2, ClipboardList, Lightbulb } from "lucide-react";
+import { Zap, Map, Briefcase, ChevronRight, Loader2, ClipboardList, Lightbulb, Brain } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Dashboard() {
@@ -16,6 +16,7 @@ export default function Dashboard() {
   const [session, setSession] = useState(null);
   const [projects, setProjects] = useState([]);
   const [theses, setTheses] = useState([]);
+  const [aiAssessment, setAiAssessment] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // Redirect by role without full reload
@@ -32,10 +33,11 @@ export default function Dashboard() {
 
   const loadCorpData = async () => {
     try {
-      const [sessions, thesesData, projs] = await Promise.all([
+      const [sessions, thesesData, projs, aiData] = await Promise.all([
         base44.entities.DiagnosticSession.filter({ corporate_id: corporateId }),
         base44.entities.InnovationThesis.filter({ corporate_id: corporateId }),
         base44.entities.CRMProject.filter({ corporate_id: corporateId }),
+        base44.entities.AIAssessment.filter({ corporate_id: corporateId }),
       ]);
       const completed = sessions
         .filter(s => s.status === "completed")
@@ -47,6 +49,7 @@ export default function Dashboard() {
       setSession(completed[0] || null);
       setTheses(thesesData);
       setProjects(projs.filter(p => p.is_active !== false));
+      setAiAssessment(aiData[0] || null);
     } catch (_) {
       // mostra estado vazio em caso de erro de rede
     } finally {
@@ -127,6 +130,48 @@ export default function Dashboard() {
               <Link to={createPageUrl("Diagnostic") + `?corporate_id=${corporate.id}`}>
                 <Button className="text-white w-full" style={{ background: '#E10867', border: 'none' }}>
                   Iniciar diagnóstico <ChevronRight className="w-4 h-4 ml-1" />
+                </Button>
+              </Link>
+            )}
+          </div>
+
+          {/* AI Readiness Scan card */}
+          <div className="bg-white rounded-2xl border p-5" style={{ borderColor: '#A7ADA7' }}>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: '#F3EEF8' }}>
+                  <Brain className="w-5 h-5" style={{ color: '#6B2FA0' }} />
+                </div>
+                <div>
+                  <p className="font-semibold text-sm" style={{ color: '#111111' }}>AI Readiness Scan</p>
+                  <p className="text-xs" style={{ color: '#4B4F4B' }}>Avaliação de prontidão em IA</p>
+                </div>
+              </div>
+              <Link to={createPageUrl("AIReadinessScan")}>
+                <Button variant="outline" style={{ borderColor: '#A7ADA7' }}>Ver resultado</Button>
+              </Link>
+            </div>
+            {aiAssessment ? (
+              <div className="flex items-center gap-4">
+                <div className="flex-shrink-0">
+                  <div className="w-16 h-16 rounded-xl flex items-center justify-center" style={{ background: '#F3EEF8' }}>
+                    <div className="text-center">
+                      <div className="text-2xl font-black" style={{ color: '#6B2FA0' }}>{Math.round(aiAssessment.global_score)}</div>
+                      <p className="text-xs" style={{ color: '#6B2FA0' }}>/5</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold" style={{ color: '#111111' }}>
+                    {aiAssessment.global_score >= 4 ? "Avançado" : aiAssessment.global_score >= 3 ? "Intermediário" : aiAssessment.global_score >= 2 ? "Inicial" : "Iniciante"}
+                  </p>
+                  <p className="text-xs" style={{ color: '#4B4F4B' }}>em {Object.keys(aiAssessment.dimension_scores || {}).length} dimensões</p>
+                </div>
+              </div>
+            ) : (
+              <Link to={createPageUrl("AIReadinessScan")}>
+                <Button className="text-white w-full" style={{ background: '#6B2FA0', border: 'none' }}>
+                  Iniciar Avaliação <ChevronRight className="w-4 h-4 ml-1" />
                 </Button>
               </Link>
             )}
