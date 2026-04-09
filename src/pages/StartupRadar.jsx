@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { createPageUrl } from "@/utils";
 import { useCorporateAccess } from "@/components/hooks/useCorporateAccess";
 import { CRM_TYPES } from "@/components/ui/DesignTokens";
 import { FitScoreBadge } from "@/components/shared/StatusBadge";
@@ -192,7 +191,7 @@ Responda em JSON: { "startup_ids": ["id1", "id2", ...] }`;
         }
       });
       preFilteredIds = (preFilterResult?.startup_ids || []).filter(id => startupMap[id]);
-    } catch (e) {
+    } catch (_) {
       // Fallback: pega as primeiras 120 se o pré-filtro falhar
       preFilteredIds = allStartups.slice(0, 120).map(s => s.id);
     }
@@ -279,7 +278,7 @@ Responda em JSON:
           }
         }
       });
-    } catch (e) {
+    } catch (_) {
       matchData = { matches: [] };
     }
 

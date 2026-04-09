@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Users, Plus, Loader2, Trash2, Shield, User,
-  Eye, EyeOff, Check, X, Clock, Mail
+  Eye, EyeOff, Check, X, Clock
 } from "lucide-react";
 
 export default function TeamManagement() {

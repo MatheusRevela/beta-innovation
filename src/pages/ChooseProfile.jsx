@@ -3,7 +3,6 @@ import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
 import { useNavigate } from "react-router-dom";
 import { Star, Building2, Rocket, ArrowRight, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 export default function ChooseProfile() {
   const navigate = useNavigate();

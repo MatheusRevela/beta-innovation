@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
 import { Link, useNavigate } from "react-router-dom";
 import PageHeader from "@/components/shared/PageHeader";
-import { Database, Building2, Briefcase, Zap, TrendingUp, Loader2, AlertTriangle } from "lucide-react";
+import { Database, Building2, Briefcase, Zap, TrendingUp, Loader2 } from "lucide-react";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();

@@ -1,7 +1,6 @@
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Lightbulb, Map, Check } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Lightbulb, Check } from "lucide-react";
 
 export default function ThesisTimeline({ theses, onSelect, selectedIds, onGoToRadar }) {
   if (theses.length === 0) return null;

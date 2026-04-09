@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useCorporateAccess } from "@/components/hooks/useCorporateAccess";
-import { BarChart3, Briefcase, Zap, Loader2, TrendingUp, Users } from "lucide-react";
+import { Briefcase, Zap, Loader2, TrendingUp } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
 const STAGE_COLORS = {

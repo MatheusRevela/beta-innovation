@@ -1,5 +1,4 @@
 import { X, ExternalLink } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 const ScoreBar = ({ value, color = "#E10867" }) => (
   <div className="flex items-center gap-2">

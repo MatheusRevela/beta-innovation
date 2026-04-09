@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
-  Zap, Map, Briefcase, ArrowRight, Star, ChevronRight,
-  BarChart3, Shield, Sparkles, Target, Building2, Database
+  Zap, Map, Briefcase, ArrowRight, Star,
+  BarChart3, Sparkles, Target
 } from "lucide-react";
 
 const FEATURES = [

@@ -11,7 +11,7 @@ import { createPageUrl } from "@/utils";
 
 export default function MyCRM() {
   const navigate = useNavigate();
-  const { loading: accessLoading, corporate, hasSuperCRMAccess, corporateId } = useCorporateAccess();
+  const { loading: accessLoading, hasSuperCRMAccess, corporateId } = useCorporateAccess();
   const [projects, setProjects] = useState([]);
   const [startups, setStartups] = useState({});
   const [loading, setLoading] = useState(true);
