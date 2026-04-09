@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
@@ -84,7 +85,7 @@ export default function Onboarding() {
       await base44.entities.CorporateMember.create({
         corporate_id: corp.id,
         email: user.email,
-        role: form.is_manager === false ? "usuario" : "gestor",
+        role: "gestor",
         super_crm_access: true,
         status: "active"
       });

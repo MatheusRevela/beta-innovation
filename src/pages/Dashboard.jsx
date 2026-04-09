@@ -6,7 +6,7 @@ import { useCorporateAccess } from "@/components/hooks/useCorporateAccess";
 import { useAuth } from "@/lib/AuthContext";
 
 import { MaturityBadge } from "@/components/shared/StatusBadge";
-import { Zap, Map, Briefcase, ChevronRight, Loader2, ClipboardList, Lightbulb, Brain, TrendingUp, Award } from "lucide-react";
+import { Zap, Map, Briefcase, ChevronRight, Loader2, Lightbulb, Brain, TrendingUp, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Dashboard() {

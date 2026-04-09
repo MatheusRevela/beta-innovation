@@ -79,19 +79,7 @@ export default function Home() {
       .catch(() => setLoading(false));
   }, []);
 
-  const handleCTA = () => {
-    if (!user) {
-      base44.auth.redirectToLogin(createPageUrl("Home"));
-      return;
-    }
-    if (user.role === "admin") {
-      navigate(createPageUrl("AdminDashboard"));
-    } else {
-      navigate(createPageUrl("Dashboard"));
-    }
-  };
-
-  const handleEnter = () => {
+  const handleNavigate = () => {
     if (!user) {
       base44.auth.redirectToLogin(createPageUrl("Home"));
       return;
@@ -121,7 +109,7 @@ export default function Home() {
           <div className="flex items-center gap-3">
             {!loading && (
               user ? (
-                <Button onClick={handleEnter} className="text-white text-sm px-5" style={{ background: '#E10867', border: 'none' }}>
+                <Button onClick={handleNavigate} className="text-white text-sm px-5" style={{ background: '#E10867', border: 'none' }}>
                   {user.role === 'admin' ? 'Console Admin' : 'Meu Portal'} <ArrowRight className="w-4 h-4 ml-1" />
                 </Button>
               ) : (
@@ -131,7 +119,7 @@ export default function Home() {
                     style={{ color: '#111111' }}>
                     Entrar
                   </button>
-                  <Button onClick={handleCTA} className="text-white text-sm px-5" style={{ background: '#E10867', border: 'none' }}>
+                  <Button onClick={handleNavigate} className="text-white text-sm px-5" style={{ background: '#E10867', border: 'none' }}>
                     Começar grátis
                   </Button>
                 </>
@@ -163,7 +151,7 @@ export default function Home() {
             O Beta-i Innovation OS é a plataforma que conecta grandes corporações às melhores startups do ecossistema — com diagnóstico de maturidade, IA e gestão de pipeline em um só lugar.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button onClick={handleCTA} size="lg"
+            <Button onClick={handleNavigate} size="lg"
               className="text-white px-10 text-base font-semibold h-12"
               style={{ background: '#E10867', border: 'none' }}>
               {user ? (user.role === 'admin' ? 'Ir para o Console' : 'Ir para o Portal') : 'Iniciar diagnóstico grátis'}
@@ -262,7 +250,7 @@ export default function Home() {
           <p className="text-base text-white/70 mb-10 max-w-lg mx-auto">
             Junte-se a empresas que já usam o Beta-i Innovation OS para conectar tecnologia ao negócio com velocidade e precisão.
           </p>
-          <Button onClick={handleCTA} size="lg"
+          <Button onClick={handleNavigate} size="lg"
             className="text-white px-12 text-base font-semibold h-12"
             style={{ background: '#E10867', border: 'none' }}>
             {user ? 'Ir para o Portal' : 'Iniciar gratuitamente'}

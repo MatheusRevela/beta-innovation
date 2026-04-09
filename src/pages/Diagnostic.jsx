@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
@@ -40,7 +41,16 @@ export default function Diagnostic() {
 
   useEffect(() => {
     if (sessionId) {
-      base44.entities.DiagnosticSession.filter({ id: sessionId }).then(r => {
+      base44.auth.me().then(async (user) => {
+        // Validate ownership: only admin or member of corporate can view
+        if (user?.role !== 'admin') {
+          const membership = await base44.entities.CorporateMember.filter({
+            email: user.email, status: 'active'
+          });
+          if (membership.length === 0) return;
+        }
+        const sessions = await base44.entities.DiagnosticSession.filter({ id: sessionId });
+        const r = sessions;
         if (r[0]) {
           setSession(r[0]);
           if (r[0].status === "completed") {

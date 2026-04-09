@@ -85,9 +85,14 @@ export default function StartupRadar() {
     ]);
 
     const sess = sessions[0];
-    const th = thesisId
+    let th = thesisId
       ? thesesData[0]
       : thesesData.find(t => t.session_id === (resolvedSessionId || sess?.id)) || thesesData[0];
+    
+    // Validate thesis ownership — prevent cross-corporate access
+    if (th && th.corporate_id !== resolvedCorporateId) {
+      th = null;
+    }
 
     setResolvedCorpId(resolvedCorporateId);
     setSession(sess);
