@@ -9,28 +9,31 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Missing thesisId or corporateId' }, { status: 400 });
     }
 
-    // Fetch thesis
-    const thesis = await base44.asServiceRole.entities.InnovationThesis.list({ filter: { id: thesisId } });
-    if (!thesis?.length) {
+    // Fetch thesis using asServiceRole
+    const allTheses = await base44.asServiceRole.entities.InnovationThesis.list();
+    const thesisData = allTheses.find(t => t.id === thesisId);
+    
+    if (!thesisData) {
       return Response.json({ error: 'Thesis not found' }, { status: 404 });
     }
 
-    const thesisData = thesis[0];
     const thesisTags = new Set((thesisData.tags || []).map(t => t.toLowerCase()));
     const thesisCategories = new Set((thesisData.macro_categories || []).map(c => c.toLowerCase()));
 
     // Fetch all active startups
-    const startups = await base44.asServiceRole.entities.Startup.filter({ is_active: true, is_deleted: false });
+    const startups = await base44.asServiceRole.entities.Startup.list();
+    const activeStartups = startups.filter(s => s.is_active && !s.is_deleted);
 
     // Delete old matches for this thesis
-    const oldMatches = await base44.asServiceRole.entities.StartupMatch.filter({ thesis_id: thesisId });
+    const allMatches = await base44.asServiceRole.entities.StartupMatch.list();
+    const oldMatches = allMatches.filter(m => m.thesis_id === thesisId);
     for (const match of oldMatches) {
       await base44.asServiceRole.entities.StartupMatch.delete(match.id);
     }
 
     // Calculate matches
     const newMatches = [];
-    for (const startup of startups) {
+    for (const startup of activeStartups) {
       const startupTags = new Set((startup.tags || []).map(t => t.toLowerCase()));
       const startupCategory = (startup.category || '').toLowerCase();
 
