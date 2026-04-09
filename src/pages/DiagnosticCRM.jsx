@@ -62,9 +62,11 @@ export default function DiagnosticCRM() {
     setLoadingProjects(true);
     const effectiveCorpId = corpId || corporate?.id;
     try {
-      const [ps] = await Promise.all([
-        base44.entities.CRMProject.filter({ corporate_id: effectiveCorpId, thesis_id: thesis.id }),
-      ]);
+      // Busca projetos da tese — filtra por thesis_id ou trata projetos sem tese
+      const allPs = await base44.entities.CRMProject.filter({ corporate_id: effectiveCorpId });
+      const ps = thesis?.id 
+        ? allPs.filter(p => p.thesis_id === thesis.id)
+        : allPs.filter(p => !p.thesis_id || p.thesis_id === thesis.id);
       const startupIds = new Set(ps.map(p => p.startup_id).filter(Boolean));
       const allStartups = startupIds.size > 0
         ? await base44.entities.Startup.filter({ is_deleted: false })
