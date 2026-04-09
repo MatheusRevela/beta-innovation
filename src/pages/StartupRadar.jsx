@@ -48,7 +48,7 @@ export default function StartupRadar() {
     setLoading(true);
 
     const resolvedCorporateId = urlCorporateId || hookCorporateId || null;
-    const resolvedSessionId = sessionId;
+    const resolvedSessionId = sessionId && String(sessionId).trim() ? sessionId : null;
 
     if (!resolvedCorporateId) {
       setLoading(false);
