@@ -157,8 +157,28 @@ export default function Dashboard() {
                     </div>
                   </div>
                   
+                  {/* Next steps */}
+                  <div className="pt-4 border-t" style={{ borderColor: '#ECEEEA' }}>
+                    {aiAssessment ? (
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-xs font-semibold" style={{ color: '#2C4425' }}>✓ AI Readiness realizado</p>
+                          <p className="text-xs mt-1" style={{ color: '#4B4F4B' }}>Última avaliação: {new Date(aiAssessment.created_date).toLocaleDateString('pt-BR')}</p>
+                        </div>
+                        <span className="text-xs font-medium px-2 py-1 rounded" style={{ background: '#e8f5e9', color: '#2C4425' }}>Refazer em 90 dias</span>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <p className="text-xs font-semibold" style={{ color: '#111111' }}>Próximo passo:</p>
+                        <Link to={createPageUrl("AIReadinessScan")}>
+                          <Button className="text-white w-full text-xs h-8" style={{ background: '#6B2FA0', border: 'none' }}>Iniciar AI Readiness →</Button>
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                  
                   {session.pillar_scores && Object.keys(session.pillar_scores).length > 0 && (
-                    <div className="pt-4 border-t" style={{ borderColor: '#ECEEEA' }}>
+                    <div className="pt-4 border-t mt-4" style={{ borderColor: '#ECEEEA' }}>
                       <p className="text-xs font-semibold mb-2" style={{ color: '#A7ADA7' }}>Principais falhas:</p>
                       <div className="flex gap-1.5 flex-wrap">
                         {Object.entries(session.pillar_scores || {})

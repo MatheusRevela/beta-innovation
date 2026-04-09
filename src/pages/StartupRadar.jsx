@@ -37,12 +37,20 @@ export default function StartupRadar() {
   const [showCompare, setShowCompare] = useState(false);
 
   useEffect(() => {
+    // Se já tem tese carregada E os parâmetros não mudaram, não recarrega
+    if (thesis && sessionId && urlCorporateId) return;
     // Aguarda o hook resolver antes de chamar loadData para evitar double-run de matching
     if (hookLoading && !urlCorporateId) return;
     loadData();
-  }, [sessionId, urlCorporateId, hookCorporateId, hookLoading]);
+  }, [sessionId, thesisId, urlCorporateId, hookCorporateId, hookLoading]);
 
   const loadData = async () => {
+    // Se já tem tese E thesis_id está na URL, não precisa recarregar
+    if (thesis && thesisId) {
+      setLoading(false);
+      return;
+    }
+    
     setLoading(true);
 
     // Prioridade: URL param > hook (CorporateMember)
@@ -67,7 +75,7 @@ export default function StartupRadar() {
       }
     }
 
-    const [sessions, theses] = await Promise.all([
+    const [sessions, thesesData] = await Promise.all([
       resolvedSessionId
         ? base44.entities.DiagnosticSession.filter({ id: resolvedSessionId })
         : base44.entities.DiagnosticSession.filter({ corporate_id: resolvedCorporateId, status: "completed" }, "-completed_at", 1),
@@ -78,8 +86,8 @@ export default function StartupRadar() {
 
     const sess = sessions[0];
     const th = thesisId
-      ? theses[0]
-      : theses.find(t => t.session_id === (resolvedSessionId || sess?.id)) || theses[0];
+      ? thesesData[0]
+      : thesesData.find(t => t.session_id === (resolvedSessionId || sess?.id)) || thesesData[0];
 
     setResolvedCorpId(resolvedCorporateId);
     setSession(sess);

@@ -145,6 +145,7 @@ export default function ThesisWizard({ corporate, sessions, onClose, onCreated }
   const [loadingAssessment, setLoadingAssessment] = useState(true);
 
   const [form, setForm] = useState({
+    name: "",
     session_id: sessions[0]?.id || "",
     sectors: [],
     themes: [],
@@ -345,6 +346,7 @@ Responda APENAS em JSON válido com as chaves: thesis_text, macro_categories, to
     const newThesis = await base44.entities.InnovationThesis.create({
       corporate_id: corporate.id,
       session_id: form.session_id || null,
+      name: form.name,
       ...data,
       matching_ran: false,
     });
@@ -442,6 +444,20 @@ Responda APENAS em JSON válido com as chaves: thesis_text, macro_categories, to
                 title="Perfil e diagnóstico"
                 desc="Vamos contextualizar a tese com o perfil da sua empresa. Se você fez o diagnóstico de maturidade, vincule-o aqui — isso enriquece enormemente a tese gerada."
               />
+              <div>
+                <label className="text-xs font-semibold block mb-1.5" style={{ color: "#4B4F4B" }}>
+                  Nome da tese <span style={{ color: "#E10867" }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  value={form.name}
+                  onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                  placeholder="Ex: Transformação Digital em IA, Energia Distribuída, Saúde em Casa..."
+                  className="w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none"
+                  style={{ borderColor: "#A7ADA7" }}
+                />
+                <p className="text-xs mt-1" style={{ color: "#A7ADA7" }}>Dê um nome estratégico para sua tese — isso facilita referências posteriores</p>
+              </div>
               <div className="bg-white border rounded-xl p-4" style={{ borderColor: "#A7ADA7" }}>
                 <p className="text-xs font-semibold mb-1" style={{ color: "#4B4F4B" }}>Empresa</p>
                 <p className="font-semibold" style={{ color: "#111111" }}>{corporate.company_name || corporate.trade_name}</p>
@@ -847,9 +863,9 @@ Responda APENAS em JSON válido com as chaves: thesis_text, macro_categories, to
           {step < STEPS.length - 1 ? (
             <Button
               onClick={() => { setAiHint(null); setStep(s => s + 1); }}
-              disabled={!canAdvance()}
+              disabled={!canAdvance() || (step === 0 && !form.name)}
               className="text-white gap-2"
-              style={{ background: canAdvance() ? "#E10867" : "#A7ADA7", border: "none" }}>
+              style={{ background: canAdvance() && (step !== 0 || form.name) ? "#E10867" : "#A7ADA7", border: "none" }}>
               Próximo <ChevronRight className="w-4 h-4" />
             </Button>
           ) : (
