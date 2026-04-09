@@ -70,11 +70,11 @@ export default function DiagnosticCRM() {
   const loadThesisData = async (thesis) => {
     setSelectedThesis(thesis);
 
-    // Load projects for this thesis
+    // CRITICAL: Filter CRMProject by BOTH corporate_id AND thesis_id
     const projectsData = await base44.entities.CRMProject.filter({
       corporate_id: corporateId,
       thesis_id: thesis.id
-    }, "-created_date");
+    });
 
     // Load all startups
     const startupsData = await base44.entities.Startup.filter({ is_deleted: false });
@@ -82,17 +82,17 @@ export default function DiagnosticCRM() {
     startupsData.forEach(s => { startupMap[s.id] = s; });
     setStartups(startupMap);
 
-    // Load matches for insights
+    // Load matches for insights (by thesis)
     const matchesData = await base44.entities.StartupMatch.filter({
-      thesis_id: thesis.id
+      thesis_id: thesis.id,
+      corporate_id: corporateId
     });
     const matchMap = {};
     matchesData.forEach(m => { matchMap[m.startup_id] = m; });
     setMatches(matchMap);
 
-    // Load task counts
+    // Load task counts for projects in this thesis
     const tasksData = await base44.entities.CRMTask.filter({
-      corporate_id: corporateId,
       project_id: { $in: projectsData.map(p => p.id) }
     });
     const counts = {};
