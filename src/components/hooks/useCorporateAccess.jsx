@@ -16,28 +16,29 @@ export function useCorporateAccess() {
 
   const load = async () => {
     setLoading(true);
-    const me = await base44.auth.me();
-    if (!me) { setLoading(false); return; }
+    try {
+      const me = await base44.auth.me();
+      if (!me) { setLoading(false); return; }
 
-    // 1. Encontrar membership ativa
-    const memberships = await base44.entities.CorporateMember.filter({ email: me.email, status: "active" });
+      // 1. Encontrar membership ativa (sort by created_date desc para pegar a mais recente)
+      const memberships = await base44.entities.CorporateMember.filter({ email: me.email, status: "active" }, "-created_date");
 
-    if (memberships.length > 0) {
-      const mem = memberships[0];
-      const corps = await base44.entities.Corporate.filter({ id: mem.corporate_id });
-      setMember(mem);
-      if (corps.length > 0) setCorporate(corps[0]);
+      if (memberships.length > 0) {
+        const mem = memberships[0];
+        const corps = await base44.entities.Corporate.filter({ id: mem.corporate_id });
+        setMember(mem);
+        if (corps.length > 0) setCorporate(corps[0]);
+      }
+    } catch (_) {
+      // silently fail — user sees empty state
+    } finally {
       setLoading(false);
-      return;
     }
-
-    // Issue #5 — Fallback removido: criação automática de membership foi movida para Onboarding.
-    // Usuários sem membership ativa simplesmente não têm acesso a uma corporate.
-    setLoading(false);
   };
 
   const isGestor = member?.role === "gestor";
-  const hasSuperCRMAccess = member?.super_crm_access !== false;
+  // Bug fix: se não tem membership, NÃO concede acesso ao SuperCRM
+  const hasSuperCRMAccess = member != null && member.super_crm_access !== false;
   const corporateId = corporate?.id || null;
 
   return { loading, corporate, member, isGestor, hasSuperCRMAccess, corporateId, reload: load };

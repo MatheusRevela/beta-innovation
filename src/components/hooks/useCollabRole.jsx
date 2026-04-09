@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { useAuth } from "@/lib/AuthContext";
 
 /**
  * Retorna as permissões do colaborador logado.
@@ -12,13 +11,9 @@ import { base44 } from "@/api/base44Client";
  *  gestor_master  → tudo, igual ao admin puro
  */
 export function useCollabRole() {
-  const [user, setUser] = useState(undefined);
+  const { user, isLoadingAuth } = useAuth();
 
-  useEffect(() => {
-    base44.auth.me().then(u => setUser(u ?? null));
-  }, []);
-
-  const loaded = user !== undefined;
+  const loaded = !isLoadingAuth;
   const collabRole = user?.collaborator_role ?? null;
   // role=admin da plataforma sempre tem acesso total, independente de collaborator_role
   const isPlatformAdmin = user?.role === "admin";

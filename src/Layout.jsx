@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
+import { useAuth } from "@/lib/AuthContext";
 import {
   LayoutDashboard, Zap, Map, Briefcase,
   ChevronLeft, ChevronRight, LogOut, User, Menu,
@@ -60,15 +61,12 @@ const NAV_ITEMS = {
   ],
 };
 
-const PORTAL_PAGES = ["Dashboard", "Diagnostic", "StartupRadar", "MyCRM", "Onboarding"];
-const ADMIN_PAGES = ["AdminDashboard", "StartupManagement", "CorporateManagement", "CRMBoard", "Reports", "AuditLogs", "AdminSettings"];
 const NO_LAYOUT_PAGES = ["Onboarding", "Login", "Register", "Home", "AdminLogin", "JoinCorporate", "ChooseProfile"];
-const PUBLIC_PAGES = ["Home", "Login", "Register", "AdminLogin", "JoinCorporate"];
 
 // Pages each collaborator role can access (null = full access)
 const COLLAB_NAV_PAGES = {
   credenciais: [
-    "AdminDashboard", "MyDiagnostics", "AIReadinessScan", "InnovationTheses", "StartupRadar",
+    "AdminDashboard", "EarlyWarnings", "MyDiagnostics", "AIReadinessScan", "InnovationTheses", "StartupRadar",
     "DiagnosticCRM", "MyCRM", "Notifications", "Laboratorio",
     "StartupManagement", "CorporateManagement", "CRMBoard", "Reports", "AuditLogs"
   ],
@@ -89,30 +87,10 @@ const COLLAB_ROLE_LABELS = {
 };
 
 export default function Layout({ children, currentPageName }) {
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [authChecked, setAuthChecked] = useState(false);
-  const location = useLocation();
-
-  useEffect(() => {
-    base44.auth.me()
-      .then(u => { setUser(u); setAuthChecked(true); })
-      .catch(() => {
-        setAuthChecked(true);
-        if (!PUBLIC_PAGES.includes(currentPageName)) {
-          base44.auth.redirectToLogin(window.location.href);
-        }
-      });
-  }, [currentPageName]);
-
-  if (!authChecked && !PUBLIC_PAGES.includes(currentPageName)) {
-    return (
-      <div className="flex items-center justify-center min-h-screen" style={{ background: '#ECEEEA' }}>
-        <div className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: '#E10867', borderTopColor: 'transparent' }} />
-      </div>
-    );
-  }
+  useLocation(); // keep router context active
 
   if (NO_LAYOUT_PAGES.includes(currentPageName)) {
     return <div className="min-h-screen" style={{ background: '#ECEEEA' }}>{children}</div>;

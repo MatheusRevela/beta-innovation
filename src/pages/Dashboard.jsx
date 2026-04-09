@@ -1,32 +1,28 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCorporateAccess } from "@/components/hooks/useCorporateAccess";
+import { useAuth } from "@/lib/AuthContext";
 
 import { MaturityBadge } from "@/components/shared/StatusBadge";
 import { Zap, Map, Briefcase, ChevronRight, Loader2, ClipboardList, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Dashboard() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const { loading: accessLoading, corporate, corporateId } = useCorporateAccess();
-  const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
   const [projects, setProjects] = useState([]);
   const [theses, setTheses] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Redirect by role without full reload
   useEffect(() => {
-    base44.auth.me().then(u => {
-      setUser(u);
-      // Admin users should be on the admin console, not the user portal
-      if (u?.role === "admin") {
-        window.location.replace(createPageUrl("AdminDashboard"));
-      } else if (u?.role === "startup_user") {
-        window.location.replace(createPageUrl("StartupPortal"));
-      }
-    });
-  }, []);
+    if (!user) return;
+    if (user.role === "admin") navigate(createPageUrl("AdminDashboard"), { replace: true });
+    else if (user.role === "startup_user") navigate(createPageUrl("StartupPortal"), { replace: true });
+  }, [user]);
 
   useEffect(() => {
     if (!accessLoading && corporateId) loadCorpData();
@@ -34,16 +30,27 @@ export default function Dashboard() {
   }, [accessLoading, corporateId]);
 
   const loadCorpData = async () => {
-    const [sessions, thesesData, projs] = await Promise.all([
-      base44.entities.DiagnosticSession.filter({ corporate_id: corporateId }),
-      base44.entities.InnovationThesis.filter({ corporate_id: corporateId }),
-      base44.entities.CRMProject.filter({ corporate_id: corporateId }),
-    ]);
-    const completed = sessions.filter(s => s.status === "completed").sort((a, b) => new Date(b.completed_at) - new Date(a.completed_at));
-    setSession(completed[0] || null);
-    setTheses(thesesData);
-    setProjects(projs.filter(p => p.is_active !== false));
-    setLoading(false);
+    try {
+      const [sessions, thesesData, projs] = await Promise.all([
+        base44.entities.DiagnosticSession.filter({ corporate_id: corporateId }),
+        base44.entities.InnovationThesis.filter({ corporate_id: corporateId }),
+        base44.entities.CRMProject.filter({ corporate_id: corporateId }),
+      ]);
+      const completed = sessions
+        .filter(s => s.status === "completed")
+        .sort((a, b) => {
+          const da = a.completed_at ? new Date(a.completed_at).getTime() : 0;
+          const db = b.completed_at ? new Date(b.completed_at).getTime() : 0;
+          return db - da;
+        });
+      setSession(completed[0] || null);
+      setTheses(thesesData);
+      setProjects(projs.filter(p => p.is_active !== false));
+    } catch (_) {
+      // mostra estado vazio em caso de erro de rede
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (loading || accessLoading) return (
@@ -58,7 +65,7 @@ export default function Dashboard() {
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-2xl font-bold" style={{ color: '#111111' }}>
-          Olá, {user?.full_name?.split(" ")[0] || "bem-vindo(a)"} 👋
+          Olá, {user?.full_name?.split(" ")[0] || user?.email?.split("@")[0] || "bem-vindo(a)"} 👋
         </h1>
         <p className="text-sm mt-1" style={{ color: '#4B4F4B' }}>
           {corporate ? (corporate.trade_name || corporate.company_name) : "Configure sua empresa para começar"}
