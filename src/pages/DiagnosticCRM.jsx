@@ -13,7 +13,7 @@ import TaskDrawer from "@/components/crm/TaskDrawer";
 import {
   Loader2, X, ExternalLink, Trash2,
   Lightbulb, ToggleLeft, ToggleRight,
-  Map, Bell, UserPlus, ArrowRight, ClipboardList, ChevronRight
+  Map, Bell, UserPlus, ArrowRight, ChevronRight
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -44,44 +44,50 @@ export default function DiagnosticCRM() {
 
   const loadData = async () => {
     setLoading(true);
-    const thesesData = await base44.entities.InnovationThesis.filter({ corporate_id: corporateId }, "-created_date");
-    setTheses(thesesData);
-    if (thesesData.length > 0) {
-      await loadThesis(thesesData[0], corporateId);
+    try {
+      const thesesData = await base44.entities.InnovationThesis.filter({ corporate_id: corporateId }, "-created_date");
+      setTheses(thesesData);
+      if (thesesData.length > 0) {
+        await loadThesis(thesesData[0], corporateId);
+      }
+    } catch (_) {
+      // erro de rede
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const loadThesis = async (thesis, corpId) => {
     setSelectedThesis(thesis);
     setLoadingProjects(true);
     const effectiveCorpId = corpId || corporate?.id;
-    const [ps] = await Promise.all([
-      base44.entities.CRMProject.filter({ corporate_id: effectiveCorpId, thesis_id: thesis.id }),
-    ]);
-    // Fetch all active startups once and filter by needed IDs client-side (avoids N+1)
-    const startupIds = new Set(ps.map(p => p.startup_id).filter(Boolean));
-    const allStartups = startupIds.size > 0
-      ? await base44.entities.Startup.filter({ is_deleted: false })
-      : [];
-    const ss = allStartups.filter(s => startupIds.has(s.id));
-    setProjects(ps);
-    const map = {};
-    ss.forEach(s => { map[s.id] = s; });
-    setStartups(map);
-
-    // Load follow-up counts (tasks with due_date)
-    if (ps.length > 0) {
-      const allTasks = await base44.entities.CRMTask.filter({ corporate_id: effectiveCorpId });
-      const counts = {};
-      allTasks.filter(t => t.due_date && t.status !== "done").forEach(t => {
-        counts[t.project_id] = (counts[t.project_id] || 0) + 1;
-      });
-      setFollowupCounts(counts);
+    try {
+      const [ps] = await Promise.all([
+        base44.entities.CRMProject.filter({ corporate_id: effectiveCorpId, thesis_id: thesis.id }),
+      ]);
+      const startupIds = new Set(ps.map(p => p.startup_id).filter(Boolean));
+      const allStartups = startupIds.size > 0
+        ? await base44.entities.Startup.filter({ is_deleted: false })
+        : [];
+      const ss = allStartups.filter(s => startupIds.has(s.id));
+      setProjects(ps);
+      const map = {};
+      ss.forEach(s => { map[s.id] = s; });
+      setStartups(map);
+      if (ps.length > 0) {
+        const allTasks = await base44.entities.CRMTask.filter({ corporate_id: effectiveCorpId });
+        const counts = {};
+        allTasks.filter(t => t.due_date && t.status !== "done").forEach(t => {
+          counts[t.project_id] = (counts[t.project_id] || 0) + 1;
+        });
+        setFollowupCounts(counts);
+      }
+    } catch (_) {
+      // erro de rede
+    } finally {
+      setLoadingProjects(false);
+      setSelected(null);
     }
-
-    setLoadingProjects(false);
-    setSelected(null);
   };
 
   const openProject = async (proj) => {
@@ -489,10 +495,6 @@ export default function DiagnosticCRM() {
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <p className="text-sm font-semibold" style={{ color: '#111111' }}>Tarefas</p>
-                  <Button size="sm" variant="outline" onClick={() => {/* TaskDrawer inline */}}
-                    className="gap-1.5 text-xs" style={{ borderColor: '#6B2FA0', color: '#6B2FA0' }}>
-                    <ClipboardList className="w-3.5 h-3.5" /> Gerenciar tarefas
-                  </Button>
                 </div>
                 <TaskDrawer project={selected} showHeader={false} />
               </div>

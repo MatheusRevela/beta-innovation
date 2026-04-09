@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { base44 } from "@/api/base44Client";
+import { useAuth } from "@/lib/AuthContext";
 import { useCollabRole } from "@/components/hooks/useCollabRole";
 import PageHeader from "@/components/shared/PageHeader";
 import ConfirmDestructiveModal from "@/components/shared/ConfirmDestructiveModal";
@@ -33,6 +34,7 @@ const CATEGORY_OPTIONS = [
 ];
 
 export default function StartupManagement() {
+  const { user } = useAuth();
   const { canManageStartups, loaded } = useCollabRole();
   const [startups, setStartups] = useState([]);
   const [total, setTotal] = useState(0);
@@ -44,14 +46,13 @@ export default function StartupManagement() {
   const [filtersKey, setFiltersKey] = useState("sm_filters");
   const [filters, setFilters] = useState({});
 
-  // Issue #12 — Prefixar chave do localStorage com ID do usuário
+  // Prefixar chave do localStorage com ID do usuário
   useEffect(() => {
-    base44.auth.me().then(me => {
-      const key = `sm_filters_${me?.id || 'anon'}`;
-      setFiltersKey(key);
-      try { setFilters(JSON.parse(localStorage.getItem(key) || "{}")); } catch { setFilters({}); }
-    });
-  }, []);
+    if (!user) return;
+    const key = `sm_filters_${user.id || 'anon'}`;
+    setFiltersKey(key);
+    try { setFilters(JSON.parse(localStorage.getItem(key) || "{}")); } catch { setFilters({}); }
+  }, [user]);
   const [sort, setSort] = useState({ field: "created_date", dir: "desc" });
   const [showForm, setShowForm] = useState(false);
   const [editStartup, setEditStartup] = useState(null);
@@ -132,7 +133,6 @@ export default function StartupManagement() {
   const toggleAll = () => setSelected(selected.length === startups.length ? [] : startups.map(s => s.id));
 
   const bulkToggleActive = async (activate) => {
-    const user = await base44.auth.me();
     await Promise.all(selected.map(async (id) => {
       await base44.entities.Startup.update(id, { is_active: activate });
       await base44.entities.AuditLog.create({
@@ -149,7 +149,6 @@ export default function StartupManagement() {
 
   const bulkDelete = async () => {
     setDeletingBulk(true);
-    const user = await base44.auth.me();
     for (const id of selected) {
       const s = startups.find(st => st.id === id);
       await base44.entities.Startup.update(id, {

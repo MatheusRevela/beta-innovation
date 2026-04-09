@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
+import { useAuth } from "@/lib/AuthContext";
 import { Bell, Check, Loader2, ChevronRight, Clock, AlertTriangle, User } from "lucide-react";
 import { format, isToday, isThisWeek, isThisMonth, isPast } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -16,6 +17,7 @@ const TABS = [
 
 export default function Notifications() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [followups, setFollowups] = useState([]);
   const [projects, setProjects] = useState({});
   const [startups, setStartups] = useState({});
@@ -26,11 +28,12 @@ export default function Notifications() {
 
 
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => { if (user) loadData(); }, [user]);
 
   const loadData = async () => {
     setLoading(true);
-    const currentUser = await base44.auth.me();
+    try {
+    const currentUser = user;
 
     // Resolve corporate via CorporateMember (novo sistema) ou fallback legado
     const memberships = await base44.entities.CorporateMember.filter({ email: currentUser.email, status: "active" });
@@ -75,8 +78,11 @@ export default function Notifications() {
     const startupMap = {};
     allStartups.forEach(s => { startupMap[s.id] = s; });
     setStartups(startupMap);
-
-    setLoading(false);
+    } catch (_) {
+      // erro de rede — mostra estado vazio
+    } finally {
+      setLoading(false);
+    }
   };
 
   const markDone = async (fu) => {

@@ -30,9 +30,14 @@ export default function MyDiagnostics() {
   }, [accessLoading, corporate]);
 
   const loadSessions = async () => {
-    const all = await base44.entities.DiagnosticSession.filter({ corporate_id: corporate.id }, "-created_date");
-    setSessions(all);
-    setLoading(false);
+    try {
+      const all = await base44.entities.DiagnosticSession.filter({ corporate_id: corporate.id }, "-created_date");
+      setSessions(all);
+    } catch (_) {
+      // erro de rede
+    } finally {
+      setLoading(false);
+    }
   };
 
   const startNew = () => {
@@ -153,7 +158,7 @@ function SessionCard({ session, onResume }) {
   const cfg = STATUS_CONFIG[session.status] || STATUS_CONFIG.draft;
   const Icon = cfg.icon;
   const isCompleted = session.status === "completed";
-  const canResume = ["draft", "in_progress"].includes(session.status); // used for button label/style
+  const canResume = ["draft", "in_progress"].includes(session.status);
 
   const dateStr = session.completed_at
     ? format(new Date(session.completed_at), "dd 'de' MMM 'de' yyyy", { locale: ptBR })
