@@ -344,6 +344,14 @@ Responda em JSON:
     const matchId = crmModal.id;
     const effectiveCorporateId = urlCorporateId || resolvedCorpId || hookCorporateId;
     const effectiveThesisId = thesis?.id;
+    const effectiveSessionId = session?.id;
+    
+    if (!effectiveThesisId) {
+      alert('Erro: Tese de inovação não carregada. Recarregue a página.');
+      setSavingCrm(false);
+      return;
+    }
+    
     try {
       await Promise.all([
         base44.entities.CRMProject.create({
