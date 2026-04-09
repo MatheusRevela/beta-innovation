@@ -2,8 +2,8 @@ import { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import {
-  X, Loader2, Wifi, WifiOff, ShieldCheck, ShieldAlert,
-  Mail, Phone, CheckCircle2, AlertTriangle, Clock, ExternalLink,
+  X, Loader2, Wifi, WifiOff, ShieldCheck,
+  Mail, CheckCircle2, AlertTriangle, ExternalLink,
   ThumbsUp, ThumbsDown, RotateCcw
 } from "lucide-react";
 

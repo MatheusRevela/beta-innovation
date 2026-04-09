@@ -11,11 +11,11 @@ import AddManualStartupModal from "@/components/crm/AddManualStartupModal";
 import FollowUpModal from "@/components/crm/FollowUpModal";
 import TaskDrawer from "@/components/crm/TaskDrawer";
 import {
-  Plus, Loader2, X, ExternalLink, Check, Trash2,
-  ChevronRight, Lightbulb, ToggleLeft, ToggleRight,
-  Map, Bell, UserPlus, ArrowRight, ClipboardList
+  Loader2, X, ExternalLink, Trash2,
+  Lightbulb, ToggleLeft, ToggleRight,
+  Map, Bell, UserPlus, ArrowRight, ClipboardList, ChevronRight
 } from "lucide-react";
-import { format, isPast, isToday } from "date-fns";
+import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 export default function DiagnosticCRM() {
@@ -29,7 +29,7 @@ export default function DiagnosticCRM() {
   const [loading, setLoading] = useState(true);
   const [loadingProjects, setLoadingProjects] = useState(false);
   const [selected, setSelected] = useState(null);
-  const [showTaskDrawer, setShowTaskDrawer] = useState(false);
+
   const [movingStage, setMovingStage] = useState(null);
   const [togglingCrm, setTogglingCrm] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -489,7 +489,7 @@ export default function DiagnosticCRM() {
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <p className="text-sm font-semibold" style={{ color: '#111111' }}>Tarefas</p>
-                  <Button size="sm" variant="outline" onClick={() => setShowTaskDrawer(true)}
+                  <Button size="sm" variant="outline" onClick={() => {/* TaskDrawer inline */}}
                     className="gap-1.5 text-xs" style={{ borderColor: '#6B2FA0', color: '#6B2FA0' }}>
                     <ClipboardList className="w-3.5 h-3.5" /> Gerenciar tarefas
                   </Button>

@@ -4,7 +4,7 @@ import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import {
   LayoutDashboard, Zap, Map, Briefcase,
-  ChevronLeft, ChevronRight, LogOut, User, Menu, X,
+  ChevronLeft, ChevronRight, LogOut, User, Menu,
   Building2, Star, Database, BarChart3, FileText, Bell, FlaskConical, Brain, AlertTriangle,
   Rocket, UserPlus
 } from "lucide-react";

@@ -1,4 +1,4 @@
-import { AlertTriangle, CheckCircle2, Clock, WifiOff, Wifi } from "lucide-react";
+import { AlertTriangle, Clock, WifiOff, Wifi } from "lucide-react";
 
 /**
  * Badge compacto exibido na tabela de startups.

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   X, Plus, Check, Trash2, Loader2, Calendar, Tag,
-  AlertCircle, Clock, User, ChevronDown, Circle, CheckCircle2
+  AlertCircle, Clock, User, Circle, CheckCircle2
 } from "lucide-react";
 import { format, isPast, isToday, differenceInDays } from "date-fns";
 import { ptBR } from "date-fns/locale";

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
 import { useCorporateAccess } from "@/components/hooks/useCorporateAccess";
-import { getMaturidadeLevel } from "@/components/ui/DesignTokens";
+
 import { MaturityBadge } from "@/components/shared/StatusBadge";
 import { Zap, Plus, ChevronRight, Loader2, Clock, CheckCircle2, PlayCircle, Hourglass, XCircle, Lock, Brain } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -153,7 +153,7 @@ function SessionCard({ session, onResume }) {
   const cfg = STATUS_CONFIG[session.status] || STATUS_CONFIG.draft;
   const Icon = cfg.icon;
   const isCompleted = session.status === "completed";
-  const canResume = ["draft", "in_progress"].includes(session.status);
+  const canResume = ["draft", "in_progress"].includes(session.status); // used for button label/style
 
   const dateStr = session.completed_at
     ? format(new Date(session.completed_at), "dd 'de' MMM 'de' yyyy", { locale: ptBR })

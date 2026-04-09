@@ -33,7 +33,7 @@ const CATEGORY_OPTIONS = [
 ];
 
 export default function StartupManagement() {
-  const { isReadOnly, canManageStartups, loaded } = useCollabRole();
+  const { canManageStartups, loaded } = useCollabRole();
   const [startups, setStartups] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);

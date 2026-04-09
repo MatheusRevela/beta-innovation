@@ -15,6 +15,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     checkAppState();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const checkAppState = async () => {
@@ -105,6 +106,12 @@ export const AuthProvider = ({ children }) => {
         setAuthError({
           type: 'auth_required',
           message: 'Authentication required'
+        });
+      } else {
+        // Non-auth error (network, 500, CORS) — show error instead of blank screen
+        setAuthError({
+          type: 'unknown',
+          message: error.message || 'Falha ao verificar autenticação'
         });
       }
     }

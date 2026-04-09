@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Bell, Calendar, Check, Loader2, ChevronRight, Clock, AlertTriangle, User, Tag } from "lucide-react";
-import { format, isToday, isThisWeek, isThisMonth, isPast, startOfDay } from "date-fns";
+import { Bell, Check, Loader2, ChevronRight, Clock, AlertTriangle, User } from "lucide-react";
+import { format, isToday, isThisWeek, isThisMonth, isPast } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { createPageUrl } from "@/utils";
 import { useNavigate } from "react-router-dom";
@@ -24,15 +24,13 @@ export default function Notifications() {
   const [statusFilter, setStatusFilter] = useState("pending");
   const [completing, setCompleting] = useState(null);
 
-  const [me, setMe] = useState(null);
-  const [myMembership, setMyMembership] = useState(null);
+
 
   useEffect(() => { loadData(); }, []);
 
   const loadData = async () => {
     setLoading(true);
     const currentUser = await base44.auth.me();
-    setMe(currentUser);
 
     // Resolve corporate via CorporateMember (novo sistema) ou fallback legado
     const memberships = await base44.entities.CorporateMember.filter({ email: currentUser.email, status: "active" });
@@ -50,7 +48,7 @@ export default function Notifications() {
       const seen = new Set();
       corp = [...corpsByEmail, ...corpsByCreator].filter(c => seen.has(c.id) ? false : seen.add(c.id))[0] || null;
     }
-    setMyMembership(membership);
+
 
     if (!corp) { setLoading(false); return; }
 

@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
 import { Link } from "react-router-dom";
 import { useCorporateAccess } from "@/components/hooks/useCorporateAccess";
-import { getMaturidadeLevel } from "@/components/ui/DesignTokens";
+
 import { MaturityBadge } from "@/components/shared/StatusBadge";
 import { Zap, Map, Briefcase, ChevronRight, Loader2, ClipboardList, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -52,7 +52,7 @@ export default function Dashboard() {
     </div>
   );
 
-  const matLevel = session ? getMaturidadeLevel(session.overall_score) : null;
+
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">

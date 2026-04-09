@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Rocket, FileText, Star, Loader2, ExternalLink, UserPlus, Zap, ChevronRight, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
