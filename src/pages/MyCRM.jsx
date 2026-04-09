@@ -25,6 +25,18 @@ export default function MyCRM() {
     else if (!accessLoading) setLoading(false);
   }, [accessLoading, corporateId]);
 
+  // Listen for new CRMProject additions in real-time
+  useEffect(() => {
+    if (!corporateId) return;
+    const unsubscribe = base44.entities.CRMProject.subscribe((event) => {
+      if (event.data?.corporate_id === corporateId && event.type === 'create') {
+        // Reload data when a new project is added from another page
+        loadData();
+      }
+    });
+    return unsubscribe;
+  }, [corporateId]);
+
   const [theses, setTheses] = useState({});
   const [matches, setMatches] = useState({});
 
