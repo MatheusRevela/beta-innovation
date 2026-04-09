@@ -1,4 +1,7 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { createPageUrl } from "@/utils";
+import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { useCorporateAccess } from "@/components/hooks/useCorporateAccess";
@@ -12,6 +15,7 @@ import StartupComparePanel from "@/components/radar/StartupComparePanel";
 
 export default function StartupRadar() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const params = new URLSearchParams(window.location.search);
   const sessionId = params.get("session_id");
   const urlCorporateId = params.get("corporate_id");
@@ -369,6 +373,11 @@ Responda em JSON:
     setMatches(prev => prev.map(m => m.id === matchId ? { ...m, added_to_crm: true } : m));
     setCrmModal(null);
     setSavingCrm(false);
+    // Redirect to DiagnosticCRM with thesis pre-selected
+    const params = new URLSearchParams();
+    if (effectiveThesisId) params.set('thesis_id', effectiveThesisId);
+    if (effectiveCorporateId) params.set('corporate_id', effectiveCorporateId);
+    setTimeout(() => navigate(createPageUrl('DiagnosticCRM') + '?' + params.toString()), 300);
   };
 
   const toggleCompare = (match, startup) => {

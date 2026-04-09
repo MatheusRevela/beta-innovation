@@ -20,6 +20,8 @@ import { ptBR } from "date-fns/locale";
 
 export default function DiagnosticCRM() {
   const navigate = useNavigate();
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialThesisId = urlParams.get('thesis_id');
   const { loading: accessLoading, corporate, corporateId } = useCorporateAccess();
   const [theses, setTheses] = useState([]);
   const [selectedThesis, setSelectedThesis] = useState(null);
@@ -41,6 +43,14 @@ export default function DiagnosticCRM() {
     if (!accessLoading && corporateId) loadData();
     else if (!accessLoading) setLoading(false);
   }, [accessLoading, corporateId]);
+
+  // Auto-select thesis from URL if provided
+  useEffect(() => {
+    if (initialThesisId && theses.length > 0 && !selectedThesis) {
+      const thesis = theses.find(t => t.id === initialThesisId);
+      if (thesis) loadThesis(thesis);
+    }
+  }, [initialThesisId, theses, selectedThesis]);
 
   const loadData = async () => {
     setLoading(true);
