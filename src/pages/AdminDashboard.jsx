@@ -2,37 +2,43 @@ import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/lib/AuthContext";
 import PageHeader from "@/components/shared/PageHeader";
 import { Database, Building2, Briefcase, Zap, TrendingUp, Loader2 } from "lucide-react";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    base44.auth.me().then(me => {
-      if (me?.role !== 'admin') navigate(createPageUrl('Dashboard'));
-      else loadStats();
-    });
-  }, []);
+    if (!user) return;
+    if (user.role !== 'admin') navigate(createPageUrl('Dashboard'), { replace: true });
+    else loadStats();
+  }, [user]);
 
   const loadStats = async () => {
-    const [startups, corps, sessions, projects] = await Promise.all([
-      base44.entities.Startup.filter({ is_deleted: false }),
-      base44.entities.Corporate.list(),
-      base44.entities.DiagnosticSession.filter({ status: "completed" }),
-      base44.entities.CRMProject.filter({ is_active: true })
-    ]);
-    setStats({
-      startups: startups.length,
-      startupsActive: startups.filter(s => s.is_active !== false).length,
-      corporates: corps.length,
-      sessions: sessions.length,
-      avgScore: sessions.length > 0 ? Math.round(sessions.reduce((a, s) => a + (s.overall_score || 0), 0) / sessions.length) : 0,
-      projects: projects.length,
-    });
-    setLoading(false);
+    try {
+      const [startups, corps, sessions, projects] = await Promise.all([
+        base44.entities.Startup.filter({ is_deleted: false }),
+        base44.entities.Corporate.list(),
+        base44.entities.DiagnosticSession.filter({ status: "completed" }),
+        base44.entities.CRMProject.filter({ is_active: true })
+      ]);
+      setStats({
+        startups: startups.length,
+        startupsActive: startups.filter(s => s.is_active !== false).length,
+        corporates: corps.length,
+        sessions: sessions.length,
+        avgScore: sessions.length > 0 ? Math.round(sessions.reduce((a, s) => a + (s.overall_score || 0), 0) / sessions.length) : 0,
+        projects: projects.length,
+      });
+    } catch (_) {
+      // mostra estado vazio em caso de erro de rede
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (loading) return (

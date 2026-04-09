@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+import { useAuth } from "@/lib/AuthContext";
 import { createPageUrl } from "@/utils";
 import { Check, ChevronRight, Star, Building2, User, Target, Shield, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,7 @@ const SIZES = ["Startup", "Pequena (<50 func.)", "Média (50–500 func.)", "Gra
 
 export default function Onboarding() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [badges, setBadges] = useState([]);
@@ -42,10 +44,8 @@ export default function Onboarding() {
 
   // Pré-preenche email do usuário autenticado
   useEffect(() => {
-    base44.auth.me().then(me => {
-      if (me?.email) setForm(f => ({ ...f, contact_email: me.email }));
-    });
-  }, []);
+    if (user?.email) setForm(f => ({ ...f, contact_email: user.email }));
+  }, [user]);
 
   const update = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
@@ -68,24 +68,33 @@ export default function Onboarding() {
     if (step < 5) { setStep(s => s + 1); return; }
 
     setLoading(true);
-    const me = await base44.auth.me();
-    const corp = await base44.entities.Corporate.create({
-      ...form,
-      lgpd_consent_date: new Date().toISOString(),
-      onboarding_completed: true,
-      onboarding_step: 5
-    });
-    // Create CorporateMember with appropriate role
-    await base44.entities.CorporateMember.create({
-      corporate_id: corp.id,
-      email: me.email,
-      role: form.is_manager === false ? "usuario" : "gestor",
-      super_crm_access: true,
-      status: "active"
-    });
-    awardBadge("✅ Onboarding concluído");
-    setLoading(false);
-    navigate(createPageUrl("Diagnostic") + `?corporate_id=${corp.id}`);
+    try {
+      // Guard: evita duplicidade se usuário já tem corporate
+      const existing = await base44.entities.CorporateMember.filter({ email: user.email, status: "active" });
+      if (existing.length > 0) {
+        navigate(createPageUrl("Dashboard"), { replace: true });
+        return;
+      }
+      const corp = await base44.entities.Corporate.create({
+        ...form,
+        lgpd_consent_date: new Date().toISOString(),
+        onboarding_completed: true,
+        onboarding_step: 5
+      });
+      await base44.entities.CorporateMember.create({
+        corporate_id: corp.id,
+        email: user.email,
+        role: form.is_manager === false ? "usuario" : "gestor",
+        super_crm_access: true,
+        status: "active"
+      });
+      awardBadge("✅ Onboarding concluído");
+      navigate(createPageUrl("Diagnostic") + `?corporate_id=${corp.id}`);
+    } catch (_) {
+      // erro de rede — libera o botão
+    } finally {
+      setLoading(false);
+    }
   };
 
   const progress = ((step - 1) / (STEPS.length - 1)) * 100;
