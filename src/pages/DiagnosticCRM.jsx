@@ -233,11 +233,8 @@ export default function DiagnosticCRM() {
               borderColor: selectedThesis?.id === t.id ? '#1E0B2E' : '#A7ADA7',
               color: selectedThesis?.id === t.id ? '#fff' : '#111111'
             }}>
-            <div className="text-xs opacity-75 mb-1">
-              {format(new Date(t.created_date), "MMM yyyy", { locale: ptBR })}
-            </div>
             <div className="text-sm truncate max-w-56">
-              {(t.macro_categories || []).slice(0, 2).join(", ") || "Tese"}
+              {t.name || (t.macro_categories || []).slice(0, 2).join(", ") || "Tese"}
             </div>
           </button>
         ))}
