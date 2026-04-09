@@ -8,17 +8,19 @@ import { CRM_TYPES } from "@/components/ui/DesignTokens";
 import { FitScoreBadge } from "@/components/shared/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, Zap, Search, Plus, ExternalLink, MessageCircle, X } from "lucide-react";
+import { Loader2, Zap, Plus, ExternalLink, MessageCircle, X } from "lucide-react";
 
 export default function StartupRadar() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const params = new URLSearchParams(window.location.search);
   const urlCorporateId = params.get("corporate_id");
+  const urlThesisId = params.get("thesis_id");
 
   const { corporateId: hookCorporateId, loading: hookLoading } = useCorporateAccess();
 
   const [theses, setTheses] = useState([]);
+  const [selectedThesisId, setSelectedThesisId] = useState(urlThesisId || null);
   const [thesesMatches, setThesesMatches] = useState({});
   const [startups, setStartups] = useState({});
   const [loading, setLoading] = useState(true);
@@ -37,6 +39,9 @@ export default function StartupRadar() {
         "-created_date"
       );
       setTheses(thesesData);
+      if (!selectedThesisId && thesesData.length > 0) {
+        setSelectedThesisId(thesesData[0].id);
+      }
 
       const all = await base44.entities.Startup.filter({ is_deleted: false });
       const map = {};
@@ -157,141 +162,162 @@ export default function StartupRadar() {
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2" style={{ color: '#111111' }}>Radar de Startups</h1>
-        <p className="text-sm" style={{ color: '#4B4F4B' }}>
-          Análise de aderência por tese de inovação
-        </p>
+        <p className="text-sm" style={{ color: '#4B4F4B' }}>Análise de aderência por tese de inovação</p>
       </div>
 
       {theses.length === 0 ? (
         <div className="text-center py-16 bg-white rounded-2xl border" style={{ borderColor: '#A7ADA7' }}>
           <div className="text-4xl mb-3">📋</div>
           <p className="font-semibold mb-1" style={{ color: '#111111' }}>Nenhuma tese criada</p>
-          <p className="text-sm" style={{ color: '#4B4F4B' }}>
-            Crie uma tese de inovação para começar a gerar o radar de startups.
-          </p>
+          <p className="text-sm" style={{ color: '#4B4F4B' }}>Crie uma tese de inovação para começar a gerar o radar de startups.</p>
         </div>
       ) : (
-        <div className="space-y-8">
-          {theses.map(thesis => {
-            const matches = thesesMatches[thesis.id] || [];
-            const isRunning = runningMatching[thesis.id] || false;
-
-            return (
-              <div key={thesis.id} className="bg-white rounded-2xl border p-6" style={{ borderColor: '#B4D1D7' }}>
-                <div className="flex items-start justify-between gap-4 mb-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <Zap className="w-5 h-5" style={{ color: '#E10867' }} />
-                      <h2 className="text-xl font-bold" style={{ color: '#111111' }}>
-                        {thesis.name || 'Tese de Inovação'}
-                      </h2>
-                    </div>
-                    <p className="text-sm mb-3" style={{ color: '#4B4F4B' }}>
-                      {thesis.thesis_text?.split("\n")[0]}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {(thesis.macro_categories || []).map(c => (
-                        <span key={c} className="px-3 py-1 rounded-full text-xs font-medium"
-                          style={{ background: '#fce7ef', color: '#E10867' }}>{c}</span>
-                      ))}
-                      {(thesis.tags || []).slice(0, 5).map(t => (
-                        <span key={t} className="px-3 py-1 rounded-full text-xs"
-                          style={{ background: '#ECEEEA', color: '#4B4F4B' }}>#{t}</span>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="flex-shrink-0">
-                    {!thesis.matching_ran ? (
-                      <Button
-                        onClick={() => runMatching(thesis.id)}
-                        disabled={isRunning}
-                        className="text-white whitespace-nowrap"
-                        style={{ background: '#E10867' }}>
-                        {isRunning ? (
-                          <>
-                            <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
-                            Gerando…
-                          </>
-                        ) : (
-                          <>
-                            <Zap className="w-3.5 h-3.5 mr-1.5" />
-                            Gerar Radar
-                          </>
-                        )}
-                      </Button>
-                    ) : (
-                      <div className="text-xs font-medium text-green-700 bg-green-50 px-3 py-2 rounded-lg border border-green-200">
-                        ✓ {matches.length} startup{matches.length !== 1 ? 's' : ''} com fit
-                      </div>
-                    )}
-                  </div>
+        <div>
+          <div className="flex gap-2 overflow-x-auto pb-4 mb-6">
+            {theses.map(t => (
+              <button
+                key={t.id}
+                onClick={() => setSelectedThesisId(t.id)}
+                className="flex-shrink-0 px-4 py-2.5 rounded-xl border text-sm font-medium transition-all"
+                style={{
+                  background: selectedThesisId === t.id ? '#1E0B2E' : '#fff',
+                  borderColor: selectedThesisId === t.id ? '#1E0B2E' : '#A7ADA7',
+                  color: selectedThesisId === t.id ? '#fff' : '#111111'
+                }}>
+                <div className="text-xs opacity-75 mb-0.5">
+                  {t.name || (t.macro_categories?.length > 0
+                    ? `${t.macro_categories[0]}${t.macro_categories.length > 1 ? ` +${t.macro_categories.length - 1}` : ''}`
+                    : `Tese`
+                  )}
                 </div>
+              </button>
+            ))}
+          </div>
 
-                {matches.length > 0 && (
-                  <div className="mt-6 pt-6 border-t" style={{ borderColor: '#ECEEEA' }}>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {matches
-                        .sort((a, b) => (b.fit_score || 0) - (a.fit_score || 0))
-                        .map(match => {
-                          const s = startups[match.startup_id];
-                          if (!s) return null;
-                          return (
-                            <div key={match.id}
-                              className="bg-gray-50 rounded-xl border shadow-sm hover:shadow-md transition-shadow cursor-pointer p-4"
-                              style={{ borderColor: '#ECEEEA' }}
-                              onClick={() => setSelectedStartup({ match, startup: s })}>
-                              <div className="flex items-start gap-3 mb-3">
-                                {s.logo_url ? (
-                                  <img src={s.logo_url} alt={s.name} className="w-10 h-10 rounded-lg object-contain border" />
-                                ) : (
-                                  <div className="w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold"
-                                    style={{ background: '#fce7ef', color: '#E10867' }}>
-                                    {s.name?.[0] || "?"}
-                                  </div>
-                                )}
-                                <div className="flex-1 min-w-0">
-                                  <p className="font-semibold text-sm" style={{ color: '#111111' }}>{s.name}</p>
-                                  <p className="text-xs" style={{ color: '#4B4F4B' }}>{s.category}</p>
-                                </div>
-                                <FitScoreBadge score={match.fit_score || 0} />
-                              </div>
-                              <p className="text-xs line-clamp-2 mb-3" style={{ color: '#4B4F4B' }}>{s.description}</p>
-                              <div className="flex items-center gap-1.5">
-                                <button onClick={e => { e.stopPropagation(); handleFeedback(match, "relevant"); }}
-                                  className="text-xs px-2 py-1 rounded border transition-all"
-                                  style={{
-                                    borderColor: match.feedback === "relevant" ? '#2C4425' : '#A7ADA7',
-                                    background: match.feedback === "relevant" ? '#2C4425' : 'transparent',
-                                    color: match.feedback === "relevant" ? '#fff' : '#4B4F4B'
-                                  }}>👍</button>
-                                <button onClick={e => { e.stopPropagation(); handleFeedback(match, "irrelevant"); }}
-                                  className="text-xs px-2 py-1 rounded border transition-all"
-                                  style={{
-                                    borderColor: match.feedback === "irrelevant" ? '#E10867' : '#A7ADA7',
-                                    background: match.feedback === "irrelevant" ? '#fce7ef' : 'transparent',
-                                    color: match.feedback === "irrelevant" ? '#E10867' : '#4B4F4B'
-                                  }}>👎</button>
-                                <div className="flex-1" />
-                                <button
-                                  onClick={e => { e.stopPropagation(); openCrmModal(match); }}
-                                  disabled={match.added_to_crm}
-                                  className="text-xs px-2.5 py-1 rounded font-medium transition-all"
-                                  style={{
-                                    background: match.added_to_crm ? '#ECEEEA' : '#E10867',
-                                    color: match.added_to_crm ? '#A7ADA7' : '#fff'
-                                  }}>
-                                  {match.added_to_crm ? "✓" : "+ CRM"}
-                                </button>
-                              </div>
-                            </div>
-                          );
-                        })}
+          <div className="space-y-8">
+            {selectedThesisId && theses.map(thesis => {
+              if (thesis.id !== selectedThesisId) return null;
+
+              const matches = thesesMatches[thesis.id] || [];
+              const isRunning = runningMatching[thesis.id] || false;
+
+              return (
+                <div key={thesis.id} className="bg-white rounded-2xl border p-6" style={{ borderColor: '#B4D1D7' }}>
+                  <div className="flex items-start justify-between gap-4 mb-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <Zap className="w-5 h-5" style={{ color: '#E10867' }} />
+                        <h2 className="text-xl font-bold" style={{ color: '#111111' }}>
+                          {thesis.name || 'Tese de Inovação'}
+                        </h2>
+                      </div>
+                      <p className="text-sm mb-3" style={{ color: '#4B4F4B' }}>
+                        {thesis.thesis_text?.split("\n")[0]}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {(thesis.macro_categories || []).map(c => (
+                          <span key={c} className="px-3 py-1 rounded-full text-xs font-medium"
+                            style={{ background: '#fce7ef', color: '#E10867' }}>{c}</span>
+                        ))}
+                        {(thesis.tags || []).slice(0, 5).map(t => (
+                          <span key={t} className="px-3 py-1 rounded-full text-xs"
+                            style={{ background: '#ECEEEA', color: '#4B4F4B' }}>#{t}</span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex-shrink-0">
+                      {!thesis.matching_ran ? (
+                        <Button
+                          onClick={() => runMatching(thesis.id)}
+                          disabled={isRunning}
+                          className="text-white whitespace-nowrap"
+                          style={{ background: '#E10867' }}>
+                          {isRunning ? (
+                            <>
+                              <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                              Gerando…
+                            </>
+                          ) : (
+                            <>
+                              <Zap className="w-3.5 h-3.5 mr-1.5" />
+                              Gerar Radar
+                            </>
+                          )}
+                        </Button>
+                      ) : (
+                        <div className="text-xs font-medium text-green-700 bg-green-50 px-3 py-2 rounded-lg border border-green-200">
+                          ✓ {matches.length} startup{matches.length !== 1 ? 's' : ''} com fit
+                        </div>
+                      )}
                     </div>
                   </div>
-                )}
-              </div>
-            );
-          })}
+
+                  {matches.length > 0 && (
+                    <div className="mt-6 pt-6 border-t" style={{ borderColor: '#ECEEEA' }}>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {matches
+                          .sort((a, b) => (b.fit_score || 0) - (a.fit_score || 0))
+                          .map(match => {
+                            const s = startups[match.startup_id];
+                            if (!s) return null;
+                            return (
+                              <div key={match.id}
+                                className="bg-gray-50 rounded-xl border shadow-sm hover:shadow-md transition-shadow cursor-pointer p-4"
+                                style={{ borderColor: '#ECEEEA' }}
+                                onClick={() => setSelectedStartup({ match, startup: s })}>
+                                <div className="flex items-start gap-3 mb-3">
+                                  {s.logo_url ? (
+                                    <img src={s.logo_url} alt={s.name} className="w-10 h-10 rounded-lg object-contain border" />
+                                  ) : (
+                                    <div className="w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold"
+                                      style={{ background: '#fce7ef', color: '#E10867' }}>
+                                      {s.name?.[0] || "?"}
+                                    </div>
+                                  )}
+                                  <div className="flex-1 min-w-0">
+                                    <p className="font-semibold text-sm" style={{ color: '#111111' }}>{s.name}</p>
+                                    <p className="text-xs" style={{ color: '#4B4F4B' }}>{s.category}</p>
+                                  </div>
+                                  <FitScoreBadge score={match.fit_score || 0} />
+                                </div>
+                                <p className="text-xs line-clamp-2 mb-3" style={{ color: '#4B4F4B' }}>{s.description}</p>
+                                <div className="flex items-center gap-1.5">
+                                  <button onClick={e => { e.stopPropagation(); handleFeedback(match, "relevant"); }}
+                                    className="text-xs px-2 py-1 rounded border transition-all"
+                                    style={{
+                                      borderColor: match.feedback === "relevant" ? '#2C4425' : '#A7ADA7',
+                                      background: match.feedback === "relevant" ? '#2C4425' : 'transparent',
+                                      color: match.feedback === "relevant" ? '#fff' : '#4B4F4B'
+                                    }}>👍</button>
+                                  <button onClick={e => { e.stopPropagation(); handleFeedback(match, "irrelevant"); }}
+                                    className="text-xs px-2 py-1 rounded border transition-all"
+                                    style={{
+                                      borderColor: match.feedback === "irrelevant" ? '#E10867' : '#A7ADA7',
+                                      background: match.feedback === "irrelevant" ? '#fce7ef' : 'transparent',
+                                      color: match.feedback === "irrelevant" ? '#E10867' : '#4B4F4B'
+                                    }}>👎</button>
+                                  <div className="flex-1" />
+                                  <button
+                                    onClick={e => { e.stopPropagation(); openCrmModal(match); }}
+                                    disabled={match.added_to_crm}
+                                    className="text-xs px-2.5 py-1 rounded font-medium transition-all"
+                                    style={{
+                                      background: match.added_to_crm ? '#ECEEEA' : '#E10867',
+                                      color: match.added_to_crm ? '#A7ADA7' : '#fff'
+                                    }}>
+                                    {match.added_to_crm ? "✓" : "+ CRM"}
+                                  </button>
+                                </div>
+                              </div>
+                            );
+                          })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
