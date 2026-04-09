@@ -67,16 +67,17 @@ export default function StartupRadar() {
       }
     }
 
+    const validThesisId = thesisId && String(thesisId).trim() ? thesisId : null;
     const [sessions, thesesData, existingMatches] = await Promise.all([
       resolvedSessionId
         ? base44.entities.DiagnosticSession.filter({ id: resolvedSessionId })
         : base44.entities.DiagnosticSession.filter({ corporate_id: resolvedCorporateId, status: "completed" }, "-completed_at", 1),
-      thesisId && String(thesisId).trim()
-        ? base44.entities.InnovationThesis.filter({ id: thesisId })
+      validThesisId
+        ? base44.entities.InnovationThesis.filter({ id: validThesisId })
         : base44.entities.InnovationThesis.filter({ corporate_id: resolvedCorporateId }),
-      thesisId && String(thesisId).trim()
-        ? base44.entities.StartupMatch.filter({ thesis_id: thesisId })
-        : []
+      validThesisId
+        ? base44.entities.StartupMatch.filter({ thesis_id: validThesisId })
+        : Promise.resolve([])
     ]);
 
     const sess = sessions[0];
