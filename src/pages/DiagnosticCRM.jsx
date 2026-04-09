@@ -44,64 +44,22 @@ export default function DiagnosticCRM() {
     else if (!accessLoading) setLoading(false);
   }, [accessLoading, corporateId]);
 
-  // Auto-select thesis from URL if provided
-  useEffect(() => {
-    if (initialThesisId && theses.length > 0 && !selectedThesis) {
-      const thesis = theses.find(t => t.id === initialThesisId);
-      if (thesis) loadThesis(thesis);
-    }
-  }, [initialThesisId, theses, selectedThesis]);
-
   const loadData = async () => {
     setLoading(true);
     try {
       const thesesData = await base44.entities.InnovationThesis.filter({ corporate_id: corporateId }, "-created_date");
       setTheses(thesesData);
       if (thesesData.length > 0) {
-        await loadThesis(thesesData[0], corporateId);
+        const fromUrl = initialThesisId
+          ? thesesData.find(t => t.id === initialThesisId)
+          : null;
+        await loadThesis(fromUrl || thesesData[0], corporateId);
       }
     } catch (_) {
       // erro de rede
     } finally {
       setLoading(false);
     }
-  };
-
-  const loadThesis = async (thesis, corpId) => {
-    setSelectedThesis(thesis);
-    setLoadingProjects(true);
-    const effectiveCorpId = corpId || corporate?.id;
-    try {
-      const ps = thesis?.id
-        ? await base44.entities.CRMProject.filter({ corporate_id: effectiveCorpId, thesis_id: thesis.id })
-        : [];
-      const startupIds = new Set(ps.map(p => p.startup_id).filter(Boolean));
-      const allStartups = startupIds.size > 0
-        ? await base44.entities.Startup.filter({ is_deleted: false })
-        : [];
-      const ss = allStartups.filter(s => startupIds.has(s.id));
-      setProjects(ps);
-      const map = {};
-      ss.forEach(s => { map[s.id] = s; });
-      setStartups(map);
-      if (ps.length > 0) {
-        const allTasks = await base44.entities.CRMTask.filter({ corporate_id: effectiveCorpId });
-        const counts = {};
-        allTasks.filter(t => t.due_date && t.status !== "done").forEach(t => {
-          counts[t.project_id] = (counts[t.project_id] || 0) + 1;
-        });
-        setFollowupCounts(counts);
-      }
-    } catch (_) {
-      // erro de rede
-    } finally {
-      setLoadingProjects(false);
-      setSelected(null);
-    }
-  };
-
-  const openProject = async (proj) => {
-    setSelected(proj);
   };
 
   const moveStage = async (proj, stage) => {
@@ -143,7 +101,8 @@ export default function DiagnosticCRM() {
     .filter(p => filterStage === "all" || p.stage === filterStage)
     .filter(p => filterType === "all" || p.type === filterType)
     .forEach(p => {
-      if (stageGroups[p.stage]) stageGroups[p.stage].push(p);
+      const stage = stageGroups[p.stage] ? p.stage : 'Shortlist';
+      stageGroups[stage].push(p);
     });
 
   // Summary stats

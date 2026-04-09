@@ -352,43 +352,38 @@ Responda em JSON:
     const matchId = crmModal.id;
     const effectiveCorporateId = urlCorporateId || resolvedCorpId || hookCorporateId;
     const effectiveThesisId = thesis?.id || crmModal.thesis_id || null;
-    await Promise.all([
-      base44.entities.CRMProject.create({
-        corporate_id: effectiveCorporateId,
-        startup_id: crmModal.startup_id,
-        match_id: matchId,
-        thesis_id: effectiveThesisId,
-        session_id: session?.id || null,
-        project_name: `${crmForm.type === "Custom" ? crmForm.custom_type_label : crmForm.type} — ${startup?.name || ""}`,
-        type: crmForm.type,
-        custom_type_label: crmForm.type === "Custom" ? crmForm.custom_type_label : null,
-        description: crmForm.description || null,
-        fit_score: crmModal.fit_score || 0,
-        include_in_super_crm: true,
-        added_by_name: user?.full_name || user?.email || "Unknown",
-      }),
-      base44.entities.StartupMatch.update(matchId, { added_to_crm: true }),
-    ]);
-    setMatches(prev => prev.map(m => m.id === matchId ? { ...m, added_to_crm: true } : m));
-    setCrmModal(null);
-    setSavingCrm(false);
-    // Redirect to DiagnosticCRM with thesis pre-selected
-    const params = new URLSearchParams();
-    if (effectiveThesisId) params.set('thesis_id', effectiveThesisId);
-    if (effectiveCorporateId) params.set('corporate_id', effectiveCorporateId);
-    setTimeout(() => navigate(createPageUrl('DiagnosticCRM') + '?' + params.toString()), 300);
-  };
-
-  const toggleCompare = (match, startup) => {
-    setCompareList(prev => {
-      const exists = prev.find(i => i.match.id === match.id);
-      if (exists) return prev.filter(i => i.match.id !== match.id);
-      if (prev.length >= 3) {
-        alert("Máximo de 3 startups para comparar.");
-        return prev;
-      }
-      return [...prev, { match, startup }];
-    });
+    try {
+      await Promise.all([
+        base44.entities.CRMProject.create({
+          corporate_id: effectiveCorporateId,
+          startup_id: crmModal.startup_id,
+          match_id: matchId,
+          thesis_id: effectiveThesisId,
+          session_id: session?.id || null,
+          project_name: `${crmForm.type === "Custom" ? crmForm.custom_type_label : crmForm.type} — ${startup?.name || ""}`,
+          type: crmForm.type,
+          custom_type_label: crmForm.type === "Custom" ? crmForm.custom_type_label : null,
+          stage: "Shortlist",
+          description: crmForm.description || null,
+          fit_score: crmModal.fit_score || 0,
+          include_in_super_crm: true,
+          added_by_name: user?.full_name || user?.email || "Unknown",
+        }),
+        base44.entities.StartupMatch.update(matchId, { added_to_crm: true }),
+      ]);
+      setMatches(prev => prev.map(m => m.id === matchId ? { ...m, added_to_crm: true } : m));
+      setCrmModal(null);
+      // Redirect to DiagnosticCRM with thesis pre-selected
+      const params = new URLSearchParams();
+      if (effectiveThesisId) params.set('thesis_id', effectiveThesisId);
+      if (effectiveCorporateId) params.set('corporate_id', effectiveCorporateId);
+      navigate(createPageUrl('DiagnosticCRM') + '?' + params.toString());
+    } catch (err) {
+      console.error('Falha ao criar projeto no CRM:', err);
+      alert('Não foi possível enviar ao CRM. Tente novamente.');
+    } finally {
+      setSavingCrm(false);
+    }
   };
 
   const handleAIPriority = (ranked) => {
