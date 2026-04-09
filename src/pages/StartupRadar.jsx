@@ -35,28 +35,18 @@ export default function StartupRadar() {
   const [savingCrm, setSavingCrm] = useState(false);
   const [session, setSession] = useState(null);
   const [resolvedCorpId, setResolvedCorpId] = useState(null);
-  const [aiPriorityMap, setAiPriorityMap] = useState({}); // match_id -> { priority_score, reason }
-  const [compareList, setCompareList] = useState([]); // up to 3 items { match, startup }
+  const [aiPriorityMap, setAiPriorityMap] = useState({});
+  const [compareList, setCompareList] = useState([]);
   const [showCompare, setShowCompare] = useState(false);
 
   useEffect(() => {
-    // Se já tem tese carregada E os parâmetros não mudaram, não recarrega
-    if (thesis && sessionId && urlCorporateId) return;
-    // Aguarda o hook resolver antes de chamar loadData para evitar double-run de matching
     if (hookLoading && !urlCorporateId) return;
     loadData();
   }, [sessionId, thesisId, urlCorporateId, hookCorporateId, hookLoading]);
 
   const loadData = async () => {
-    // Se já tem tese E thesis_id está na URL, não precisa recarregar
-    if (thesis && thesisId) {
-      setLoading(false);
-      return;
-    }
-    
     setLoading(true);
 
-    // Prioridade: URL param > hook (CorporateMember)
     const resolvedCorporateId = urlCorporateId || hookCorporateId || null;
     const resolvedSessionId = sessionId;
 
@@ -65,7 +55,6 @@ export default function StartupRadar() {
       return;
     }
 
-    // Validação de ownership: admin ou membro ativo da corporate
     if (user?.role !== 'admin') {
       const membership = await base44.entities.CorporateMember.filter({
         corporate_id: resolvedCorporateId,
@@ -78,13 +67,16 @@ export default function StartupRadar() {
       }
     }
 
-    const [sessions, thesesData] = await Promise.all([
+    const [sessions, thesesData, existingMatches] = await Promise.all([
       resolvedSessionId
         ? base44.entities.DiagnosticSession.filter({ id: resolvedSessionId })
         : base44.entities.DiagnosticSession.filter({ corporate_id: resolvedCorporateId, status: "completed" }, "-completed_at", 1),
       thesisId
         ? base44.entities.InnovationThesis.filter({ id: thesisId })
-        : base44.entities.InnovationThesis.filter({ corporate_id: resolvedCorporateId })
+        : base44.entities.InnovationThesis.filter({ corporate_id: resolvedCorporateId }),
+      thesisId
+        ? base44.entities.StartupMatch.filter({ thesis_id: thesisId })
+        : []
     ]);
 
     const sess = sessions[0];
@@ -92,7 +84,6 @@ export default function StartupRadar() {
       ? thesesData[0]
       : thesesData.find(t => t.session_id === (resolvedSessionId || sess?.id)) || thesesData[0];
     
-    // Validate thesis ownership — prevent cross-corporate access
     if (th && th.corporate_id !== resolvedCorporateId) {
       th = null;
     }
@@ -105,7 +96,13 @@ export default function StartupRadar() {
       await generateThesisWithIds(sess, resolvedCorporateId, resolvedSessionId || sess?.id);
       return;
     }
-    if (th && th.matching_ran) {
+    if (th && thesisId && existingMatches.length > 0) {
+      setMatches(existingMatches);
+      const all = await base44.entities.Startup.filter({ is_deleted: false });
+      const map = {};
+      all.forEach(s => { map[s.id] = s; });
+      setStartups(map);
+    } else if (th && th.matching_ran) {
       await loadMatches(th.id);
     } else if (th) {
       await runMatchingWithIds(th, resolvedCorporateId, resolvedSessionId || sess?.id);
@@ -171,8 +168,6 @@ Responda em JSON:
     allStartups.forEach(s => { startupMap[s.id] = s; });
     setStartups(startupMap);
 
-    // ── ESTÁGIO 1: Pré-filtro leve sobre TODAS as startups ──
-    // Envia apenas ID + tags + categoria (compacto) para o LLM selecionar os candidatos mais promissores
     const thesisContext = `Tese: ${th.thesis_text?.substring(0, 300) || ""}
 Macrocategorias: ${(th.macro_categories || []).join(", ")}
 Prioridades: ${(th.top_priorities || []).join(", ")}
@@ -209,11 +204,9 @@ Responda em JSON: { "startup_ids": ["id1", "id2", ...] }`;
       });
       preFilteredIds = (preFilterResult?.startup_ids || []).filter(id => startupMap[id]);
     } catch (_) {
-      // Fallback: pega as primeiras 120 se o pré-filtro falhar
       preFilteredIds = allStartups.slice(0, 120).map(s => s.id);
     }
 
-    // ── ESTÁGIO 2: Análise detalhada apenas nas startups pré-selecionadas ──
     const candidateStartups = preFilteredIds.slice(0, 120).map(id => startupMap[id]).filter(Boolean);
 
     const startupSummaries = candidateStartups.map(s =>
@@ -323,8 +316,6 @@ Responda em JSON:
     setLoading(false);
   };
 
-
-
   const loadMatches = async (thesisId) => {
     const m = await base44.entities.StartupMatch.filter({ thesis_id: thesisId });
     setMatches(m);
@@ -351,7 +342,7 @@ Responda em JSON:
     const startup = startups[crmModal.startup_id];
     const matchId = crmModal.id;
     const effectiveCorporateId = urlCorporateId || resolvedCorpId || hookCorporateId;
-    const effectiveThesisId = thesis?.id || crmModal.thesis_id || null;
+    const effectiveThesisId = thesis?.id;
     try {
       await Promise.all([
         base44.entities.CRMProject.create({
@@ -373,7 +364,6 @@ Responda em JSON:
       ]);
       setMatches(prev => prev.map(m => m.id === matchId ? { ...m, added_to_crm: true } : m));
       setCrmModal(null);
-      // Redirect to DiagnosticCRM with thesis pre-selected
       const params = new URLSearchParams();
       if (effectiveThesisId) params.set('thesis_id', effectiveThesisId);
       if (effectiveCorporateId) params.set('corporate_id', effectiveCorporateId);
@@ -402,7 +392,6 @@ Responda em JSON:
       return !search || (s?.name || "").toLowerCase().includes(search.toLowerCase());
     })
     .sort((a, b) => {
-      // If AI prioritization ran, sort by priority_score first
       if (hasAIPriority) {
         const aScore = aiPriorityMap[a.id]?.priority_score ?? -1;
         const bScore = aiPriorityMap[b.id]?.priority_score ?? -1;
@@ -441,7 +430,6 @@ Responda em JSON:
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold mb-1" style={{ color: '#111111' }}>Radar de Startups</h1>
         <p className="text-sm" style={{ color: '#4B4F4B' }}>
@@ -449,7 +437,6 @@ Responda em JSON:
         </p>
       </div>
 
-      {/* Thesis summary */}
       {thesis && (
         <div className="bg-white rounded-2xl border p-4 mb-6" style={{ borderColor: '#B4D1D7' }}>
           <div className="flex items-center gap-2 mb-2">
@@ -470,7 +457,6 @@ Responda em JSON:
         </div>
       )}
 
-      {/* AI Prioritization Panel */}
       {matches.length > 0 && thesis && (
         <AIPrioritizationPanel
           thesis={thesis}
@@ -480,7 +466,6 @@ Responda em JSON:
         />
       )}
 
-      {/* AI Priority notice */}
       {hasAIPriority && (
         <div className="flex items-center gap-2 px-3 py-2 rounded-xl mb-4 text-xs font-medium"
           style={{ background: '#F3EEF8', color: '#6B2FA0' }}>
@@ -490,7 +475,6 @@ Responda em JSON:
         </div>
       )}
 
-      {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#A7ADA7' }} />
@@ -513,7 +497,6 @@ Responda em JSON:
         </div>
       </div>
 
-      {/* Empty state */}
       {filtered.length === 0 && (
         <div className="text-center py-16 bg-white rounded-2xl border" style={{ borderColor: '#A7ADA7' }}>
           <div className="text-4xl mb-3">🔍</div>
@@ -524,7 +507,6 @@ Responda em JSON:
         </div>
       )}
 
-      {/* Radar by category */}
       {Object.entries(groupedByCategory).map(([cat, catMatches]) => (
         <div key={cat} className="mb-8">
           <div className="flex items-center gap-3 mb-4">
@@ -574,7 +556,6 @@ Responda em JSON:
                         </span>
                       ))}
                     </div>
-                    {/* Feedback + CTA */}
                     <div className="flex items-center gap-2 border-t pt-3" style={{ borderColor: '#ECEEEA' }}>
                       <button onClick={e => { e.stopPropagation(); handleFeedback(match, "relevant"); }}
                         className="text-xs px-2 py-1 rounded-lg border transition-all"
@@ -623,7 +604,6 @@ Responda em JSON:
         </div>
       ))}
 
-      {/* Startup detail drawer */}
       {selectedStartup && (
         <div className="fixed inset-0 z-50 flex justify-end">
           <div className="absolute inset-0 bg-black/40" onClick={() => setSelectedStartup(null)} />
@@ -713,7 +693,6 @@ Responda em JSON:
         </div>
       )}
 
-      {/* Compare floating bar */}
       {compareList.length > 0 && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 px-5 py-3 rounded-2xl shadow-2xl"
           style={{ background: '#1E0B2E', minWidth: 320 }}>
@@ -737,7 +716,6 @@ Responda em JSON:
         </div>
       )}
 
-      {/* Compare modal */}
       {showCompare && (
         <StartupComparePanel
           items={compareList}
@@ -746,7 +724,6 @@ Responda em JSON:
         />
       )}
 
-      {/* CRM Modal */}
       {crmModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-fade-in-up">
@@ -791,4 +768,16 @@ Responda em JSON:
       )}
     </div>
   );
+
+  function toggleCompare(match, startup) {
+    setCompareList(prev => {
+      const exists = prev.find(i => i.match.id === match.id);
+      if (exists) return prev.filter(i => i.match.id !== match.id);
+      if (prev.length >= 3) {
+        alert("Máximo de 3 startups para comparar.");
+        return prev;
+      }
+      return [...prev, { match, startup }];
+    });
+  }
 }
