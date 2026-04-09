@@ -1,27 +1,27 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
+import { useAuth } from "@/lib/AuthContext";
 
 /**
  * Hook central de acesso à corporate.
  * Retorna: { loading, corporate, member, isGestor, hasSuperCRMAccess, corporateId }
  */
 export function useCorporateAccess() {
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [corporate, setCorporate] = useState(null);
   const [member, setMember] = useState(null);
 
   useEffect(() => {
-    load();
-  }, []);
+    if (user) load();
+    else setLoading(false);
+  }, [user]);
 
   const load = async () => {
     setLoading(true);
     try {
-      const me = await base44.auth.me();
-      if (!me) { setLoading(false); return; }
-
       // 1. Encontrar membership ativa (sort by created_date desc para pegar a mais recente)
-      const memberships = await base44.entities.CorporateMember.filter({ email: me.email, status: "active" }, "-created_date");
+      const memberships = await base44.entities.CorporateMember.filter({ email: user.email, status: "active" }, "-created_date");
 
       if (memberships.length > 0) {
         const mem = memberships[0];

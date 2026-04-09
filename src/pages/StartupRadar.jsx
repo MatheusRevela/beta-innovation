@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
+import { useAuth } from "@/lib/AuthContext";
 import { useCorporateAccess } from "@/components/hooks/useCorporateAccess";
 import { CRM_TYPES } from "@/components/ui/DesignTokens";
 import { FitScoreBadge } from "@/components/shared/StatusBadge";
@@ -10,6 +11,7 @@ import AIPrioritizationPanel from "@/components/radar/AIPrioritizationPanel";
 import StartupComparePanel from "@/components/radar/StartupComparePanel";
 
 export default function StartupRadar() {
+  const { user } = useAuth();
   const params = new URLSearchParams(window.location.search);
   const sessionId = params.get("session_id");
   const urlCorporateId = params.get("corporate_id");
@@ -52,12 +54,11 @@ export default function StartupRadar() {
       return;
     }
 
-    // Issue #1 — Validação de ownership: admin ou membro ativo da corporate
-    const me = await base44.auth.me();
-    if (me?.role !== 'admin') {
+    // Validação de ownership: admin ou membro ativo da corporate
+    if (user?.role !== 'admin') {
       const membership = await base44.entities.CorporateMember.filter({
         corporate_id: resolvedCorporateId,
-        email: me.email,
+        email: user.email,
         status: 'active'
       });
       if (membership.length === 0) {
@@ -334,7 +335,6 @@ Responda em JSON:
     const startup = startups[crmModal.startup_id];
     const matchId = crmModal.id;
     const effectiveCorporateId = urlCorporateId || resolvedCorpId || hookCorporateId;
-    const me = await base44.auth.me();
     await Promise.all([
       base44.entities.CRMProject.create({
         corporate_id: effectiveCorporateId,
@@ -347,7 +347,7 @@ Responda em JSON:
         description: crmForm.description,
         fit_score: crmModal.fit_score,
         include_in_super_crm: true,
-        added_by_name: me.full_name || me.email,
+        added_by_name: user?.full_name || user?.email,
       }),
       base44.entities.StartupMatch.update(matchId, { added_to_crm: true }),
     ]);
@@ -360,7 +360,10 @@ Responda em JSON:
     setCompareList(prev => {
       const exists = prev.find(i => i.match.id === match.id);
       if (exists) return prev.filter(i => i.match.id !== match.id);
-      if (prev.length >= 3) return prev;
+      if (prev.length >= 3) {
+        alert("Máximo de 3 startups para comparar.");
+        return prev;
+      }
       return [...prev, { match, startup }];
     });
   };

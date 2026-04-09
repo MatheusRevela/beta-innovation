@@ -19,7 +19,8 @@ export function useCollabRole() {
   const isPlatformAdmin = user?.role === "admin";
   const isFullAdmin = isPlatformAdmin || !collabRole || collabRole === "gestor_master";
 
-  const isReadOnly          = collabRole === "credenciais";
+  // Admins de plataforma NUNCA são read-only, mesmo com collaborator_role definido
+  const isReadOnly          = !isPlatformAdmin && collabRole === "credenciais";
   const canManageStartups   = isFullAdmin || collabRole === "scouting";
   const canManageLab        = isFullAdmin || collabRole === "scouting";
   const canManageCorporates = isFullAdmin || collabRole === "gestor_projetos";
