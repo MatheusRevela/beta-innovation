@@ -27,6 +27,16 @@ export default function StartupRadar() {
   const [matches, setMatches] = useState([]);
   const [startups, setStartups] = useState({});
   const [loading, setLoading] = useState(true);
+  const [runningMatching, setRunningMatching] = useState(false);
+  const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedStartup, setSelectedStartup] = useState(null);
+  const [compareList, setCompareList] = useState([]);
+  const [showCompare, setShowCompare] = useState(false);
+  const [crmModal, setCrmModal] = useState(null);
+  const [crmForm, setCrmForm] = useState({ type: "", custom_type_label: "", description: "" });
+  const [savingCrm, setSavingCrm] = useState(false);
+  const [aiPriorityMap, setAiPriorityMap] = useState({});
 
   useEffect(() => {
     if (hookLoading && !urlCorporateId) return;
@@ -82,9 +92,8 @@ export default function StartupRadar() {
     setSavingCrm(true);
     const startup = startups[crmModal.startup_id];
     const matchId = crmModal.id;
-    const effectiveCorporateId = urlCorporateId || resolvedCorpId || hookCorporateId;
+    const effectiveCorporateId = urlCorporateId || hookCorporateId;
     const effectiveThesisId = thesis?.id;
-    const effectiveSessionId = session?.id;
     
     if (!effectiveThesisId) {
       alert('Erro: Tese de inovação não carregada. Recarregue a página.');
@@ -99,7 +108,7 @@ export default function StartupRadar() {
           startup_id: crmModal.startup_id,
           match_id: matchId,
           thesis_id: effectiveThesisId,
-          session_id: session?.id || null,
+          session_id: sessionId || null,
           project_name: `${crmForm.type === "Custom" ? crmForm.custom_type_label : crmForm.type} — ${startup?.name || ""}`,
           type: crmForm.type,
           custom_type_label: crmForm.type === "Custom" ? crmForm.custom_type_label : null,
