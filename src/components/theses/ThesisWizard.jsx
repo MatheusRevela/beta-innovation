@@ -343,10 +343,12 @@ Responda APENAS em JSON válido com as chaves: thesis_text, macro_categories, to
       }
     });
 
+    const finalName = form.name?.trim() ? form.name.trim() : (data.macro_categories?.[0] || "Tese de Inovação");
+    
     const newThesis = await base44.entities.InnovationThesis.create({
       corporate_id: corporate.id,
       session_id: form.session_id || null,
-      name: form.name || "Tese sem nome",
+      name: finalName,
       thesis_text: data.thesis_text || "",
       macro_categories: data.macro_categories || [],
       top_priorities: data.top_priorities || [],
