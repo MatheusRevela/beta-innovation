@@ -49,8 +49,22 @@ export default function InnovationTheses() {
     );
   };
 
-  const goToRadar = (thesis) => {
+  const goToRadar = async (thesis) => {
+    if (!thesis.matching_ran) {
+      try {
+        await base44.functions.invoke('runThesisMatching', {
+          thesisId: thesis.id,
+          corporateId: corporate.id,
+        });
+        setTheses(prev => prev.map(t => t.id === thesis.id ? { ...t, matching_ran: true } : t));
+      } catch (err) {
+        console.error('Matching failed:', err);
+        alert('Erro ao gerar radar. Tente novamente.');
+        return;
+      }
+    }
     navigate(createPageUrl("StartupRadar") + `?thesis_id=${thesis.id}&corporate_id=${corporate.id}`);
+
   };
 
   const deleteThesis = async (id) => {
