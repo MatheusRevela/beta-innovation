@@ -348,12 +348,13 @@ Responda em JSON:
     const startup = startups[crmModal.startup_id];
     const matchId = crmModal.id;
     const effectiveCorporateId = urlCorporateId || resolvedCorpId || hookCorporateId;
+    const effectiveThesisId = thesis?.id || crmModal.thesis_id || null;
     await Promise.all([
       base44.entities.CRMProject.create({
         corporate_id: effectiveCorporateId,
         startup_id: crmModal.startup_id,
         match_id: matchId,
-        thesis_id: thesis?.id || null,
+        thesis_id: effectiveThesisId,
         session_id: session?.id || null,
         project_name: `${crmForm.type === "Custom" ? crmForm.custom_type_label : crmForm.type} — ${startup?.name || ""}`,
         type: crmForm.type,
