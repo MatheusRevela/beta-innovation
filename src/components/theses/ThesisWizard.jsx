@@ -346,8 +346,12 @@ Responda APENAS em JSON válido com as chaves: thesis_text, macro_categories, to
     const newThesis = await base44.entities.InnovationThesis.create({
       corporate_id: corporate.id,
       session_id: form.session_id || null,
-      name: form.name,
-      ...data,
+      name: form.name || "Tese sem nome",
+      thesis_text: data.thesis_text || "",
+      macro_categories: data.macro_categories || [],
+      top_priorities: data.top_priorities || [],
+      tags: data.tags || [],
+      sectors: data.sectors || [],
       matching_ran: false,
     });
 
