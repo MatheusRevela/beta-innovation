@@ -22,300 +22,41 @@ export default function StartupRadar() {
 
   const { corporateId: hookCorporateId, loading: hookLoading } = useCorporateAccess();
 
+  const [theses, setTheses] = useState([]);
   const [thesis, setThesis] = useState(null);
   const [matches, setMatches] = useState([]);
   const [startups, setStartups] = useState({});
   const [loading, setLoading] = useState(true);
-  const [runningMatching, setRunningMatching] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [search, setSearch] = useState("");
-  const [selectedStartup, setSelectedStartup] = useState(null);
-  const [crmModal, setCrmModal] = useState(null);
-  const [crmForm, setCrmForm] = useState({ type: "", custom_type_label: "", description: "" });
-  const [savingCrm, setSavingCrm] = useState(false);
-  const [session, setSession] = useState(null);
-  const [resolvedCorpId, setResolvedCorpId] = useState(null);
-  const [aiPriorityMap, setAiPriorityMap] = useState({});
-  const [compareList, setCompareList] = useState([]);
-  const [showCompare, setShowCompare] = useState(false);
 
   useEffect(() => {
     if (hookLoading && !urlCorporateId) return;
+    const loadData = async () => {
+      const corpId = urlCorporateId || hookCorporateId;
+      const thesesData = await base44.entities.InnovationThesis.filter(
+        { corporate_id: corpId },
+        "-created_date"
+      );
+      setTheses(thesesData);
+      if (thesisId) {
+        const selectedThesis = thesesData.find(t => t.id === thesisId);
+        if (selectedThesis) {
+          setThesis(selectedThesis);
+          if (selectedThesis.matching_ran) {
+            const m = await base44.entities.StartupMatch.filter({ thesis_id: thesisId });
+            setMatches(m);
+            const all = await base44.entities.Startup.filter({ is_deleted: false });
+            const map = {};
+            all.forEach(s => { map[s.id] = s; });
+            setStartups(map);
+          } else {
+            setMatches([]);
+          }
+        }
+      }
+      setLoading(false);
+    };
     loadData();
   }, [sessionId, thesisId, urlCorporateId, hookCorporateId, hookLoading]);
-
-  const loadData = async () => {
-    setLoading(true);
-
-    const resolvedCorporateId = urlCorporateId || hookCorporateId || null;
-    const resolvedSessionId = sessionId && String(sessionId).trim() ? sessionId : null;
-
-    if (!resolvedCorporateId) {
-      setLoading(false);
-      return;
-    }
-
-    if (user?.role !== 'admin') {
-      const membership = await base44.entities.CorporateMember.filter({
-        corporate_id: resolvedCorporateId,
-        email: user.email,
-        status: 'active'
-      });
-      if (membership.length === 0) {
-        setLoading(false);
-        return;
-      }
-    }
-
-    const validThesisId = thesisId && String(thesisId).trim() ? thesisId : null;
-    const [sessions, thesesData, existingMatches] = await Promise.all([
-      resolvedSessionId
-        ? base44.entities.DiagnosticSession.filter({ id: resolvedSessionId })
-        : base44.entities.DiagnosticSession.filter({ corporate_id: resolvedCorporateId, status: "completed" }, "-completed_at", 1),
-      validThesisId
-        ? base44.entities.InnovationThesis.filter({ id: validThesisId })
-        : base44.entities.InnovationThesis.filter({ corporate_id: resolvedCorporateId }),
-      validThesisId
-        ? base44.entities.StartupMatch.filter({ thesis_id: validThesisId })
-        : Promise.resolve([])
-    ]);
-
-    const sess = sessions[0];
-    let th = thesisId
-      ? thesesData[0]
-      : thesesData.find(t => t.session_id === (resolvedSessionId || sess?.id)) || thesesData[0];
-    
-    if (th && th.corporate_id !== resolvedCorporateId) {
-      th = null;
-    }
-
-    setResolvedCorpId(resolvedCorporateId);
-    setSession(sess);
-    setThesis(th);
-
-    if (!th && sess) {
-      await generateThesisWithIds(sess, resolvedCorporateId, resolvedSessionId || sess?.id);
-      return;
-    }
-    if (th && thesisId && existingMatches.length > 0) {
-      setMatches(existingMatches);
-      const all = await base44.entities.Startup.filter({ is_deleted: false });
-      const map = {};
-      all.forEach(s => { map[s.id] = s; });
-      setStartups(map);
-    } else if (th && th.matching_ran) {
-      await loadMatches(th.id);
-    } else if (th) {
-      await runMatchingWithIds(th, resolvedCorporateId, resolvedSessionId || sess?.id);
-    }
-    setLoading(false);
-  };
-
-  const generateThesisWithIds = async (sess, corpId, sessId) => {
-    setRunningMatching(true);
-    const prompt = `Com base nos resultados de diagnóstico de maturidade de inovação abaixo, gere uma tese de inovação para a empresa.
-
-Score geral: ${sess.overall_score}% — Nível: ${sess.maturity_level}
-Scores por pilar: ${JSON.stringify(sess.pillar_scores)}
-Síntese: ${sess.ai_synthesis || "N/A"}
-
-Gere a tese identificando:
-1. As macrocategorias de inovação mais relevantes para esta empresa (com base nos pilares mais fracos e oportunidades)
-2. Top 5 prioridades estratégicas
-3. Tags para matching com startups
-
-Responda em JSON:
-{
-  "thesis_text": "string (2-3 parágrafos)",
-  "macro_categories": ["categoria1", "categoria2", "categoria3", "categoria4", "categoria5"],
-  "top_priorities": ["prioridade1", "prioridade2", "prioridade3", "prioridade4", "prioridade5"],
-  "tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6", "tag7", "tag8"],
-  "sectors": ["setor1", "setor2", "setor3"]
-}`;
-
-    const thesisData = await base44.integrations.Core.InvokeLLM({
-      prompt,
-      response_json_schema: {
-        type: "object",
-        properties: {
-          thesis_text: { type: "string" },
-          macro_categories: { type: "array", items: { type: "string" } },
-          top_priorities: { type: "array", items: { type: "string" } },
-          tags: { type: "array", items: { type: "string" } },
-          sectors: { type: "array", items: { type: "string" } }
-        }
-      }
-    });
-
-    const newThesis = await base44.entities.InnovationThesis.create({
-      corporate_id: corpId,
-      session_id: sessId,
-      ...thesisData
-    });
-    setThesis(newThesis);
-    await runMatchingWithIds(newThesis, corpId, sessId);
-  };
-
-  const runMatchingWithIds = async (th, corpId, sessId) => {
-    setRunningMatching(true);
-    const allStartups = await base44.entities.Startup.filter({ is_deleted: false, is_active: true });
-    if (allStartups.length === 0) {
-      setRunningMatching(false);
-      setLoading(false);
-      return;
-    }
-
-    const startupMap = {};
-    allStartups.forEach(s => { startupMap[s.id] = s; });
-    setStartups(startupMap);
-
-    const thesisContext = `Tese: ${th.thesis_text?.substring(0, 300) || ""}
-Macrocategorias: ${(th.macro_categories || []).join(", ")}
-Prioridades: ${(th.top_priorities || []).join(", ")}
-Tags: ${(th.tags || []).join(", ")}
-Setores: ${(th.sectors || []).join(", ")}`;
-
-    const compactSummaries = allStartups.map(s =>
-      `${s.id}|${s.name}|${s.category || ""}|${s.vertical || ""}|${(s.tags || []).join(",")}`
-    ).join("\n");
-
-    const preFilterPrompt = `Você é especialista em matching de inovação aberta.
-
-TESE DE INOVAÇÃO:
-${thesisContext}
-
-BASE DE STARTUPS (ID|Nome|Categoria|Vertical|Tags):
-${compactSummaries}
-
-Analise TODAS as startups acima e selecione os IDs das TOP 120 com MAIOR potencial de fit com a tese, baseando-se nas tags, categorias e verticais.
-Retorne APENAS os IDs, ordenados do maior para o menor potencial.
-
-Responda em JSON: { "startup_ids": ["id1", "id2", ...] }`;
-
-    let preFilteredIds = [];
-    try {
-      const preFilterResult = await base44.integrations.Core.InvokeLLM({
-        prompt: preFilterPrompt,
-        response_json_schema: {
-          type: "object",
-          properties: {
-            startup_ids: { type: "array", items: { type: "string" } }
-          }
-        }
-      });
-      preFilteredIds = (preFilterResult?.startup_ids || []).filter(id => startupMap[id]);
-    } catch (_) {
-      preFilteredIds = allStartups.slice(0, 120).map(s => s.id);
-    }
-
-    const candidateStartups = preFilteredIds.slice(0, 120).map(id => startupMap[id]).filter(Boolean);
-
-    const startupSummaries = candidateStartups.map(s =>
-      `ID:${s.id} | Nome:${s.name} | Categoria:${s.category || ""} | Vertical:${s.vertical || ""} | Tags:${(s.tags || []).join(",")} | Desc:${(s.description || "").substring(0, 200)}`
-    ).join("\n");
-
-    const matchPrompt = `Você é um especialista em inovação aberta e matching tese-startup.
-
-TESE DE INOVAÇÃO DA EMPRESA:
-${th.thesis_text}
-Macrocategorias: ${(th.macro_categories || []).join(", ")}
-Prioridades: ${(th.top_priorities || []).join(", ")}
-Tags da tese: ${(th.tags || []).join(", ")}
-Setores: ${(th.sectors || []).join(", ")}
-
-STARTUPS PRÉ-SELECIONADAS (candidatos com maior potencial):
-${startupSummaries}
-
-METODOLOGIA DE SCORING OBRIGATÓRIA:
-Para cada startup, calcule o fit_score (0-100) usando EXATAMENTE os seguintes pesos ponderados:
-
-1. ALINHAMENTO DE TAGS (peso 50%): Avalie 0-100 a sobreposição semântica entre as tags/categoria/vertical da startup e as tags/macrocategorias da tese. Considere sinônimos e termos relacionados. Startups sem nenhuma tag relevante devem receber ≤20 neste critério.
-
-2. RELEVÂNCIA DO MODELO DE NEGÓCIO (peso 30%): Avalie 0-100 se o modelo de negócio da startup (SaaS, Marketplace, Hardware, etc.) e seu setor são compatíveis com os objetivos estratégicos e prioridades da tese. Considere o estágio da startup e viabilidade de parceria corporativa.
-
-3. POTENCIAL DE IMPACTO TECNOLÓGICO (peso 20%): Avalie 0-100 o potencial desta startup de gerar impacto tecnológico real e inovação incremental ou disruptiva para a empresa, baseado na descrição da solução e das prioridades estratégicas da tese.
-
-CÁLCULO: fit_score = (score_tags × 0.50) + (score_modelo × 0.30) + (score_impacto × 0.20)
-Arredonde para inteiro. Inclua apenas startups com fit_score ≥ 40.
-Selecione as TOP 30-50 com maior fit_score final.
-
-Para cada startup selecionada, forneça:
-- fit_reasons: explique os principais pontos de alinhamento, mencionando especificamente tags coincidentes e o porquê do modelo de negócio ser relevante
-- risk_reasons: aponte lacunas ou incompatibilidades reais
-- tags_matched: liste apenas as tags que realmente coincidem com a tese
-- category_match: qual macrocategoria da tese esta startup atende melhor
-
-Responda em JSON:
-{
-  "matches": [
-    {
-      "startup_id": "string",
-      "fit_score": number,
-      "score_tags": number,
-      "score_modelo": number,
-      "score_impacto": number,
-      "category_match": "string",
-      "fit_reasons": ["reason1", "reason2"],
-      "risk_reasons": ["risk1"],
-      "tags_matched": ["tag1"]
-    }
-  ]
-}`;
-
-    let matchData;
-    try {
-      matchData = await base44.integrations.Core.InvokeLLM({
-        prompt: matchPrompt,
-        response_json_schema: {
-          type: "object",
-          properties: {
-            matches: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  startup_id: { type: "string" },
-                  fit_score: { type: "number" },
-                  score_tags: { type: "number" },
-                  score_modelo: { type: "number" },
-                  score_impacto: { type: "number" },
-                  category_match: { type: "string" },
-                  fit_reasons: { type: "array", items: { type: "string" } },
-                  risk_reasons: { type: "array", items: { type: "string" } },
-                  tags_matched: { type: "array", items: { type: "string" } }
-                }
-              }
-            }
-          }
-        }
-      });
-    } catch (_) {
-      matchData = { matches: [] };
-    }
-
-    const validMatches = (matchData?.matches || []).slice(0, 50).filter(m => startupMap[m.startup_id]);
-    const savedMatches = await Promise.all(
-      validMatches.map(m => base44.entities.StartupMatch.create({
-        corporate_id: corpId,
-        thesis_id: th.id,
-        session_id: sessId,
-        startup_id: m.startup_id,
-        fit_score: m.fit_score,
-        score_tags: m.score_tags,
-        score_modelo: m.score_modelo,
-        score_impacto: m.score_impacto,
-        fit_reasons: m.fit_reasons,
-        risk_reasons: m.risk_reasons,
-        category_match: m.category_match,
-        tags_matched: m.tags_matched
-      }))
-    );
-
-    await base44.entities.InnovationThesis.update(th.id, { matching_ran: true, matching_ran_at: new Date().toISOString() });
-    setMatches(savedMatches);
-    setRunningMatching(false);
-    setLoading(false);
-  };
 
   const loadMatches = async (thesisId) => {
     const m = await base44.entities.StartupMatch.filter({ thesis_id: thesisId });
@@ -327,9 +68,8 @@ Responda em JSON:
     setLoading(false);
   };
 
-  const handleFeedback = async (match, feedback) => {
-    await base44.entities.StartupMatch.update(match.id, { feedback });
-    setMatches(prev => prev.map(m => m.id === match.id ? { ...m, feedback } : m));
+  const switchThesis = (thesisId) => {
+    navigate(createPageUrl('StartupRadar') + `?thesis_id=${thesisId}&corporate_id=${urlCorporateId || hookCorporateId}`);
   };
 
   const openCrmModal = (match) => {
@@ -446,11 +186,33 @@ Responda em JSON:
         </p>
       </div>
 
+      {/* Thesis tabs */}
+      {theses.length > 1 && (
+        <div className="flex gap-2 overflow-x-auto pb-4 mb-6">
+          {theses.map(t => (
+            <button key={t.id} onClick={() => switchThesis(t.id)}
+              className="flex-shrink-0 px-4 py-3 rounded-xl border text-sm font-medium transition-all"
+              style={{
+                background: thesis?.id === t.id ? '#1E0B2E' : '#fff',
+                borderColor: thesis?.id === t.id ? '#1E0B2E' : '#A7ADA7',
+                color: thesis?.id === t.id ? '#fff' : '#111111'
+              }}>
+              <div className="text-xs opacity-75 mb-1">
+                {t.name || (t.macro_categories?.length > 0
+                  ? `${t.macro_categories[0]}${t.macro_categories.length > 1 ? ` +${t.macro_categories.length - 1}` : ''}`
+                  : `Tese`
+                )}
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+
       {thesis && (
         <div className="bg-white rounded-2xl border p-4 mb-6" style={{ borderColor: '#B4D1D7' }}>
           <div className="flex items-center gap-2 mb-2">
             <Zap className="w-4 h-4" style={{ color: '#E10867' }} />
-            <span className="font-semibold text-sm">Tese de Inovação</span>
+            <span className="font-semibold text-sm">{thesis.name || 'Tese de Inovação'}</span>
           </div>
           <p className="text-sm mb-3" style={{ color: '#4B4F4B' }}>{thesis.thesis_text?.split("\n")[0]}</p>
           <div className="flex flex-wrap gap-1.5">
