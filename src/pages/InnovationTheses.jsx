@@ -53,6 +53,11 @@ export default function InnovationTheses() {
     navigate(createPageUrl("StartupRadar") + `?corporate_id=${corporate.id}&thesis_id=${thesis.id}`);
   };
 
+  const deleteThesis = async (id) => {
+    await base44.entities.InnovationThesis.delete(id);
+    setTheses(prev => prev.filter(t => t.id !== id));
+  };
+
   if (loading) return (
     <div className="flex items-center justify-center min-h-64">
       <Loader2 className="w-6 h-6 animate-spin" style={{ color: '#E10867' }} />
