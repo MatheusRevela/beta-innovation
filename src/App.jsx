@@ -24,7 +24,7 @@ const AuthenticatedApp = () => {
   // Fix: side-effect (navigation) must NOT run during render — use useEffect
   useEffect(() => {
     if (authError?.type === 'auth_required') {
-      navigateToLogin();
+      window.location.href = '/Home';
     }
   }, [authError]);
 
