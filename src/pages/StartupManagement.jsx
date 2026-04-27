@@ -79,16 +79,27 @@ export default function StartupManagement() {
     if (f.business_model) query.business_model = f.business_model;
 
     const sortStr = `${s.dir === "desc" ? "-" : ""}${s.field}`;
-    let all = await base44.entities.Startup.filter(query, sortStr, PAGE_SIZE + PAGE_SIZE * pg);
+
     if (q) {
-      all = all.filter(st =>
+      // Com busca textual: busca tudo para filtrar e contar corretamente
+      const all = await base44.entities.Startup.filter(query, sortStr, 9999);
+      const filtered = all.filter(st =>
         st.name?.toLowerCase().includes(q.toLowerCase()) ||
         st.description?.toLowerCase().includes(q.toLowerCase()) ||
         (st.tags || []).some(t => t.toLowerCase().includes(q.toLowerCase()))
       );
+      setTotal(filtered.length);
+      setStartups(filtered.slice(pg * PAGE_SIZE, (pg + 1) * PAGE_SIZE));
+    } else {
+      // Sem busca textual: busca total e página separadamente
+      const [allForCount, page] = await Promise.all([
+        base44.entities.Startup.filter(query, sortStr, 9999),
+        base44.entities.Startup.filter(query, sortStr, PAGE_SIZE, pg * PAGE_SIZE),
+      ]);
+      setTotal(allForCount.length);
+      setStartups(page);
     }
-    setTotal(all.length);
-    setStartups(all.slice(pg * PAGE_SIZE, (pg + 1) * PAGE_SIZE));
+
     setLoading(false);
   }, []);
 
