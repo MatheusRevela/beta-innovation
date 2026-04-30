@@ -57,30 +57,33 @@ Responda em JSON:
   "summary": "string (2-3 frases sobre o resultado da priorização)"
 }`;
 
-    const result = await base44.integrations.Core.InvokeLLM({
-      prompt,
-      response_json_schema: {
-        type: "object",
-        properties: {
-          ranked: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                match_id: { type: "string" },
-                priority_score: { type: "number" },
-                reason: { type: "string" }
+    try {
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            ranked: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  match_id: { type: "string" },
+                  priority_score: { type: "number" },
+                  reason: { type: "string" }
+                }
               }
-            }
-          },
-          summary: { type: "string" }
+            },
+            summary: { type: "string" }
+          }
         }
-      }
-    });
+      });
 
-    setResults(result);
-    onResultsReady(result.ranked);
-    setLoading(false);
+      setResults(result);
+      onResultsReady(result.ranked);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
