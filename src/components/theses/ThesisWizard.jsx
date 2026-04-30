@@ -3,7 +3,8 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import {
   ChevronLeft, ChevronRight, X, Zap, Loader2, Check, HelpCircle,
-  Target, Lightbulb, AlertTriangle, TrendingUp, Building2, Sparkles, Brain
+  Target, Lightbulb, AlertTriangle, TrendingUp, Building2, Sparkles, Brain,
+  RotateCcw, Tag
 } from "lucide-react";
 
 // ─── STEP DEFINITIONS ────────────────────────────────────────────────────────
@@ -136,15 +137,29 @@ function Chip({ label, emoji, selected, onClick, color = "#E10867", bgColor = "#
 
 // ─── MAIN WIZARD ─────────────────────────────────────────────────────────────
 
-export default function ThesisWizard({ corporate, sessions, onClose, onCreated }) {
+export default function ThesisWizard({ corporate, sessions, onClose, onCreated, editThesis = null }) {
   const [step, setStep] = useState(0);
   const [generating, setGenerating] = useState(false);
+  const [generatedPreview, setGeneratedPreview] = useState(null); // NEW: preview after generation
   const [aiHint, setAiHint] = useState(null);
   const [loadingHint, setLoadingHint] = useState(false);
   const [aiAssessment, setAiAssessment] = useState(null);
   const [loadingAssessment, setLoadingAssessment] = useState(true);
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState(editThesis ? {
+    name: editThesis.name || "",
+    session_id: editThesis.session_id || "",
+    sectors: editThesis.sectors || [],
+    themes: [],
+    challenges: [],
+    expected_results: [],
+    restrictions: [],
+    horizon: "",
+    engagement_types: [],
+    strategic_context: "",
+    current_initiatives: "",
+    no_go_areas: "",
+  } : {
     name: "",
     session_id: sessions[0]?.id || "",
     sectors: [],
@@ -213,6 +228,41 @@ export default function ThesisWizard({ corporate, sessions, onClose, onCreated }
     setLoadingHint(false);
   };
 
+  const confirmAndSave = async () => {
+    if (!generatedPreview) return;
+    setGenerating(true);
+    const finalName = form.name?.trim() ? form.name.trim() : (generatedPreview.macro_categories?.[0] || "Tese de Inovação");
+    let savedThesis;
+    if (editThesis) {
+      savedThesis = await base44.entities.InnovationThesis.update(editThesis.id, {
+        name: finalName,
+        thesis_text: generatedPreview.thesis_text || "",
+        macro_categories: generatedPreview.macro_categories || [],
+        top_priorities: generatedPreview.top_priorities || [],
+        tags: generatedPreview.tags || [],
+        sectors: generatedPreview.sectors || [],
+        matching_ran: false,
+        cached_report: null,
+        cached_report_at: null,
+      });
+      savedThesis = { ...editThesis, ...savedThesis, id: editThesis.id };
+    } else {
+      savedThesis = await base44.entities.InnovationThesis.create({
+        corporate_id: corporate.id,
+        session_id: form.session_id || null,
+        name: finalName,
+        thesis_text: generatedPreview.thesis_text || "",
+        macro_categories: generatedPreview.macro_categories || [],
+        top_priorities: generatedPreview.top_priorities || [],
+        tags: generatedPreview.tags || [],
+        sectors: generatedPreview.sectors || [],
+        matching_ran: false,
+      });
+    }
+    setGenerating(false);
+    onCreated(savedThesis);
+  };
+
   const generateThesis = async () => {
     setGenerating(true);
     const selectedSession = sessions.find(s => s.id === form.session_id) || sessions[0];
@@ -274,6 +324,7 @@ Temas / áreas prioritárias: ${form.themes.join(", ") || "Geral"}
 DESAFIOS DE NEGÓCIO A RESOLVER
 ═══════════════════════════════
 ${form.challenges.join("\n- ") || "Não especificado"}
+${form.strategic_context_challenge ? `\nDesafio específico adicional: ${form.strategic_context_challenge}` : ""}
 
 ═══════════════════════════════
 RESULTADOS ESPERADOS COM A INOVAÇÃO
@@ -349,23 +400,122 @@ Responda APENAS em JSON válido com as chaves: thesis_text, macro_categories, to
       }
     });
 
-    const finalName = form.name?.trim() ? form.name.trim() : (data.macro_categories?.[0] || "Tese de Inovação");
-    
-    const newThesis = await base44.entities.InnovationThesis.create({
-      corporate_id: corporate.id,
-      session_id: form.session_id || null,
-      name: finalName,
-      thesis_text: data.thesis_text || "",
-      macro_categories: data.macro_categories || [],
-      top_priorities: data.top_priorities || [],
-      tags: data.tags || [],
-      sectors: data.sectors || [],
-      matching_ran: false,
-    });
-
     setGenerating(false);
-    onCreated(newThesis);
+    setGeneratedPreview(data); // Show preview instead of saving immediately
   };
+
+  // ── GENERATED PREVIEW SCREEN ────────────────────────────────────────────────
+  if (generatedPreview && !generating) {
+    const previewName = form.name?.trim() || generatedPreview.macro_categories?.[0] || "Tese de Inovação";
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
+        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[92vh] flex flex-col animate-fade-in-up">
+          {/* Header */}
+          <div className="px-6 pt-5 pb-4 border-b flex-shrink-0 flex items-center justify-between" style={{ borderColor: "#ECEEEA" }}>
+            <div>
+              <div className="flex items-center gap-2 mb-0.5">
+                <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: "#e8f5e9" }}>
+                  <Sparkles className="w-3.5 h-3.5" style={{ color: "#2C4425" }} />
+                </div>
+                <span className="text-xs font-semibold" style={{ color: "#2C4425" }}>Tese gerada com sucesso!</span>
+              </div>
+              <h2 className="font-bold text-lg" style={{ color: "#111111" }}>{previewName}</h2>
+            </div>
+            <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+              <X className="w-5 h-5" style={{ color: "#A7ADA7" }} />
+            </button>
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 overflow-y-auto px-6 py-4 space-y-5">
+            {/* Thesis text */}
+            {generatedPreview.thesis_text && (
+              <div className="p-4 rounded-2xl" style={{ background: "#fce7ef" }}>
+                <p className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: "#E10867" }}>Narrativa Estratégica</p>
+                <p className="text-sm leading-relaxed" style={{ color: "#111111" }}>{generatedPreview.thesis_text.split("\n")[0]}</p>
+              </div>
+            )}
+
+            {/* Macro categories */}
+            {(generatedPreview.macro_categories || []).length > 0 && (
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ color: "#4B4F4B" }}>
+                  <Target className="w-3.5 h-3.5" /> Macrocategorias ({generatedPreview.macro_categories.length})
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {generatedPreview.macro_categories.map(c => (
+                    <span key={c} className="px-3 py-1 rounded-full text-xs font-semibold"
+                      style={{ background: "#fce7ef", color: "#E10867" }}>{c}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Top priorities */}
+            {(generatedPreview.top_priorities || []).length > 0 && (
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ color: "#4B4F4B" }}>
+                  <Target className="w-3.5 h-3.5" /> Prioridades Estratégicas
+                </p>
+                <div className="space-y-1.5">
+                  {generatedPreview.top_priorities.map((p, i) => (
+                    <div key={i} className="flex items-start gap-2">
+                      <span className="w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5 text-white"
+                        style={{ background: "#6B2FA0" }}>{i + 1}</span>
+                      <p className="text-xs leading-relaxed" style={{ color: "#4B4F4B" }}>{p}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Tags */}
+            {(generatedPreview.tags || []).length > 0 && (
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ color: "#4B4F4B" }}>
+                  <Tag className="w-3.5 h-3.5" /> Tags de Matching ({generatedPreview.tags.length})
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {generatedPreview.tags.map(t => (
+                    <span key={t} className="px-2 py-0.5 rounded-full text-xs"
+                      style={{ background: "#ECEEEA", color: "#4B4F4B" }}>#{t}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Engagement rationale */}
+            {generatedPreview.engagement_rationale && (
+              <div className="p-3 rounded-xl" style={{ background: "#f0f8fb", borderColor: "#B4D1D7", border: "1px solid" }}>
+                <p className="text-xs font-semibold mb-1" style={{ color: "#1E0B2E" }}>Tipo de Engajamento Recomendado</p>
+                <p className="text-xs" style={{ color: "#4B4F4B" }}>{generatedPreview.engagement_rationale}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="px-6 py-4 border-t flex items-center justify-between gap-3 flex-shrink-0" style={{ borderColor: "#ECEEEA" }}>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" onClick={async () => { setGeneratedPreview(null); await generateThesis(); }}
+                style={{ borderColor: "#A7ADA7" }}>
+                <RotateCcw className="w-4 h-4 mr-1.5" /> Regenerar
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => { setGeneratedPreview(null); setStep(0); }}
+                style={{ color: "#A7ADA7" }}>
+                Voltar ao formulário
+              </Button>
+            </div>
+            <Button
+              onClick={confirmAndSave}
+              className="text-white gap-2 px-6"
+              style={{ background: "#2C4425", border: "none" }}>
+              <Check className="w-4 h-4" /> {editThesis ? "Salvar alterações" : "Salvar Tese"}
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // ── LOADING AI ASSESSMENT ───────────────────────────────────────────────────
   if (loadingAssessment) {
@@ -385,19 +535,25 @@ Responda APENAS em JSON válido com as chaves: thesis_text, macro_categories, to
 
   // ── LOADING SCREEN ──────────────────────────────────────────────────────────
   if (generating) {
+    const isSaving = !!generatedPreview;
     return (
       <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 p-8 bg-black/60">
         <div className="bg-white rounded-2xl shadow-2xl p-10 max-w-sm w-full text-center">
           <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5"
-            style={{ background: "#fce7ef" }}>
-            <Sparkles className="w-8 h-8 animate-pulse" style={{ color: "#E10867" }} />
+            style={{ background: isSaving ? "#e8f5e9" : "#fce7ef" }}>
+            <Sparkles className="w-8 h-8 animate-pulse" style={{ color: isSaving ? "#2C4425" : "#E10867" }} />
           </div>
-          <h2 className="text-xl font-bold mb-2" style={{ color: "#111111" }}>Construindo sua Tese…</h2>
+          <h2 className="text-xl font-bold mb-2" style={{ color: "#111111" }}>
+            {isSaving ? "Salvando Tese…" : "Construindo sua Tese…"}
+          </h2>
           <p className="text-sm mb-5" style={{ color: "#4B4F4B" }}>
-            A IA está analisando todos os dados fornecidos e elaborando uma tese de inovação aprofundada e personalizada.
+            {isSaving
+              ? "Estamos salvando sua tese de inovação."
+              : "A IA está analisando todos os dados fornecidos e elaborando uma tese de inovação aprofundada e personalizada."
+            }
           </p>
-          <Loader2 className="w-6 h-6 animate-spin mx-auto" style={{ color: "#E10867" }} />
-          <p className="text-xs mt-4" style={{ color: "#A7ADA7" }}>Isso pode levar alguns segundos…</p>
+          <Loader2 className="w-6 h-6 animate-spin mx-auto" style={{ color: isSaving ? "#2C4425" : "#E10867" }} />
+          {!isSaving && <p className="text-xs mt-4" style={{ color: "#A7ADA7" }}>Isso pode levar alguns segundos…</p>}
         </div>
       </div>
     );
@@ -414,7 +570,9 @@ Responda APENAS em JSON válido com as chaves: thesis_text, macro_categories, to
         <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b flex-shrink-0"
           style={{ borderColor: "#ECEEEA" }}>
           <div>
-            <h2 className="font-bold text-lg" style={{ color: "#111111" }}>Nova Tese de Inovação</h2>
+            <h2 className="font-bold text-lg" style={{ color: "#111111" }}>
+              {editThesis ? "Editar Tese de Inovação" : "Nova Tese de Inovação"}
+            </h2>
             <p className="text-xs mt-0.5" style={{ color: "#4B4F4B" }}>
               Passo {step + 1} de {STEPS.length} — {currentStep.emoji} {currentStep.label}
             </p>

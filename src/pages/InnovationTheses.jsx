@@ -6,7 +6,8 @@ import { useCorporateAccess } from "@/components/hooks/useCorporateAccess";
 import {
   Lightbulb, Plus, ChevronRight, Loader2, Zap, Map,
   Trash2, GitCompare, FileText, Brain, CheckCircle2,
-  Clock, Tag, Target, AlertTriangle, RotateCcw, ChevronDown, ChevronUp, X
+  Clock, Tag, Target, AlertTriangle, ChevronDown, ChevronUp,
+  X, Pencil, BarChart2, Sparkles, ArrowRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
@@ -15,14 +16,43 @@ import ThesisCompare from "@/components/theses/ThesisCompare";
 import ThesisReportModal from "@/components/theses/ThesisReportModal";
 import ThesisWizard from "@/components/theses/ThesisWizard";
 
+// Compute a "thesis strength" score 0-100
+function thesisStrength(thesis) {
+  let score = 0;
+  if (thesis.thesis_text?.length > 100) score += 20;
+  if ((thesis.macro_categories || []).length >= 3) score += 20;
+  if ((thesis.top_priorities || []).length >= 3) score += 20;
+  if ((thesis.tags || []).length >= 10) score += 20;
+  if (thesis.session_id) score += 10;
+  if (thesis.matching_ran) score += 10;
+  return score;
+}
+
+function StrengthBar({ thesis }) {
+  const score = thesisStrength(thesis);
+  const color = score >= 80 ? "#2C4425" : score >= 50 ? "#6B2FA0" : "#E10867";
+  const label = score >= 80 ? "Forte" : score >= 50 ? "Boa" : "Básica";
+  return (
+    <div className="flex items-center gap-2">
+      <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: "#ECEEEA" }}>
+        <div className="h-full rounded-full transition-all duration-500" style={{ width: `${score}%`, background: color }} />
+      </div>
+      <span className="text-xs font-semibold flex-shrink-0" style={{ color, minWidth: 36 }}>{label}</span>
+    </div>
+  );
+}
+
 export default function InnovationTheses() {
   const navigate = useNavigate();
   const { loading: accessLoading, corporate, corporateId } = useCorporateAccess();
   const [theses, setTheses] = useState([]);
   const [sessions, setSessions] = useState([]);
+  const [matchCounts, setMatchCounts] = useState({}); // thesis_id → count
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [editingThesis, setEditingThesis] = useState(null);
   const [compareIds, setCompareIds] = useState([]);
+  const [compareMode, setCompareMode] = useState(false);
   const [showCompare, setShowCompare] = useState(false);
   const [reportThesis, setReportThesis] = useState(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
@@ -34,17 +64,29 @@ export default function InnovationTheses() {
   }, [accessLoading, corporateId]);
 
   const loadData = async () => {
-    const [thesesData, sessionsData] = await Promise.all([
+    const [thesesData, sessionsData, matchesData] = await Promise.all([
       base44.entities.InnovationThesis.filter({ corporate_id: corporateId }, "-created_date"),
-      base44.entities.DiagnosticSession.filter({ corporate_id: corporateId, status: "completed" }, "-completed_at")
+      base44.entities.DiagnosticSession.filter({ corporate_id: corporateId, status: "completed" }, "-completed_at"),
+      base44.entities.StartupMatch.filter({ corporate_id: corporateId }),
     ]);
     setTheses(thesesData);
     setSessions(sessionsData);
+    // Count matches per thesis
+    const counts = {};
+    for (const m of matchesData) {
+      if (m.thesis_id) counts[m.thesis_id] = (counts[m.thesis_id] || 0) + 1;
+    }
+    setMatchCounts(counts);
     setLoading(false);
   };
 
-  const handleThesisCreated = (newThesis) => {
-    setTheses(prev => [newThesis, ...prev]);
+  const handleThesisCreated = (savedThesis) => {
+    if (editingThesis) {
+      setTheses(prev => prev.map(t => t.id === savedThesis.id ? savedThesis : t));
+      setEditingThesis(null);
+    } else {
+      setTheses(prev => [savedThesis, ...prev]);
+    }
     setShowForm(false);
   };
 
@@ -74,7 +116,7 @@ export default function InnovationTheses() {
     </div>
   );
 
-  const compareMode = compareIds.length >= 1;
+  const isCompareModeActive = compareMode || compareIds.length > 0;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -94,17 +136,27 @@ export default function InnovationTheses() {
         </div>
         {corporate && (
           <div className="flex items-center gap-2 flex-shrink-0">
-            {compareIds.length >= 2 && (
-              <Button onClick={() => setShowCompare(true)} variant="outline" size="sm"
+            {theses.length >= 2 && !isCompareModeActive && (
+              <Button
+                onClick={() => setCompareMode(true)}
+                variant="outline" size="sm"
                 style={{ borderColor: '#6B2FA0', color: '#6B2FA0' }}>
-                <GitCompare className="w-3.5 h-3.5 mr-1.5" /> Comparar ({compareIds.length})
+                <GitCompare className="w-3.5 h-3.5 mr-1.5" /> Comparar Teses
               </Button>
             )}
-            {compareMode && (
-              <Button onClick={() => setCompareIds([])} variant="outline" size="sm"
-                style={{ borderColor: '#A7ADA7', color: '#A7ADA7' }}>
-                <X className="w-3.5 h-3.5 mr-1" /> Cancelar
-              </Button>
+            {isCompareModeActive && (
+              <>
+                {compareIds.length >= 2 && (
+                  <Button onClick={() => setShowCompare(true)} size="sm" className="text-white"
+                    style={{ background: '#6B2FA0', border: 'none' }}>
+                    <GitCompare className="w-3.5 h-3.5 mr-1.5" /> Comparar ({compareIds.length})
+                  </Button>
+                )}
+                <Button onClick={() => { setCompareMode(false); setCompareIds([]); }} variant="outline" size="sm"
+                  style={{ borderColor: '#A7ADA7', color: '#A7ADA7' }}>
+                  <X className="w-3.5 h-3.5 mr-1" /> Cancelar
+                </Button>
+              </>
             )}
             <Button onClick={() => setShowForm(true)} className="text-white gap-1.5" style={{ background: '#E10867', border: 'none' }}>
               <Plus className="w-4 h-4" /> Nova Tese
@@ -161,27 +213,20 @@ export default function InnovationTheses() {
       )}
 
       {/* ── COMPARE MODE BANNER ── */}
-      {compareMode && (
+      {isCompareModeActive && (
         <div className="rounded-xl border p-3 mb-5 flex items-center gap-3"
           style={{ borderColor: '#6B2FA0', background: '#f3e8ff' }}>
           <GitCompare className="w-4 h-4 flex-shrink-0" style={{ color: '#6B2FA0' }} />
           <p className="text-sm flex-1" style={{ color: '#6B2FA0' }}>
-            <strong>{compareIds.length}</strong> tese{compareIds.length > 1 ? 's' : ''} selecionada{compareIds.length > 1 ? 's' : ''} para comparação
-            {compareIds.length < 2 && ' — selecione ao menos mais uma'}
+            <strong>{compareIds.length}</strong> tese{compareIds.length !== 1 ? 's' : ''} selecionada{compareIds.length !== 1 ? 's' : ''}
+            {compareIds.length < 2 && ' — clique em mais teses para comparar'}
           </p>
-          {compareIds.length >= 2 && (
-            <Button onClick={() => setShowCompare(true)} size="sm" className="text-white flex-shrink-0"
-              style={{ background: '#6B2FA0', border: 'none' }}>
-              Comparar agora
-            </Button>
-          )}
         </div>
       )}
 
       {/* ── LISTA DE TESES ── */}
       {theses.length > 0 && (
         <div className="space-y-4">
-          {/* Stats bar */}
           <div className="flex items-center gap-4 mb-2">
             <p className="text-sm font-medium" style={{ color: '#4B4F4B' }}>
               {theses.length} tese{theses.length > 1 ? 's' : ''} criada{theses.length > 1 ? 's' : ''}
@@ -196,6 +241,7 @@ export default function InnovationTheses() {
             const isFirst = idx === 0;
             const isSelected = compareIds.includes(thesis.id);
             const isExpanded = expandedId === thesis.id;
+            const matchCount = matchCounts[thesis.id] || 0;
             const thesisName = thesis.name ||
               (thesis.macro_categories?.length > 0 ? thesis.macro_categories[0] : null) ||
               format(new Date(thesis.created_date), "'Tese de' MMM yyyy", { locale: ptBR });
@@ -212,11 +258,26 @@ export default function InnovationTheses() {
                 {/* Card Header */}
                 <div className="p-5">
                   <div className="flex items-start gap-4">
-                    {/* Icon */}
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                      style={{ background: isFirst ? '#fce7ef' : '#ECEEEA' }}>
-                      <Lightbulb className="w-5 h-5" style={{ color: isFirst ? '#E10867' : '#4B4F4B' }} />
-                    </div>
+                    {/* Compare checkbox or icon */}
+                    {isCompareModeActive ? (
+                      <button
+                        onClick={() => toggleCompare(thesis.id)}
+                        className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 border-2 transition-all"
+                        style={{
+                          borderColor: isSelected ? '#6B2FA0' : '#A7ADA7',
+                          background: isSelected ? '#f3e8ff' : '#ECEEEA',
+                        }}>
+                        {isSelected
+                          ? <CheckCircle2 className="w-5 h-5" style={{ color: '#6B2FA0' }} />
+                          : <GitCompare className="w-5 h-5" style={{ color: '#A7ADA7' }} />
+                        }
+                      </button>
+                    ) : (
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style={{ background: isFirst ? '#fce7ef' : '#ECEEEA' }}>
+                        <Lightbulb className="w-5 h-5" style={{ color: isFirst ? '#E10867' : '#4B4F4B' }} />
+                      </div>
+                    )}
 
                     {/* Main content */}
                     <div className="flex-1 min-w-0">
@@ -227,38 +288,48 @@ export default function InnovationTheses() {
                         )}
                         <h3 className="font-bold text-sm" style={{ color: '#111111' }}>{thesisName}</h3>
                       </div>
-                      <div className="flex items-center gap-3 flex-wrap">
+
+                      {/* Meta row */}
+                      <div className="flex items-center gap-3 flex-wrap mt-0.5">
                         <span className="text-xs flex items-center gap-1" style={{ color: '#A7ADA7' }}>
                           <Clock className="w-3 h-3" />
-                          {format(new Date(thesis.created_date), "dd 'de' MMM 'de' yyyy", { locale: ptBR })}
+                          {format(new Date(thesis.created_date), "dd MMM yyyy", { locale: ptBR })}
                         </span>
                         {thesis.session_id && (
                           <span className="text-xs flex items-center gap-1" style={{ color: '#6B2FA0' }}>
                             <Zap className="w-3 h-3" /> Com diagnóstico
                           </span>
                         )}
-                        <span className={`text-xs flex items-center gap-1 font-medium ${thesis.matching_ran ? '' : ''}`}
-                          style={{ color: thesis.matching_ran ? '#2C4425' : '#A7ADA7' }}>
-                          {thesis.matching_ran
-                            ? <><CheckCircle2 className="w-3 h-3" /> Matching realizado</>
-                            : <><Clock className="w-3 h-3" /> Matching pendente</>
-                          }
-                        </span>
+                        {/* Match count badge */}
+                        {thesis.matching_ran && (
+                          <span className="text-xs flex items-center gap-1 font-medium px-2 py-0.5 rounded-full"
+                            style={{
+                              background: matchCount > 0 ? '#e8f5e9' : '#ECEEEA',
+                              color: matchCount > 0 ? '#2C4425' : '#A7ADA7'
+                            }}>
+                            <Sparkles className="w-3 h-3" />
+                            {matchCount > 0 ? `${matchCount} startups encontradas` : 'Nenhum match'}
+                          </span>
+                        )}
+                        {!thesis.matching_ran && (
+                          <span className="text-xs flex items-center gap-1" style={{ color: '#A7ADA7' }}>
+                            <Clock className="w-3 h-3" /> Matching pendente
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Strength bar */}
+                      <div className="mt-2 max-w-xs">
+                        <StrengthBar thesis={thesis} />
                       </div>
                     </div>
 
                     {/* Actions */}
                     <div className="flex items-center gap-1 flex-shrink-0">
-                      {/* Select for compare */}
                       <button
-                        onClick={() => toggleCompare(thesis.id)}
-                        title={isSelected ? "Remover da comparação" : "Selecionar para comparar"}
-                        className="p-1.5 rounded-lg transition-all"
-                        style={{
-                          background: isSelected ? '#f3e8ff' : 'transparent',
-                          color: isSelected ? '#6B2FA0' : '#A7ADA7',
-                        }}>
-                        <GitCompare className="w-4 h-4" />
+                        onClick={() => { setEditingThesis(thesis); setShowForm(true); }}
+                        className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors" title="Editar tese">
+                        <Pencil className="w-4 h-4" style={{ color: '#A7ADA7' }} />
                       </button>
                       <button onClick={() => setReportThesis(thesis)}
                         className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors" title="Gerar relatório">
@@ -275,14 +346,13 @@ export default function InnovationTheses() {
                   {/* Thesis preview text */}
                   {thesis.thesis_text && (
                     <div className="mt-3 ml-14">
-                      <p className={`text-sm leading-relaxed ${isExpanded ? '' : 'line-clamp-2'}`}
-                        style={{ color: '#4B4F4B' }}>
+                      <p className="text-sm leading-relaxed line-clamp-2" style={{ color: '#4B4F4B' }}>
                         {thesis.thesis_text.split("\n")[0]}
                       </p>
                     </div>
                   )}
 
-                  {/* Macro categories */}
+                  {/* Macro categories — prominent */}
                   {(thesis.macro_categories || []).length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mt-3 ml-14">
                       {thesis.macro_categories.slice(0, 5).map(c => (
@@ -298,15 +368,15 @@ export default function InnovationTheses() {
                     </div>
                   )}
 
-                  {/* Tags */}
+                  {/* Tags — secondary, smaller */}
                   {(thesis.tags || []).length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mt-2 ml-14">
-                      {thesis.tags.slice(0, 6).map(t => (
-                        <span key={t} className="px-2 py-0.5 rounded-full text-xs"
-                          style={{ background: '#ECEEEA', color: '#4B4F4B' }}>#{t}</span>
+                    <div className="flex flex-wrap gap-1 mt-1.5 ml-14">
+                      {thesis.tags.slice(0, 5).map(t => (
+                        <span key={t} className="px-1.5 py-0.5 rounded text-xs"
+                          style={{ background: '#F5F5F5', color: '#A7ADA7', fontSize: 10 }}>#{t}</span>
                       ))}
-                      {thesis.tags.length > 6 && (
-                        <span className="text-xs" style={{ color: '#A7ADA7' }}>+{thesis.tags.length - 6} tags</span>
+                      {thesis.tags.length > 5 && (
+                        <span className="text-xs" style={{ color: '#A7ADA7', fontSize: 10 }}>+{thesis.tags.length - 5} tags</span>
                       )}
                     </div>
                   )}
@@ -314,17 +384,18 @@ export default function InnovationTheses() {
 
                 {/* Expanded section */}
                 {isExpanded && (
-                  <div className="px-5 pb-4 border-t pt-4" style={{ borderColor: '#ECEEEA', background: '#FAFAFA' }}>
+                  <div className="px-5 pb-5 border-t pt-4" style={{ borderColor: '#ECEEEA', background: '#FAFAFA', borderRadius: '0 0 1rem 1rem' }}>
                     {/* Top priorities */}
                     {(thesis.top_priorities || []).length > 0 && (
-                      <div className="mb-4">
-                        <p className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5"
+                      <div className="mb-5">
+                        <p className="text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5"
                           style={{ color: '#4B4F4B' }}>
                           <Target className="w-3.5 h-3.5" /> Prioridades Estratégicas
                         </p>
-                        <div className="space-y-1.5">
+                        <div className="space-y-2">
                           {thesis.top_priorities.map((p, i) => (
-                            <div key={i} className="flex items-start gap-2">
+                            <div key={i} className="flex items-start gap-2.5 p-2.5 rounded-xl"
+                              style={{ background: '#fff', border: '1px solid #ECEEEA' }}>
                               <span className="w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5 text-white"
                                 style={{ background: '#6B2FA0' }}>{i + 1}</span>
                               <p className="text-xs leading-relaxed" style={{ color: '#4B4F4B' }}>{p}</p>
@@ -354,7 +425,7 @@ export default function InnovationTheses() {
 
                 {/* Footer */}
                 <div className="px-5 py-3 border-t flex items-center justify-between gap-3"
-                  style={{ borderColor: '#ECEEEA', background: '#FAFAFA', borderRadius: '0 0 1rem 1rem' }}>
+                  style={{ borderColor: '#ECEEEA', background: isExpanded ? '#FAFAFA' : '#FAFAFA', borderRadius: isExpanded ? '0' : '0 0 1rem 1rem' }}>
                   <button
                     onClick={() => setExpandedId(isExpanded ? null : thesis.id)}
                     className="flex items-center gap-1 text-xs transition-colors hover:opacity-70"
@@ -378,8 +449,11 @@ export default function InnovationTheses() {
                       size="sm"
                       className="text-white gap-1.5"
                       style={{ background: thesis.matching_ran ? '#2C4425' : '#E10867', border: 'none' }}>
-                      <Map className="w-3.5 h-3.5" />
-                      {thesis.matching_ran ? "Ver Radar" : "Gerar Radar"}
+                      {thesis.matching_ran ? (
+                        <><Map className="w-3.5 h-3.5" /> Ver Radar {matchCount > 0 && `(${matchCount})`}</>
+                      ) : (
+                        <><Sparkles className="w-3.5 h-3.5" /> Gerar Radar <ArrowRight className="w-3 h-3" /></>
+                      )}
                     </Button>
                   </div>
                 </div>
@@ -432,11 +506,12 @@ export default function InnovationTheses() {
         />
       )}
 
-      {showForm && (
+      {(showForm || editingThesis != null) && (
         <ThesisWizard
           corporate={corporate}
           sessions={sessions}
-          onClose={() => setShowForm(false)}
+          editThesis={editingThesis}
+          onClose={() => { setShowForm(false); setEditingThesis(null); }}
           onCreated={handleThesisCreated}
         />
       )}
