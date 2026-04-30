@@ -11,32 +11,31 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Missing thesisId or corporateId' }, { status: 400 });
     }
 
-    const allTheses = await base44.asServiceRole.entities.InnovationThesis.list();
-    const thesisData = allTheses.find(t => t.id === thesisId);
-    
+    // Fetch thesis, assessments and startups in parallel for efficiency
+    const [thesisList, assessments] = await Promise.all([
+      base44.asServiceRole.entities.InnovationThesis.filter({ corporate_id: corporateId }),
+      base44.asServiceRole.entities.AIAssessment.filter({ corporate_id: corporateId }),
+    ]);
+
+    const thesisData = thesisList.find(t => t.id === thesisId);
     if (!thesisData) {
       return Response.json({ error: 'Thesis not found' }, { status: 404 });
     }
 
     let diagnosticData = null;
-    let aiReadinessData = null;
+    const aiReadinessData = assessments[0] || null;
 
     if (thesisData.session_id) {
-      const allSessions = await base44.asServiceRole.entities.DiagnosticSession.list();
-      diagnosticData = allSessions.find(s => s.id === thesisData.session_id);
+      const sessions = await base44.asServiceRole.entities.DiagnosticSession.filter({ corporate_id: corporateId });
+      diagnosticData = sessions.find(s => s.id === thesisData.session_id) || null;
     }
-
-    const allAssessments = await base44.asServiceRole.entities.AIAssessment.list();
-    aiReadinessData = allAssessments.find(a => a.corporate_id === corporateId);
 
     const allStartups = await base44.asServiceRole.entities.Startup.list();
     const activeStartups = allStartups.filter(s => s.is_active && !s.is_deleted);
 
-    const allMatches = await base44.asServiceRole.entities.StartupMatch.list();
-    const oldMatches = allMatches.filter(m => m.thesis_id === thesisId);
-    for (const match of oldMatches) {
-      await base44.asServiceRole.entities.StartupMatch.delete(match.id);
-    }
+    // Delete old matches for this thesis in parallel
+    const allMatches = await base44.asServiceRole.entities.StartupMatch.filter({ thesis_id: thesisId });
+    await Promise.all(allMatches.map(m => base44.asServiceRole.entities.StartupMatch.delete(m.id)));
 
     const startupsText = activeStartups.map(s => 
       s.id + '|' + s.name + '|' + (s.category || '') + '|' + (s.vertical || '') + '|' + (s.stage || '') + '|' + (s.business_model || '') + '|' + (s.description || '').substring(0, 150) + '|' + (s.value_proposition || '').substring(0, 100) + '|' + (s.tags || []).join(',')
@@ -74,10 +73,13 @@ Deno.serve(async (req) => {
     });
 
     const newMatches = [];
+    const seenStartupIds = new Set(); // Deduplicate: LLM may return same startup_id twice
     if (startupEvaluations && startupEvaluations.evaluations && Array.isArray(startupEvaluations.evaluations)) {
       for (const record of startupEvaluations.evaluations) {
         const startup = activeStartups.find(s => s.id === record.startup_id);
         if (!startup) continue;
+        if (seenStartupIds.has(record.startup_id)) continue; // skip duplicates
+        seenStartupIds.add(record.startup_id);
 
         newMatches.push({
           corporate_id: corporateId,

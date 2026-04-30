@@ -210,7 +210,15 @@ export default function StartupRadar() {
   const rawMatches = thesesMatches[selectedThesisId] || [];
 
   const filteredMatches = useMemo(() => {
-    let list = [...rawMatches];
+    // Deduplicate by startup_id defensively (keep highest fit_score)
+    const deduped = new Map();
+    for (const m of rawMatches) {
+      const existing = deduped.get(m.startup_id);
+      if (!existing || (m.fit_score || 0) > (existing.fit_score || 0)) {
+        deduped.set(m.startup_id, m);
+      }
+    }
+    let list = Array.from(deduped.values());
 
     // Apply priority order from AI
     if (priorityOrder) {
@@ -553,6 +561,19 @@ export default function StartupRadar() {
                     <button onClick={() => setCompareItems([])} className="p-1 rounded hover:bg-purple-200 transition-colors">
                       <X className="w-4 h-4" style={{ color: "#6B2FA0" }} />
                     </button>
+                  </div>
+                )}
+
+                {/* Duplicate warning banner */}
+                {rawMatches.length > new Set(rawMatches.map(m => m.startup_id)).size && (
+                  <div className="flex items-center gap-3 px-4 py-3 rounded-xl mb-4"
+                    style={{ background: "#fffbeb", border: "1px solid #fcd34d" }}>
+                    <AlertTriangle className="w-4 h-4 flex-shrink-0" style={{ color: "#d97706" }} />
+                    <p className="text-sm flex-1" style={{ color: "#92400e" }}>
+                      Detectamos startups duplicadas neste radar. Isso pode ocorrer quando o matching é rodado mais de uma vez.
+                      <button onClick={() => runMatching(currentThesis.id, true)}
+                        className="ml-2 underline font-semibold">Refazer matching</button> para corrigir.
+                    </p>
                   </div>
                 )}
 
