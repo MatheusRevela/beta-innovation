@@ -82,38 +82,46 @@ export default function PublicStartupRegister() {
   const handleSubmit = async () => {
     setLoading(true);
     const tagsArr = form.tags ? form.tags.split(",").map(t => t.trim()).filter(Boolean) : [];
-    const payload = {
-      name: form.name,
-      cnpj: form.cnpj,
-      category: form.category,
-      vertical: form.vertical,
-      business_model: form.business_model,
-      stage: form.stage,
-      description: form.description,
-      website: form.website,
-      contact_email: form.contact_email,
-      state: form.state,
-      founding_year: form.founding_year ? Number(form.founding_year) : undefined,
-      tags: tagsArr,
-      logo_url: form.logo_url || undefined,
-      is_active: true,
-      completeness_score: calcCompleteness({ ...form, tags: tagsArr }),
-    };
 
     let startupId = form._id;
     if (startupId) {
-      await base44.entities.Startup.update(startupId, payload);
+      // Edição de cadastro já existente: atualiza diretamente na Startup
+      await base44.entities.Startup.update(startupId, {
+        name: form.name,
+        cnpj: form.cnpj,
+        category: form.category,
+        vertical: form.vertical,
+        business_model: form.business_model,
+        stage: form.stage,
+        description: form.description,
+        website: form.website,
+        contact_email: form.contact_email,
+        state: form.state,
+        founding_year: form.founding_year ? Number(form.founding_year) : undefined,
+        tags: tagsArr,
+        logo_url: form.logo_url || undefined,
+        completeness_score: calcCompleteness({ ...form, tags: tagsArr }),
+      });
     } else {
-      const created = await base44.entities.Startup.create(payload);
-      startupId = created.id;
-      await base44.entities.StartupUser.create({
-        startup_id: startupId,
-        user_email: user.email,
-        user_name: user.full_name || user.email,
-        role: "admin_startup",
-        status: "ativo",
-        invited_at: new Date().toISOString(),
-        activated_at: new Date().toISOString(),
+      // Novo cadastro: vai para LabStartup com source=self_register aguardando aprovação
+      await base44.entities.LabStartup.create({
+        name: form.name,
+        cnpj: form.cnpj,
+        category: form.category,
+        vertical: form.vertical,
+        business_model: form.business_model,
+        stage: form.stage,
+        description: form.description,
+        website: form.website,
+        contact_email: form.contact_email,
+        state: form.state,
+        founding_year: form.founding_year ? Number(form.founding_year) : undefined,
+        tags: tagsArr,
+        logo_url: form.logo_url || undefined,
+        source: "self_register",
+        status: "pending",
+        registered_by_email: user.email,
+        registered_by_name: user.full_name || user.email,
       });
     }
 
@@ -128,8 +136,8 @@ export default function PublicStartupRegister() {
         <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#e8f0e6' }}>
           <Check className="w-8 h-8" style={{ color: '#2C4425' }} />
         </div>
-        <h2 className="font-bold text-lg" style={{ color: '#111111' }}>Cadastro salvo!</h2>
-        <p className="text-sm mt-2" style={{ color: '#4B4F4B' }}>Redirecionando para o seu portal...</p>
+        <h2 className="font-bold text-lg" style={{ color: '#111111' }}>Cadastro enviado!</h2>
+        <p className="text-sm mt-2" style={{ color: '#4B4F4B' }}>Sua inscrição foi recebida e está aguardando aprovação da equipe Beta-i.</p>
       </div>
     </div>
   );

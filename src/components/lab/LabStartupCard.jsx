@@ -125,6 +125,7 @@ Retorne TODOS os campos abaixo com base em pesquisa real:
       ai_enriched_at: localLab.ai_enriched_at,
       is_active: false,
       is_deleted: false,
+      source: "csv",
       enrichment_status: "pending"
     });
 

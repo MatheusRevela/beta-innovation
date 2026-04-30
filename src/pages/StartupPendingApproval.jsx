@@ -44,8 +44,9 @@ export default function StartupPendingApproval() {
         target_customers: lab.target_customers,
         logo_url: lab.logo_url,
         cnpj: lab.cnpj,
-        is_active: true,
+        is_active: false,
         is_deleted: false,
+        source: "self_register",
         ai_enriched: lab.ai_enriched || false,
         enrichment_status: "pending",
       });

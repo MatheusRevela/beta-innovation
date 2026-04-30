@@ -77,6 +77,7 @@ export default function StartupManagement() {
     if (f.category) query.category = f.category;
     if (f.stage) query.stage = f.stage;
     if (f.business_model) query.business_model = f.business_model;
+    if (f.source) query.source = f.source;
 
     const sortStr = `${s.dir === "desc" ? "-" : ""}${s.field}`;
 
@@ -278,6 +279,13 @@ export default function StartupManagement() {
             className="border rounded-lg px-3 py-1.5 text-sm" style={{ borderColor: '#A7ADA7' }}>
             <option value="">Categoria</option>
             {CATEGORY_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+          <select value={filters.source ?? ""} onChange={e => handleFilter("source", e.target.value)}
+            className="border rounded-lg px-3 py-1.5 text-sm" style={{ borderColor: '#A7ADA7' }}>
+            <option value="">Origem</option>
+            <option value="manual">Cadastro manual</option>
+            <option value="csv">Cadastro em lote</option>
+            <option value="self_register">Inscrição da startup</option>
           </select>
           {activeFiltersCount > 0 && (
             <button onClick={clearFilters}

@@ -106,7 +106,8 @@ Inclua: termos técnicos, verticais de mercado, tecnologias usadas, problemas re
     const data = {
       ...form,
       tags: form.tags || [],
-      is_active: form.is_active !== false
+      is_active: form.is_active !== false,
+      ...(!startup?.id && { source: "manual" }),
     };
     if (startup?.id) {
       await base44.entities.Startup.update(startup.id, data);
