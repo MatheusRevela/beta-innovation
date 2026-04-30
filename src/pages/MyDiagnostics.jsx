@@ -23,6 +23,7 @@ export default function MyDiagnostics() {
   const { loading: accessLoading, corporate, isGestor } = useCorporateAccess();
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [aiAssessment, setAiAssessment] = useState(null);
 
   useEffect(() => {
     if (!accessLoading && corporate) loadSessions();
@@ -31,8 +32,12 @@ export default function MyDiagnostics() {
 
   const loadSessions = async () => {
     try {
-      const all = await base44.entities.DiagnosticSession.filter({ corporate_id: corporate.id }, "-created_date");
+      const [all, aiResults] = await Promise.all([
+        base44.entities.DiagnosticSession.filter({ corporate_id: corporate.id }, "-created_date"),
+        base44.entities.AIAssessment.filter({ corporate_id: corporate.id }, "-created_date", 1),
+      ]);
       setSessions(all);
+      if (aiResults?.length > 0) setAiAssessment(aiResults[0]);
     } catch (_) {
       // erro de rede
     } finally {
@@ -65,7 +70,7 @@ export default function MyDiagnostics() {
     <div className="max-w-3xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold" style={{ color: '#111111' }}>Meus Diagnósticos</h1>
+          <h1 className="text-2xl font-bold" style={{ color: '#111111' }}>Diagnósticos de Maturidade</h1>
           <p className="text-sm mt-1" style={{ color: '#4B4F4B' }}>
             {sessions.length} diagnóstico{sessions.length !== 1 ? 's' : ''} no total
           </p>
@@ -116,7 +121,7 @@ export default function MyDiagnostics() {
         <div className="mb-6">
           <h2 className="text-sm font-semibold mb-3 uppercase tracking-wide" style={{ color: '#4B4F4B' }}>Em andamento</h2>
           <div className="space-y-3">
-            {ongoing.map(s => <SessionCard key={s.id} session={s} onResume={() => resume(s)} />)}
+            {ongoing.map((s, i) => <SessionCard key={s.id} session={s} onResume={() => resume(s)} index={ongoing.length - i} />)}
           </div>
         </div>
       )}
@@ -125,12 +130,12 @@ export default function MyDiagnostics() {
         <div>
           <h2 className="text-sm font-semibold mb-3 uppercase tracking-wide" style={{ color: '#4B4F4B' }}>Concluídos</h2>
           <div className="space-y-3">
-            {completed.map(s => <SessionCard key={s.id} session={s} onResume={() => resume(s)} />)}
+            {completed.map((s, i) => <SessionCard key={s.id} session={s} onResume={() => resume(s)} index={completed.length - i} />)}
           </div>
         </div>
       )}
 
-      {/* AI Readiness Scan upsell */}
+      {/* AI Readiness Scan banner */}
       {completed.length > 0 && (
         <div className="mt-8 rounded-2xl border-2 p-6 flex items-center gap-5"
           style={{ borderColor: '#6B2FA0', background: 'linear-gradient(135deg, #1E0B2E08, #6B2FA012)' }}>
@@ -138,23 +143,43 @@ export default function MyDiagnostics() {
             style={{ background: '#f3e8ff' }}>
             <Brain className="w-6 h-6" style={{ color: '#6B2FA0' }} />
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="font-bold text-sm mb-0.5" style={{ color: '#1E0B2E' }}>Próximo passo: AI Readiness Scan</p>
-            <p className="text-xs" style={{ color: '#4B4F4B' }}>
-              Avalie a prontidão de IA da sua empresa em 9 dimensões. Enriquece sua Tese de Inovação com insights específicos sobre IA.
-            </p>
-          </div>
-          <Button onClick={() => navigate(createPageUrl('AIReadinessScan'))} size="sm"
-            className="text-white flex-shrink-0" style={{ background: '#6B2FA0', border: 'none' }}>
-            Iniciar <ChevronRight className="w-3.5 h-3.5 ml-1" />
-          </Button>
+          {aiAssessment ? (
+            <>
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-sm mb-0.5" style={{ color: '#1E0B2E' }}>AI Readiness Scan</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-xl font-black" style={{ color: '#6B2FA0' }}>
+                    {aiAssessment.global_score != null ? (aiAssessment.global_score * 20).toFixed(0) : '—'}
+                  </span>
+                  <span className="text-xs" style={{ color: '#4B4F4B' }}>/ 100 · Score de Prontidão em IA</span>
+                </div>
+              </div>
+              <Button onClick={() => navigate(createPageUrl('AIReadinessScan'))} size="sm"
+                className="text-white flex-shrink-0" style={{ background: '#6B2FA0', border: 'none' }}>
+                Ver resultado <ChevronRight className="w-3.5 h-3.5 ml-1" />
+              </Button>
+            </>
+          ) : (
+            <>
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-sm mb-0.5" style={{ color: '#1E0B2E' }}>Próximo passo: AI Readiness Scan</p>
+                <p className="text-xs" style={{ color: '#4B4F4B' }}>
+                  Avalie a prontidão de IA da sua empresa em 9 dimensões. Enriquece sua Tese de Inovação com insights específicos sobre IA.
+                </p>
+              </div>
+              <Button onClick={() => navigate(createPageUrl('AIReadinessScan'))} size="sm"
+                className="text-white flex-shrink-0" style={{ background: '#6B2FA0', border: 'none' }}>
+                Iniciar <ChevronRight className="w-3.5 h-3.5 ml-1" />
+              </Button>
+            </>
+          )}
         </div>
       )}
     </div>
   );
 }
 
-function SessionCard({ session, onResume }) {
+function SessionCard({ session, onResume, index }) {
   const cfg = STATUS_CONFIG[session.status] || STATUS_CONFIG.draft;
   const Icon = cfg.icon;
   const isCompleted = session.status === "completed";
@@ -173,7 +198,7 @@ function SessionCard({ session, onResume }) {
         <div className="min-w-0">
           <div className="flex items-center gap-2 flex-wrap mb-0.5">
             <span className="text-sm font-semibold" style={{ color: '#111111' }}>
-              Diagnóstico #{session.id?.slice(-6)}
+              Diagnóstico {index != null ? `#${index}` : `· ${format(new Date(session.created_date), "MMM yyyy", { locale: ptBR })}`}
             </span>
             <span className="px-2 py-0.5 rounded-full text-xs font-medium" style={{ background: cfg.bg, color: cfg.color }}>
               {cfg.label}
