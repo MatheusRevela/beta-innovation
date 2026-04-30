@@ -183,7 +183,6 @@ function SessionCard({ session, onResume, index }) {
   const cfg = STATUS_CONFIG[session.status] || STATUS_CONFIG.draft;
   const Icon = cfg.icon;
   const isCompleted = session.status === "completed";
-  const canResume = ["draft", "in_progress"].includes(session.status);
 
   const dateStr = session.completed_at
     ? format(new Date(session.completed_at), "dd 'de' MMM 'de' yyyy", { locale: ptBR })

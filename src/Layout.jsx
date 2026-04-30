@@ -17,7 +17,7 @@ const NAV_ITEMS = {
     { label: "Dashboard", icon: LayoutDashboard, page: "AdminDashboard" },
     { label: "Early Warnings", icon: AlertTriangle, page: "EarlyWarnings" },
     { section: "Visão Corporate" },
-    { label: "Diagnósticos", icon: Zap, page: "MyDiagnostics" },
+    { label: "Diagnóstico de Maturidade", icon: Zap, page: "MyDiagnostics" },
     { label: "AI Readiness Scan", icon: Brain, page: "AIReadinessScan" },
     { label: "Teses de Inovação", icon: Star, page: "InnovationTheses" },
     { label: "Radar de Startups", icon: Map, page: "StartupRadar" },
