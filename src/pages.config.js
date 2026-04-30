@@ -76,7 +76,7 @@ import Reports from './pages/Reports';
 import StartupManagement from './pages/StartupManagement';
 import StartupRadar from './pages/StartupRadar';
 import TeamManagement from './pages/TeamManagement';
-import StartupPendingApproval from './pages/StartupPendingApproval.jsx';
+import StartupPendingApproval from './pages/StartupPendingApproval';
 import __Layout from './Layout.jsx';
 
 
