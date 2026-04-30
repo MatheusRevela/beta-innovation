@@ -173,7 +173,7 @@ export default function Layout({ children, currentPageName }) {
                 to={createPageUrl(page)}
                 onClick={() => setMobileOpen(false)}
                 className={`
-                  flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
+                  flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium transition-all
                   ${isActive
                     ? 'text-white shadow-sm'
                     : 'text-white/60 hover:text-white hover:bg-white/10'
