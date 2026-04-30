@@ -9,7 +9,7 @@ import { FitScoreBadge } from "@/components/shared/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Loader2, Zap, Plus, ExternalLink, X, Map,
+  Loader2, Zap, Plus, ExternalLink, X, Map as MapIcon,
   Search, SlidersHorizontal, RefreshCw, GitCompare,
   Sparkles, ThumbsUp, ThumbsDown, CheckCircle2,
   ChevronRight, Target, Tag, TrendingUp, Building2,
@@ -262,7 +262,7 @@ export default function StartupRadar() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4" style={{ background: "#ECEEEA" }}>
         <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ background: "#fce7ef" }}>
-          <Map className="w-8 h-8" style={{ color: "#E10867" }} />
+          <MapIcon className="w-8 h-8" style={{ color: "#E10867" }} />
         </div>
         <div className="text-center">
           <h2 className="text-lg font-bold mb-1" style={{ color: "#111111" }}>Carregando Radar…</h2>
@@ -281,7 +281,7 @@ export default function StartupRadar() {
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "#fce7ef" }}>
-                <Map className="w-5 h-5" style={{ color: "#E10867" }} />
+                <MapIcon className="w-5 h-5" style={{ color: "#E10867" }} />
               </div>
               <div>
                 <h1 className="text-xl font-bold leading-tight" style={{ color: "#111111" }}>Radar de Startups</h1>
@@ -342,7 +342,7 @@ export default function StartupRadar() {
         {theses.length === 0 && (
           <div className="bg-white rounded-2xl border p-14 text-center" style={{ borderColor: "#E5E7E5" }}>
             <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: "#fce7ef" }}>
-              <Map className="w-8 h-8" style={{ color: "#E10867" }} />
+              <MapIcon className="w-8 h-8" style={{ color: "#E10867" }} />
             </div>
             <h2 className="font-bold text-lg mb-2" style={{ color: "#111111" }}>Nenhuma tese de inovação criada</h2>
             <p className="text-sm mb-6 max-w-sm mx-auto" style={{ color: "#4B4F4B" }}>
