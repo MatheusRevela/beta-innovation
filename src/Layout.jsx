@@ -127,7 +127,7 @@ export default function Layout({ children, currentPageName }) {
       <aside
         className={`
           fixed md:relative z-50 flex flex-col h-full transition-all duration-300 ease-in-out
-          ${collapsed ? 'w-16' : 'w-60'}
+          ${collapsed ? 'w-16' : 'w-64'}
           ${mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}
         style={{ background: portalColor, borderRight: '1px solid rgba(255,255,255,0.08)' }}
