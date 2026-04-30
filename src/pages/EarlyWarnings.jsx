@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import {
   AlertTriangle, Clock, Building2, Loader2, RefreshCw, ShieldAlert,
-  TrendingDown, CalendarX, DatabaseZap, Star, ArrowRight,
+  CalendarX, DatabaseZap, Star, ArrowRight,
   CheckCircle2, XCircle, Zap, Filter, ChevronDown, Target,
   Activity, BrainCircuit, LayoutDashboard, Eye
 } from "lucide-react";
@@ -27,7 +27,6 @@ const CATEGORY_META = {
   no_tasks:           { icon: Target,       label: "Sem Tarefas Ativas",      color: "#d97706" },
   low_quality:        { icon: DatabaseZap,  label: "Qualidade Baixa",         color: "#7c3aed" },
   pending_approval:   { icon: ShieldAlert,  label: "Aprovação Pendente",      color: "#0891b2" },
-  stalled_match:      { icon: TrendingDown, label: "Match Sem Ação",          color: "#16a34a" },
   orphan_thesis:      { icon: Star,         label: "Tese Sem Matching",       color: "#E10867" },
 };
 
@@ -44,17 +43,18 @@ export default function EarlyWarnings() {
     const now = new Date();
     const results = [];
 
-    const [projects, tasks, startups, theses, matches, labStartups] = await Promise.all([
+    const [projects, tasks, theses, labStartups] = await Promise.all([
       base44.entities.CRMProject.filter({ is_active: true }),
       base44.entities.CRMTask.list("-created_date", 200),
-      base44.entities.Startup.filter({ is_active: false }),
       base44.entities.InnovationThesis.list("-created_date", 50),
-      base44.entities.StartupMatch.filter({ status: "suggested" }),
       base44.entities.LabStartup.filter({ status: "pending" }),
     ]);
 
+    // Projetos elegíveis: ativos e não encerrados
+    const eligibleProjects = projects.filter(p => p.stage !== "Encerrado" && !p.is_deleted);
+
     // 1. Projetos parados (>14d sem atualização)
-    for (const p of projects) {
+    for (const p of eligibleProjects) {
       const days = differenceInDays(now, new Date(p.updated_date || p.created_date));
       if (days > 14) {
         const score = Math.min(100, 30 + days * 2);
@@ -72,8 +72,8 @@ export default function EarlyWarnings() {
     }
 
     // 2. Prazos vencidos em projetos
-    for (const p of projects) {
-      if (p.deadline && isPast(parseISO(p.deadline)) && p.stage !== "Encerrado") {
+    for (const p of eligibleProjects) {
+      if (p.deadline && isPast(parseISO(p.deadline))) {
         const overdueDays = differenceInDays(now, parseISO(p.deadline));
         const score = Math.min(100, 50 + overdueDays * 3);
         results.push({
@@ -95,10 +95,10 @@ export default function EarlyWarnings() {
       if (!tasksByProject[t.project_id]) tasksByProject[t.project_id] = [];
       tasksByProject[t.project_id].push(t);
     }
-    for (const p of projects) {
+    for (const p of eligibleProjects) {
       const ptasks = tasksByProject[p.id] || [];
       const activeTasks = ptasks.filter(t => t.status === "pending" || t.status === "in_progress");
-      if (activeTasks.length === 0 && p.stage !== "Encerrado") {
+      if (activeTasks.length === 0) {
         const days = differenceInDays(now, new Date(p.created_date));
         if (days > 7) {
           results.push({
@@ -149,24 +149,7 @@ export default function EarlyWarnings() {
       }
     }
 
-    // 6. Matches sugeridos sem ação há mais de 10 dias
-    for (const m of matches) {
-      const days = differenceInDays(now, new Date(m.created_date));
-      if (days > 10) {
-        results.push({
-          id: `match_${m.id}`,
-          category: "stalled_match",
-          title: `Match aguardando avaliação`,
-          subtitle: `Sugerido há ${days} dias · Score: ${m.fit_score || "—"}%`,
-          detail: `Match identificado ainda sem feedback. Oportunidade pode estar sendo desperdiçada.`,
-          score: Math.min(80, 20 + days * 2),
-          meta: { days, matchId: m.id },
-          action: { label: "Ver Radar", page: "StartupRadar" },
-        });
-      }
-    }
-
-    // 7. Teses sem matching rodado
+    // 6. Teses sem matching rodado
     for (const t of theses) {
       if (!t.matching_ran) {
         const days = differenceInDays(now, new Date(t.created_date));
