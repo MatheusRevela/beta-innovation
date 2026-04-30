@@ -232,7 +232,7 @@ Score Global de Prontidão em IA: ${Math.round(aiAssessment.global_score)}/100
 Maiores Gaps de IA (dimensões mais fracas): ${gaps}
 Pontos Fortes de IA: ${strengths}
 
-INSTRUÇÃO ESPECIAL: Use os gaps identificados acima para sugerir Macrocategorias e perfis de startups focadas em resolver esses gaps tecnológicos. Inclua um parágrafo no "Contexto Estratégico" da tese que cite a prontidão atual da empresa para adoção de IA (score ${Math.round(aiAssessment.global_score)}/100) e como isso influencia a estratégia de inovação.`;
+INSTRUÇÃO ESPECIAL: Use os gaps identificados acima para sugerir Macrocategorias e perfis de startups focadas em resolver esses gaps tecnológicos. Inclua um parágrafo no "Contexto Estratégico" da tese que cite a prontidão atual da empresa para adoção de IA (score ${Math.round(aiAssessment.global_score)}/100) e como isso influencia a estratégia de inovação. Todo o conteúdo deve ser em português do Brasil.`;
         })()
       : `
 ═══════════════════════════════
@@ -311,21 +311,27 @@ Com base em TODOS os dados acima, gere uma tese de inovação completa com:
    - Como o engajamento com startups deve funcionar neste contexto
    - Quais são os critérios de sucesso e impacto esperado
 
-2. MACRO_CATEGORIES: 5-7 macrocategorias específicas de inovação derivadas da tese
-   (ex: para Energia → "Virtual Power Plant", "Energy as a Service", "Smart Grid B2B")
-   (ex: para Bancos → "Embedded Finance", "Credit Risk AI", "Open Finance")
+2. MACRO_CATEGORIES: 5-7 macrocategorias específicas de inovação derivadas da tese.
+   OBRIGATÓRIO: Escreva SEMPRE em português do Brasil.
+   (ex: para Energia → "Energia Distribuída", "Gestão de Demanda", "Medição Inteligente")
+   (ex: para Bancos → "Crédito com IA", "Finanças Embutidas", "Open Finance")
+   (ex: para Saúde → "Telemedicina B2B", "Diagnóstico por IA", "Gestão de Prontuário")
    Devem ser específicas ao setor e temas escolhidos, não genéricas.
 
-3. TOP_PRIORITIES: 5-7 prioridades estratégicas concretas e acionáveis, cada uma com uma entrega clara
+3. TOP_PRIORITIES: 5-7 prioridades estratégicas concretas e acionáveis, cada uma com uma entrega clara.
+   OBRIGATÓRIO: Escreva SEMPRE em português do Brasil.
 
-4. TAGS: Mínimo 15 tags técnicas e de negócio ultra-específicas para matching com startups
-   (ex: "virtual power plant", "embedded finance", "digital twin manufacturing", "generative AI customer service")
-   Use termos em inglês predominantemente (padrão de mercado para matching).
+4. TAGS: Mínimo 15 tags técnicas e de negócio para matching com startups.
+   CRÍTICO PARA O MATCHING: As startups da plataforma têm tags em português do Brasil.
+   OBRIGATÓRIO: Escreva as tags SEMPRE em português do Brasil, em letras minúsculas.
+   (ex: "automação de processos", "inteligência artificial", "análise de dados", "eficiência operacional", "conformidade regulatória", "experiência do cliente", "integração de sistemas", "segurança da informação")
+   Use termos técnicos e de negócio em português que uma startup brasileira usaria para se descrever.
 
-5. SECTORS: Setores-alvo confirmados para busca de startups
+5. SECTORS: Setores-alvo confirmados para busca de startups. Em português.
 
-6. ENGAGEMENT_RATIONALE: Breve justificativa (2-3 frases) sobre o tipo de engajamento mais indicado para este corporate
+6. ENGAGEMENT_RATIONALE: Breve justificativa (2-3 frases) sobre o tipo de engajamento mais indicado. Em português.
 
+IMPORTANTE GERAL: Todo o conteúdo gerado deve estar em português do Brasil. Nenhum campo pode conter texto em inglês.
 Responda APENAS em JSON válido com as chaves: thesis_text, macro_categories, top_priorities, tags, sectors, engagement_rationale`;
 
     const data = await base44.integrations.Core.InvokeLLM({
