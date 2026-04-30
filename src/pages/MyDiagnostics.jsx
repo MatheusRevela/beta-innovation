@@ -149,7 +149,7 @@ export default function MyDiagnostics() {
                 <p className="font-bold text-sm mb-0.5" style={{ color: '#1E0B2E' }}>AI Readiness Scan</p>
                 <div className="flex items-center gap-2 mt-1">
                   <span className="text-xl font-black" style={{ color: '#6B2FA0' }}>
-                    {aiAssessment.global_score != null ? (aiAssessment.global_score * 20).toFixed(0) : '—'}
+                    {aiAssessment.global_score != null ? Math.round(aiAssessment.global_score) : '—'}
                   </span>
                   <span className="text-xs" style={{ color: '#4B4F4B' }}>/ 100 · Score de Prontidão em IA</span>
                 </div>
