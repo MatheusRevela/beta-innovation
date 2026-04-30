@@ -48,27 +48,30 @@ Responda em JSON:
   "risks": ["string", "string", "string"]
 }`;
 
-    const result = await base44.integrations.Core.InvokeLLM({
-      prompt,
-      response_json_schema: {
-        type: "object",
-        properties: {
-          executive_summary: { type: "string" },
-          strategic_context: { type: "string" },
-          categories_justification: { type: "array", items: { type: "object", properties: { category: { type: "string" }, justification: { type: "string" } } } },
-          immediate_priorities: { type: "array", items: { type: "string" } },
-          startup_profiles: { type: "array", items: { type: "object", properties: { category: { type: "string" }, profile: { type: "string" } } } },
-          risks: { type: "array", items: { type: "string" } }
+    try {
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            executive_summary: { type: "string" },
+            strategic_context: { type: "string" },
+            categories_justification: { type: "array", items: { type: "object", properties: { category: { type: "string" }, justification: { type: "string" } } } },
+            immediate_priorities: { type: "array", items: { type: "string" } },
+            startup_profiles: { type: "array", items: { type: "object", properties: { category: { type: "string" }, profile: { type: "string" } } } },
+            risks: { type: "array", items: { type: "string" } }
+          }
         }
-      }
-    });
+      });
 
-    setReport(result);
-    await base44.entities.InnovationThesis.update(thesis.id, {
-      cached_report: result,
-      cached_report_at: new Date().toISOString(),
-    });
-    setLoading(false);
+      setReport(result);
+      await base44.entities.InnovationThesis.update(thesis.id, {
+        cached_report: result,
+        cached_report_at: new Date().toISOString(),
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const exportPDF = () => {

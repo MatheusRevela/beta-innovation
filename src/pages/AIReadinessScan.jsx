@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
@@ -592,6 +592,11 @@ function QuizView({ currentQ, setCurrentQ, answers, onSelect, onSubmit, saving }
 function ResultsView({ assessment, onGoToTheses, onRedo }) {
   const [expandedDim, setExpandedDim] = useState(null);
   const [aiSynthesis, setAiSynthesis] = useState(assessment?.ai_synthesis ?? null);
+
+  // Reset synthesis when assessment changes (e.g. after redo)
+  useEffect(() => {
+    setAiSynthesis(assessment?.ai_synthesis ?? null);
+  }, [assessment?.id]);
   const [loadingSynthesis, setLoadingSynthesis] = useState(false);
 
   if (!assessment) return null;

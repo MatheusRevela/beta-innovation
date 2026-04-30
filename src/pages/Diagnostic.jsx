@@ -48,7 +48,7 @@ export default function Diagnostic() {
           });
           if (membership.length === 0) return;
         }
-        const sessions = await base44.entities.DiagnosticSession.list("-created_date", 200);
+        const sessions = await base44.entities.DiagnosticSession.filter({ corporate_id: corporateId || undefined }, "-created_date", 100);
         const r = sessions.filter(s => s.id === sessionId);
         if (r[0]) {
           setSession(r[0]);

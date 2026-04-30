@@ -232,7 +232,7 @@ export const DIAGNOSTIC_PILLARS = [
         text: "A empresa monitora tendências de mercado e tecnologia para antecipar disrupções?",
         type: "likert",
         scale: 5,
-        labels: ["Não", "Ad hoc", "Occasionally", "Frequentemente", "Sistemático e estruturado"]
+        labels: ["Não", "Ad hoc", "Às vezes", "Frequentemente", "Sistemático e estruturado"]
       },
       {
         id: "rf4",
