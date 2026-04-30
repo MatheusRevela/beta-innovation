@@ -578,64 +578,110 @@ function QuizView({ currentQ, setCurrentQ, answers, onSelect, onSubmit, saving }
 
 // ─── RESULTS VIEW ─────────────────────────────────────────────────────────────
 function ResultsView({ assessment, onGoToTheses, onRedo }) {
+  const [expandedDim, setExpandedDim] = useState(null);
+  const [aiSynthesis, setAiSynthesis] = useState(assessment?.ai_synthesis || null);
+  const [loadingSynthesis, setLoadingSynthesis] = useState(false);
+
   if (!assessment) return null;
 
   const { dimension_scores = {}, global_score = 0 } = assessment;
   const maturity = getAIMaturityLabel(global_score);
   const maturityColors = getAIMaturityColor(global_score);
 
-  // Radar chart data
   const radarData = DIMENSIONS.map(d => ({
     subject: d.short,
     score: dimension_scores[d.id] || 0,
     fullMark: 100,
   }));
 
-  // Top 2 gaps (lowest scoring dimensions)
   const sortedDims = DIMENSIONS
     .map(d => ({ ...d, score: dimension_scores[d.id] || 0 }))
     .sort((a, b) => a.score - b.score);
-  const topGaps = sortedDims.slice(0, 2);
+  const topGaps = sortedDims.slice(0, 3);
   const topStrengths = sortedDims.slice(-2).reverse();
+
+  const generateSynthesis = async () => {
+    setLoadingSynthesis(true);
+    const dimSummary = DIMENSIONS.map(d =>
+      `${d.name}: ${Math.round(dimension_scores[d.id] || 0)}/100`
+    ).join(", ");
+    const result = await base44.integrations.Core.InvokeLLM({
+      prompt: `Você é um especialista em transformação digital e IA. Gere uma síntese executiva em português, de 3 parágrafos, para uma empresa com o seguinte perfil de AI Readiness (escala 0-100):\n\nScore Global: ${Math.round(global_score)}/100 — Nível: ${maturity}\n\nPor dimensão: ${dimSummary}\n\nA síntese deve: 1) Contextualizar o nível atual, 2) Destacar os 3 maiores gaps e seus riscos estratégicos, 3) Recomendar 3 iniciativas prioritárias concretas para os próximos 90 dias. Seja direto, executivo e acionável.`,
+    });
+    const text = typeof result === "string" ? result : (result?.text || result?.content || "");
+    setAiSynthesis(text);
+    await base44.entities.AIAssessment.update(assessment.id, { ai_synthesis: text });
+    setLoadingSynthesis(false);
+  };
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-2 mb-1">
-          <Brain className="w-5 h-5" style={{ color: "#E10867" }} />
-          <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#E10867" }}>
-            AI Readiness Scan · Resultado
-          </span>
+      <div className="flex items-start justify-between mb-8">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <Brain className="w-5 h-5" style={{ color: "#E10867" }} />
+            <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#E10867" }}>
+              AI Readiness Scan · Resultado
+            </span>
+          </div>
+          <h1 className="text-2xl font-bold" style={{ color: "#111111" }}>Relatório de Prontidão em IA</h1>
+          <p className="text-sm mt-1" style={{ color: "#4B4F4B" }}>Avaliação de 9 dimensões críticas de Inteligência Artificial</p>
         </div>
-        <h1 className="text-2xl font-bold" style={{ color: "#111111" }}>Relatório de Prontidão em IA</h1>
-        <p className="text-sm mt-1" style={{ color: "#4B4F4B" }}>
-          Avaliação de 9 dimensões críticas de Inteligência Artificial
-        </p>
+        <Button onClick={onRedo} variant="outline" size="sm" className="flex-shrink-0" style={{ borderColor: "#A7ADA7" }}>
+          <RotateCcw className="w-3.5 h-3.5 mr-1.5" /> Refazer
+        </Button>
       </div>
 
       {/* Global Score Card */}
       <div className="bg-white rounded-2xl border p-6 mb-6 flex items-center gap-6" style={{ borderColor: "#A7ADA7" }}>
-        <div className="w-20 h-20 rounded-2xl flex flex-col items-center justify-center flex-shrink-0"
+        <div className="w-24 h-24 rounded-2xl flex flex-col items-center justify-center flex-shrink-0"
           style={{ background: maturityColors.bg }}>
-          <span className="text-2xl font-black" style={{ color: maturityColors.color }}>
-            {Math.round(global_score)}
-          </span>
+          <span className="text-3xl font-black" style={{ color: maturityColors.color }}>{Math.round(global_score)}</span>
           <span className="text-xs font-medium" style={{ color: maturityColors.color }}>/100</span>
         </div>
         <div className="flex-1">
-          <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "#A7ADA7" }}>
-            Score Global de Prontidão em IA
-          </p>
-          <h2 className="text-xl font-bold mb-1" style={{ color: "#111111" }}>{maturity}</h2>
-          <div className="w-full h-2 rounded-full" style={{ background: "#ECEEEA" }}>
-            <div className="h-full rounded-full transition-all"
-              style={{ width: `${scoreToPercent(global_score)}%`, background: maturityColors.color }} />
+          <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "#A7ADA7" }}>Score Global de Prontidão em IA</p>
+          <h2 className="text-xl font-bold mb-2" style={{ color: "#111111" }}>{maturity}</h2>
+          <div className="w-full h-2.5 rounded-full" style={{ background: "#ECEEEA" }}>
+            <div className="h-full rounded-full transition-all" style={{ width: `${scoreToPercent(global_score)}%`, background: maturityColors.color }} />
           </div>
-          <p className="text-xs mt-1" style={{ color: "#4B4F4B" }}>
-            {Math.round(global_score)}% do nível máximo de maturidade
-          </p>
+          <p className="text-xs mt-1.5" style={{ color: "#4B4F4B" }}>{Math.round(global_score)}% do nível máximo de maturidade em IA</p>
         </div>
+      </div>
+
+      {/* AI Synthesis */}
+      <div className="bg-white rounded-2xl border p-6 mb-6" style={{ borderColor: "#A7ADA7" }}>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Brain className="w-4 h-4" style={{ color: "#6B2FA0" }} />
+            <h3 className="font-bold" style={{ color: "#111111" }}>Síntese Executiva</h3>
+          </div>
+          {!aiSynthesis && !loadingSynthesis && (
+            <Button onClick={generateSynthesis} size="sm" className="text-white" style={{ background: "#6B2FA0", border: "none" }}>
+              <Zap className="w-3.5 h-3.5 mr-1.5" /> Gerar com IA
+            </Button>
+          )}
+          {aiSynthesis && !loadingSynthesis && (
+            <button onClick={generateSynthesis} className="text-xs flex items-center gap-1 hover:opacity-70 transition-opacity" style={{ color: "#A7ADA7" }}>
+              <RotateCcw className="w-3 h-3" /> Regenerar
+            </button>
+          )}
+        </div>
+        {loadingSynthesis && (
+          <div className="flex items-center gap-3 py-6 justify-center">
+            <Loader2 className="w-5 h-5 animate-spin" style={{ color: "#6B2FA0" }} />
+            <span className="text-sm" style={{ color: "#4B4F4B" }}>Gerando síntese executiva...</span>
+          </div>
+        )}
+        {!loadingSynthesis && aiSynthesis && (
+          <p className="text-sm leading-relaxed whitespace-pre-wrap" style={{ color: "#4B4F4B" }}>{aiSynthesis}</p>
+        )}
+        {!loadingSynthesis && !aiSynthesis && (
+          <p className="text-sm" style={{ color: "#A7ADA7" }}>
+            Clique em "Gerar com IA" para receber uma análise executiva personalizada com os principais gaps, riscos estratégicos e iniciativas prioritárias para os próximos 90 dias.
+          </p>
+        )}
       </div>
 
       {/* Radar Chart */}
@@ -644,46 +690,47 @@ function ResultsView({ assessment, onGoToTheses, onRedo }) {
         <ResponsiveContainer width="100%" height={340}>
           <RadarChart data={radarData} cx="50%" cy="50%" outerRadius="65%">
             <PolarGrid stroke="#ECEEEA" />
-            <PolarAngleAxis
-              dataKey="subject"
-              tick={{ fontSize: 11, fill: "#4B4F4B", fontWeight: 500 }}
-            />
+            <PolarAngleAxis dataKey="subject" tick={{ fontSize: 11, fill: "#4B4F4B", fontWeight: 500 }} />
             <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 9, fill: "#A7ADA7" }} tickCount={6} />
-            <Radar
-              name="Score"
-              dataKey="score"
-              stroke="#E10867"
-              fill="#E10867"
-              fillOpacity={0.25}
-              strokeWidth={2}
-            />
-            <Tooltip
-              formatter={(v) => [`${Math.round(v)} / 100`, "Score"]}
-              contentStyle={{ borderRadius: 8, border: "1px solid #ECEEEA", fontSize: 12 }}
-            />
+            <Radar name="Score" dataKey="score" stroke="#E10867" fill="#E10867" fillOpacity={0.25} strokeWidth={2} />
+            <Tooltip formatter={(v) => [`${Math.round(v)} / 100`, "Score"]} contentStyle={{ borderRadius: 8, border: "1px solid #ECEEEA", fontSize: 12 }} />
           </RadarChart>
         </ResponsiveContainer>
+      </div>
 
-        {/* Dimension scores table */}
-        <div className="grid grid-cols-3 gap-2 mt-4">
+      {/* All Dimensions — expandable */}
+      <div className="bg-white rounded-2xl border mb-6 overflow-hidden" style={{ borderColor: "#A7ADA7" }}>
+        <div className="px-5 py-4 border-b" style={{ borderColor: "#ECEEEA" }}>
+          <h3 className="font-bold" style={{ color: "#111111" }}>Análise por Dimensão</h3>
+          <p className="text-xs mt-0.5" style={{ color: "#4B4F4B" }}>Clique em cada dimensão para ver recomendações detalhadas</p>
+        </div>
+        <div className="divide-y" style={{ borderColor: "#ECEEEA" }}>
           {DIMENSIONS.map(d => {
             const score = dimension_scores[d.id] || 0;
             const colors = getAIMaturityColor(score);
+            const isOpen = expandedDim === d.id;
             return (
-              <div key={d.id} className="flex items-center gap-2 px-3 py-2 rounded-lg"
-                style={{ background: "#FAFAFA" }}>
-                <span className="text-base">{d.emoji}</span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium truncate" style={{ color: "#111111" }}>{d.short}</p>
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <div className="flex-1 h-1 rounded-full" style={{ background: "#ECEEEA" }}>
+              <div key={d.id}>
+                <button
+                  onClick={() => setExpandedDim(isOpen ? null : d.id)}
+                  className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-gray-50 transition-colors text-left">
+                  <span className="text-lg flex-shrink-0">{d.emoji}</span>
+                  <span className="flex-1 text-sm font-semibold" style={{ color: "#111111" }}>{d.name}</span>
+                  <div className="flex items-center gap-3 flex-shrink-0">
+                    <span className="text-sm font-bold" style={{ color: colors.color }}>{Math.round(score)}/100</span>
+                    <div className="w-20 h-1.5 rounded-full" style={{ background: "#ECEEEA" }}>
                       <div className="h-full rounded-full" style={{ width: `${scoreToPercent(score)}%`, background: colors.color }} />
                     </div>
-                    <span className="text-xs font-bold flex-shrink-0" style={{ color: colors.color }}>
-                      {Math.round(score)}
-                    </span>
+                    <ChevronRight className="w-4 h-4 transition-transform" style={{ color: "#A7ADA7", transform: isOpen ? "rotate(90deg)" : "none" }} />
                   </div>
-                </div>
+                </button>
+                {isOpen && (
+                  <div className="px-5 pb-4 pt-2 border-t" style={{ background: "#FAFAFA", borderColor: "#ECEEEA" }}>
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-full inline-block mb-2"
+                      style={{ background: colors.bg, color: colors.color }}>{getAIMaturityLabel(score)}</span>
+                    <p className="text-sm leading-relaxed" style={{ color: "#4B4F4B" }}>{getGapRecommendation(d.id)}</p>
+                  </div>
+                )}
               </div>
             );
           })}
@@ -692,67 +739,49 @@ function ResultsView({ assessment, onGoToTheses, onRedo }) {
 
       {/* Gaps & Strengths */}
       <div className="grid md:grid-cols-2 gap-4 mb-6">
-        {/* Gaps */}
         <div className="bg-white rounded-2xl border p-5" style={{ borderColor: "#A7ADA7" }}>
           <div className="flex items-center gap-2 mb-4">
             <AlertTriangle className="w-4 h-4" style={{ color: "#E65100" }} />
-            <h3 className="font-bold text-sm" style={{ color: "#111111" }}>Dimensões Prioritárias (Gaps)</h3>
+            <h3 className="font-bold text-sm" style={{ color: "#111111" }}>Top 3 Gaps Prioritários</h3>
           </div>
-          <div className="space-y-3">
-            {topGaps.map(d => (
-              <div key={d.id} className="p-3 rounded-xl" style={{ background: "#FFF3E0" }}>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-semibold" style={{ color: "#E65100" }}>
-                    {d.emoji} {d.name}
-                  </span>
-                  <span className="text-sm font-bold" style={{ color: "#E65100" }}>{Math.round(d.score)}/100</span>
+          <div className="space-y-2">
+            {topGaps.map((d, i) => (
+              <div key={d.id} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: "#FFF3E0" }}>
+                <span className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white"
+                  style={{ background: "#E65100" }}>{i + 1}</span>
+                <div className="flex-1 min-w-0">
+                  <span className="text-sm font-semibold block" style={{ color: "#E65100" }}>{d.emoji} {d.name}</span>
+                  <span className="text-xs" style={{ color: "#4B4F4B" }}>{Math.round(d.score)}/100</span>
                 </div>
-                <p className="text-xs" style={{ color: "#4B4F4B" }}>
-                  {getGapRecommendation(d.id)}
-                </p>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Strengths */}
         <div className="bg-white rounded-2xl border p-5" style={{ borderColor: "#A7ADA7" }}>
           <div className="flex items-center gap-2 mb-4">
             <TrendingUp className="w-4 h-4" style={{ color: "#2C4425" }} />
             <h3 className="font-bold text-sm" style={{ color: "#111111" }}>Pontos Fortes</h3>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-2">
             {topStrengths.map(d => (
-              <div key={d.id} className="p-3 rounded-xl" style={{ background: "#e8f5e9" }}>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-semibold" style={{ color: "#2C4425" }}>
-                    {d.emoji} {d.name}
-                  </span>
-                  <span className="text-sm font-bold" style={{ color: "#2C4425" }}>{Math.round(d.score)}/100</span>
+              <div key={d.id} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: "#e8f5e9" }}>
+                <span className="text-lg">{d.emoji}</span>
+                <div className="flex-1 min-w-0">
+                  <span className="text-sm font-semibold block" style={{ color: "#2C4425" }}>{d.name}</span>
+                  <span className="text-xs" style={{ color: "#4B4F4B" }}>{Math.round(d.score)}/100 · Dimensão consolidada</span>
                 </div>
-                <p className="text-xs" style={{ color: "#4B4F4B" }}>Dimensão bem consolidada na organização.</p>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* CTAs */}
-      <div className="flex gap-3">
-        <Button
-          onClick={onGoToTheses}
-          className="flex-1 text-white text-base h-12 rounded-xl"
-          style={{ background: "#E10867", border: "none" }}>
-          Avançar para Gerar Tese de Inovação <ChevronRight className="w-5 h-5 ml-1" />
-        </Button>
-        <Button
-          onClick={onRedo}
-          variant="outline"
-          className="h-12 rounded-xl"
-          style={{ borderColor: "#A7ADA7" }}>
-          <RotateCcw className="w-4 h-4 mr-2" /> Refazer
-        </Button>
-      </div>
+      {/* CTA */}
+      <Button onClick={onGoToTheses} className="w-full text-white text-base h-12 rounded-xl"
+        style={{ background: "#E10867", border: "none" }}>
+        Avançar para Gerar Tese de Inovação <ChevronRight className="w-5 h-5 ml-1" />
+      </Button>
     </div>
   );
 }

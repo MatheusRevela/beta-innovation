@@ -1,0 +1,29 @@
+{
+  "name": "AIAssessment",
+  "type": "object",
+  "properties": {
+    "corporate_id": {
+      "type": "string",
+      "description": "ID da empresa avaliada"
+    },
+    "answers": {
+      "type": "object",
+      "description": "Objeto com ID da quest\u00e3o como chave e score (1-5) como valor"
+    },
+    "dimension_scores": {
+      "type": "object",
+      "description": "Objeto com ID da dimens\u00e3o como chave e m\u00e9dia das respostas como valor"
+    },
+    "global_score": {
+      "type": "number",
+      "description": "Score global de prontid\u00e3o em IA (m\u00e9dia das 9 dimens\u00f5es, escala 1-5)"
+    },
+    "ai_synthesis": {
+      "type": "string",
+      "description": "S\u00edntese executiva gerada por IA"
+    }
+  },
+  "required": [
+    "corporate_id"
+  ]
+}
