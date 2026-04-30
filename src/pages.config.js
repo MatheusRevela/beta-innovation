@@ -76,6 +76,7 @@ import Reports from './pages/Reports';
 import StartupManagement from './pages/StartupManagement';
 import StartupRadar from './pages/StartupRadar';
 import TeamManagement from './pages/TeamManagement';
+import StartupPendingApproval from './pages/StartupPendingApproval.jsx';
 import __Layout from './Layout.jsx';
 
 
@@ -109,6 +110,7 @@ export const PAGES = {
     "StartupManagement": StartupManagement,
     "StartupRadar": StartupRadar,
     "TeamManagement": TeamManagement,
+    "StartupPendingApproval": StartupPendingApproval,
 }
 
 export const pagesConfig = {

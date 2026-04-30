@@ -7,7 +7,7 @@ import {
   LayoutDashboard, Zap, Map, Briefcase,
   ChevronLeft, ChevronRight, LogOut, User, Menu,
   Building2, Star, Database, BarChart3, FileText, Bell, FlaskConical, Brain, AlertTriangle,
-  Rocket, UserPlus
+  Rocket, UserPlus, UserCheck
 } from "lucide-react";
 
 const NAV_ITEMS = {
@@ -33,6 +33,7 @@ const NAV_ITEMS = {
     { label: "Corporates", icon: Building2, page: "CorporateManagement" },
     { label: "Laboratório", icon: FlaskConical, page: "Laboratorio" },
     { label: "Startups", icon: Database, page: "StartupManagement" },
+    { label: "Aprovação de Startups", icon: UserCheck, page: "StartupPendingApproval" },
     { label: "CRM Board", icon: Briefcase, page: "CRMBoard" },
     { label: "Relatórios", icon: BarChart3, page: "Reports" },
     { label: "Colaboradores", icon: User, page: "Colaboradores" },
