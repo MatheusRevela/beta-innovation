@@ -271,12 +271,24 @@ export default function AIReadinessScan() {
   const handleSubmit = async () => {
     setSaving(true);
     const { dimension_scores, global_score } = calcScores(answers);
-    const saved = await base44.entities.AIAssessment.create({
-      corporate_id: corporate.id,
-      answers,
-      dimension_scores,
-      global_score,
-    });
+    // If redoing, update existing record; otherwise create new
+    let saved;
+    if (assessment?.id) {
+      saved = await base44.entities.AIAssessment.update(assessment.id, {
+        answers,
+        dimension_scores,
+        global_score,
+        ai_synthesis: null,
+      });
+      saved = { ...assessment, ...saved, id: assessment.id };
+    } else {
+      saved = await base44.entities.AIAssessment.create({
+        corporate_id: corporate.id,
+        answers,
+        dimension_scores,
+        global_score,
+      });
+    }
     setAssessment(saved);
     setView("results");
     setSaving(false);
@@ -285,7 +297,7 @@ export default function AIReadinessScan() {
   const handleRedo = () => {
     setAnswers({});
     setCurrentQ(0);
-    setView("landing");
+    setView("quiz"); // Go directly to quiz, not landing, to avoid confusion
   };
 
   if (view === "loading") {
@@ -579,7 +591,7 @@ function QuizView({ currentQ, setCurrentQ, answers, onSelect, onSubmit, saving }
 // ─── RESULTS VIEW ─────────────────────────────────────────────────────────────
 function ResultsView({ assessment, onGoToTheses, onRedo }) {
   const [expandedDim, setExpandedDim] = useState(null);
-  const [aiSynthesis, setAiSynthesis] = useState(assessment?.ai_synthesis || null);
+  const [aiSynthesis, setAiSynthesis] = useState(assessment?.ai_synthesis ?? null);
   const [loadingSynthesis, setLoadingSynthesis] = useState(false);
 
   if (!assessment) return null;

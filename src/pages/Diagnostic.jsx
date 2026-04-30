@@ -48,8 +48,8 @@ export default function Diagnostic() {
           });
           if (membership.length === 0) return;
         }
-        const sessions = await base44.entities.DiagnosticSession.filter({ id: sessionId });
-        const r = sessions;
+        const sessions = await base44.entities.DiagnosticSession.list("-created_date", 200);
+        const r = sessions.filter(s => s.id === sessionId);
         if (r[0]) {
           setSession(r[0]);
           if (r[0].status === "completed") {
@@ -73,7 +73,7 @@ export default function Diagnostic() {
   const setAnswer = async (qId, val) => {
     setResponses(r => ({ ...r, [`${pillar.id}__${qId}`]: val }));
     // Create session on first answer if none exists yet
-    if (!session && !sessionCreated && corporateId) {
+    if (!session && !sessionCreated && corporateId && !sessionId) {
       // Issue #6 — Validar ownership antes de criar sessão
       const me = await base44.auth.me();
       if (me?.role !== 'admin') {
